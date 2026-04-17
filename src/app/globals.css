@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #050507;
+  --surface: #101117;
+  --surface-soft: #141620;
+  --border: #23242b;
+  --text: #f4f6f8;
+  --muted: #a9afb7;
+  --primary: #c7cbd1;
+  --primary-ink: #07070a;
+  --primary-hover: #b6bac2;
+  --primary-tint: rgba(199, 203, 209, 0.08);
+  --hairline-accent: rgba(199, 203, 209, 0.2);
+  --whatsapp: #25d366;
+  --whatsapp-hover: #1fb85a;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  @apply antialiased;
+}
+
+a {
+  color: var(--primary);
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+h1,
+h2 {
+  font-family: var(--font-serif), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  letter-spacing: 0.02em;
+}
+
+.surface-panel {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.surface-soft {
+  background: var(--surface-soft);
+  border-color: var(--border);
+}
+
+.hairline-accent {
+  border-color: var(--hairline-accent);
+}
+
+.product-card-surface {
+  background: linear-gradient(180deg, #0c0d12 0%, #101117 100%);
+}
+
+.btn-primary,
+.btn-outline,
+.btn-whatsapp {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  padding: 0.7rem 1rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--primary-ink);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  color: var(--primary-ink);
+}
+
+.btn-outline {
+  border: 1px solid var(--primary);
+  color: var(--text);
+}
+
+.btn-outline:hover {
+  background: var(--primary-tint);
+  color: var(--text);
+}
+
+.btn-whatsapp {
+  border: 1px solid var(--whatsapp);
+  background: var(--whatsapp);
+  color: #0b0b0d;
+}
+
+.btn-whatsapp:hover {
+  background: var(--whatsapp-hover);
+  color: #0b0b0d;
+}
+
+.tap-target {
+  min-height: 48px;
+  min-width: 44px;
+}
