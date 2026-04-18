@@ -126,7 +126,7 @@ export default function MensSandalsFactoryChittagongPage() {
             </article>
             <article className="surface-panel rounded-2xl border p-6">
               <h3 className="text-2xl font-semibold text-[#f4eee1]">Loafers</h3>
-              <p className="mt-3 text-[#adb2bd]">MOQ placeholder: to be confirmed by style and material.</p>
+              <p className="mt-3 text-[#adb2bd]">Loafers MOQ is finalized after style review and material selection.</p>
             </article>
           </div>
         </div>

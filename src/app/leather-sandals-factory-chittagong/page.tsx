@@ -303,7 +303,7 @@ export default function LeatherSandalsFactoryChittagongPage() {
             <article className="surface-panel rounded-2xl border p-6">
               <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">MOQ</p>
               <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1]">Loafers</h2>
-              <p className="mt-4 text-base text-[#adb2bd]">Loafers MOQ placeholder: to be confirmed according to selected model.</p>
+              <p className="mt-4 text-base text-[#adb2bd]">Loafers MOQ is confirmed after model review and material selection.</p>
             </article>
           </div>
         </div>

@@ -116,6 +116,38 @@ export default function LowMoqFootwearManufacturerPage() {
         </div>
       </section>
 
+      <section id="quick-answer" className="py-14 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+            <article className="surface-panel rounded-2xl border p-6 sm:p-8">
+              <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">Quick Answer</p>
+              <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1] sm:text-4xl">Low MOQ Footwear Factory in Bangladesh</h2>
+              <p className="mt-4 text-base leading-relaxed text-[#adb2bd] sm:text-lg">
+                If you need low quantity footwear manufacturing, Rizz Leather produces in Bakolia, Chittagong with sandals MOQ from 12 pairs and
+                Oxford MOQ from 120+ pairs. We support OEM/private label, wholesale supply, and Dhaka buyer delivery from our Chittagong base.
+              </p>
+            </article>
+            <article className="surface-panel rounded-2xl border p-6 sm:p-8">
+              <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">Who We Are</p>
+              <ul className="mt-4 space-y-3 text-base leading-relaxed text-[#d8dde5]">
+                <li>Factory base: Sayed Sha Road, Bakolia, Chittagong-4203, Bangladesh</li>
+                <li>Serving: Bangladesh wholesale buyers, including Dhaka retailers and resellers</li>
+                <li>Model: OEM, private label, and ready stock or made-to-order supply</li>
+                <li>Markets: Bangladesh plus export-focused projects for USA, Europe, and Middle East</li>
+              </ul>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Link href="/sandals-factory-chittagong" className="btn-outline">
+                  Sandals Factory Page
+                </Link>
+                <Link href="/leather-sandals-manufacturer-bangladesh" className="btn-outline">
+                  Leather Manufacturer Page
+                </Link>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="moq" className="py-14 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="text-3xl font-semibold text-[#f4eee1] sm:text-4xl">MOQ by Category</h2>
@@ -130,7 +162,7 @@ export default function LowMoqFootwearManufacturerPage() {
             </article>
             <article className="surface-panel rounded-2xl border p-6">
               <h3 className="text-2xl font-semibold text-[#f4eee1]">Loafers MOQ</h3>
-              <p className="mt-3 text-[#adb2bd]">Placeholder: to be confirmed after final design and material brief.</p>
+              <p className="mt-3 text-[#adb2bd]">Loafers MOQ is confirmed after final design review and material brief.</p>
             </article>
           </div>
         </div>
@@ -151,6 +183,27 @@ export default function LowMoqFootwearManufacturerPage() {
             <article className="surface-panel rounded-2xl border p-6">
               <h3 className="text-2xl font-semibold text-[#f4eee1]">Wholesale</h3>
               <p className="mt-3 text-[#adb2bd]">Fast ready-stock fulfillment and scalable made-to-order production cycles.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="order-examples" className="py-14 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">Order Examples</p>
+          <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1] sm:text-4xl">Typical Low-MOQ Production Scenarios</h2>
+          <div className="mt-6 grid gap-5 lg:grid-cols-3">
+            <article className="surface-panel rounded-2xl border p-6">
+              <h3 className="text-2xl font-semibold text-[#f4eee1]">Retail Pilot Batch</h3>
+              <p className="mt-3 text-[#adb2bd]">Order type: mixed sandals, 24-60 pairs. Outcome: low-risk retail testing with quick replenishment planning.</p>
+            </article>
+            <article className="surface-panel rounded-2xl border p-6">
+              <h3 className="text-2xl font-semibold text-[#f4eee1]">Private Label Launch</h3>
+              <p className="mt-3 text-[#adb2bd]">Order type: branded sandals, logo and packaging. Outcome: launch-ready SKU set with repeat order roadmap.</p>
+            </article>
+            <article className="surface-panel rounded-2xl border p-6">
+              <h3 className="text-2xl font-semibold text-[#f4eee1]">Scale-Up Batch</h3>
+              <p className="mt-3 text-[#adb2bd]">Order type: larger repeat quantities after validation. Outcome: stable lead-time planning for seasonal demand.</p>
             </article>
           </div>
         </div>

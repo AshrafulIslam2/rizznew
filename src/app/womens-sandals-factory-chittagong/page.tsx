@@ -126,7 +126,7 @@ export default function WomensSandalsFactoryChittagongPage() {
             </article>
             <article className="surface-panel rounded-2xl border p-6">
               <h3 className="text-2xl font-semibold text-[#f4eee1]">Loafers MOQ</h3>
-              <p className="mt-3 text-[#adb2bd]">Placeholder: to be confirmed by design and material plan.</p>
+              <p className="mt-3 text-[#adb2bd]">Loafers MOQ is confirmed after final design and material plan approval.</p>
             </article>
           </div>
         </div>

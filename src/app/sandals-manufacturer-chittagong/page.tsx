@@ -287,7 +287,7 @@ export default function SandalsManufacturerChittagongPage() {
             <article className="surface-panel rounded-2xl border p-6">
               <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">MOQ</p>
               <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1]">Loafers</h2>
-              <p className="mt-4 text-base text-[#adb2bd]">Loafers MOQ placeholder: to be confirmed once design and materials are finalized.</p>
+              <p className="mt-4 text-base text-[#adb2bd]">Loafers MOQ is confirmed once design and materials are finalized.</p>
             </article>
           </div>
         </div>

@@ -182,6 +182,38 @@ export default function SandalsFactoryChittagongPage() {
         </div>
       </section>
 
+      <section id="quick-answer" className="py-14 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+            <article className="surface-panel rounded-2xl border p-6 sm:p-8">
+              <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">Quick Answer</p>
+              <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1] sm:text-4xl">Sandals Factory in Chittagong for Bangladesh Buyers</h2>
+              <p className="mt-4 text-base leading-relaxed text-[#adb2bd] sm:text-lg">
+                Rizz Leather manufactures from Bakolia, Chittagong and supplies wholesale buyers across Bangladesh, including Dhaka.
+                We support OEM/private label, ready stock dispatch in 3-4 days, and made-to-order production in 15-30 days.
+              </p>
+            </article>
+            <article className="surface-panel rounded-2xl border p-6 sm:p-8">
+              <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">Trust Signals</p>
+              <ul className="mt-4 space-y-3 text-base leading-relaxed text-[#d8dde5]">
+                <li>Factory address: Sayed Sha Road, Bakolia, Chittagong-4203, Bangladesh</li>
+                <li>MOQ: Sandals from 12 pairs, Oxford from 120+ pairs</li>
+                <li>Client types: retailers, wholesalers, brand owners, and resellers</li>
+                <li>Export-focused supply support for USA, Europe, and Middle East projects</li>
+              </ul>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Link href="/low-moq-footwear-manufacturer" className="btn-outline">
+                  Low MOQ Page
+                </Link>
+                <Link href="/leather-sandals-manufacturer-bangladesh" className="btn-outline">
+                  Leather Manufacturer Page
+                </Link>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section className="py-14 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid gap-10 lg:grid-cols-[1fr_0.92fr] lg:items-start">
@@ -300,7 +332,7 @@ export default function SandalsFactoryChittagongPage() {
             <article className="surface-panel rounded-2xl border p-6">
               <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">MOQ</p>
               <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1]">Loafers</h2>
-              <p className="mt-4 text-base text-[#adb2bd]">Loafers MOQ placeholder: to be confirmed after sample and material alignment.</p>
+              <p className="mt-4 text-base text-[#adb2bd]">Loafers MOQ is confirmed after sample review and material alignment.</p>
             </article>
           </div>
         </div>
