@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT } from "@/lib/site";
 import { getBaseUrl } from "@/lib/seo";
+import { LandingStructuredData } from "@/components/landing-structured-data";
 
 const pageTitle = "Sandals Manufacturer in Chittagong | MOQ 12 Pairs | Rizz";
 const pageDescription =
@@ -13,6 +14,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: pageTitle,
     description: pageDescription,
+    alternates: {
+      canonical: url,
+      languages: {
+        en: url
+      }
+    },
     openGraph: {
       title: pageTitle,
       description: pageDescription,
@@ -77,12 +84,33 @@ const faqs = [
   {
     q: "Do you offer OEM/private label?",
     a: "Yes. We offer OEM/private label with logo embossing and logo printing."
+  },
+  {
+    q: "Do you also manufacture Oxford shoes?",
+    a: "Yes. Oxford production starts from 120+ pairs, while sandals start from 12 pairs."
+  },
+  {
+    q: "Can you support branded box and packaging?",
+    a: "Yes. We can support private label packaging and branded box requests based on the order plan."
+  },
+  {
+    q: "Can we order samples before bulk?",
+    a: "Yes. Sampling can be arranged before full production for OEM and repeat models."
   }
 ];
 
 export default function SandalsManufacturerChittagongPage() {
   return (
     <main>
+      <LandingStructuredData
+        path="/sandals-manufacturer-chittagong"
+        title={pageTitle}
+        faqs={faqs}
+        breadcrumbs={[
+          { name: "Home", item: "/" },
+          { name: "Sandals Manufacturer in Chittagong", item: "/sandals-manufacturer-chittagong" }
+        ]}
+      />
       <section className="relative overflow-hidden border-b border-[var(--hairline-accent)]">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -240,6 +268,28 @@ export default function SandalsManufacturerChittagongPage() {
             </Link>
             .
           </p>
+        </div>
+      </section>
+
+      <section id="moq" className="border-y border-[var(--hairline-accent)] py-14 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid gap-6 lg:grid-cols-3">
+            <article className="surface-panel rounded-2xl border p-6">
+              <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">MOQ</p>
+              <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1]">Sandals</h2>
+              <p className="mt-4 text-base text-[#adb2bd]">Sandals MOQ starts from 12 pairs for wholesale and OEM buyers.</p>
+            </article>
+            <article className="surface-panel rounded-2xl border p-6">
+              <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">MOQ</p>
+              <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1]">Oxford</h2>
+              <p className="mt-4 text-base text-[#adb2bd]">Oxford MOQ starts from 120+ pairs depending on upper and sole specification.</p>
+            </article>
+            <article className="surface-panel rounded-2xl border p-6">
+              <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">MOQ</p>
+              <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1]">Loafers</h2>
+              <p className="mt-4 text-base text-[#adb2bd]">Loafers MOQ placeholder: to be confirmed once design and materials are finalized.</p>
+            </article>
+          </div>
         </div>
       </section>
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT } from "@/lib/site";
 import { getBaseUrl } from "@/lib/seo";
+import { LandingStructuredData } from "@/components/landing-structured-data";
 
 const pageTitle = "Sandals Wholesaler in Chittagong | MOQ 12 Pairs | Rizz";
 const pageDescription =
@@ -68,6 +69,15 @@ const faqs = [
 export default function SandalsWholesalerChittagongPage() {
   return (
     <main>
+      <LandingStructuredData
+        path="/sandals-wholesaler-chittagong"
+        title={pageTitle}
+        faqs={faqs}
+        breadcrumbs={[
+          { name: "Home", item: "/" },
+          { name: "Sandals Wholesaler in Chittagong", item: "/sandals-wholesaler-chittagong" }
+        ]}
+      />
       <section className="relative overflow-hidden border-b border-[var(--hairline-accent)]">
         <div
           className="absolute inset-0 bg-cover bg-center"

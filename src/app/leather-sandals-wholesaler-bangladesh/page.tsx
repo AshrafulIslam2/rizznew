@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT } from "@/lib/site";
 import { getBaseUrl } from "@/lib/seo";
+import { LandingStructuredData } from "@/components/landing-structured-data";
 
 const pageTitle = "Leather Sandals Wholesaler in Bangladesh | MOQ 12 Pairs | Rizz";
 const pageDescription =
@@ -104,6 +105,15 @@ const faqs = [
 export default function LeatherSandalsWholesalerBangladeshPage() {
   return (
     <main>
+      <LandingStructuredData
+        path="/leather-sandals-wholesaler-bangladesh"
+        title={pageTitle}
+        faqs={faqs}
+        breadcrumbs={[
+          { name: "Home", item: "/" },
+          { name: "Leather Sandals Wholesaler in Bangladesh", item: "/leather-sandals-wholesaler-bangladesh" }
+        ]}
+      />
       <section className="relative overflow-hidden border-b border-[var(--hairline-accent)]">
         <div
           className="absolute inset-0 bg-cover bg-center"

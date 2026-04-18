@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT } from "@/lib/site";
 import { getBaseUrl } from "@/lib/seo";
+import { LandingStructuredData } from "@/components/landing-structured-data";
 
 const pageTitle = "Sandals Manufacturer in Bangladesh | MOQ 12 Pairs | Rizz";
 const pageDescription =
@@ -13,6 +14,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: pageTitle,
     description: pageDescription,
+    alternates: {
+      canonical: url,
+      languages: {
+        en: url
+      }
+    },
     openGraph: {
       title: pageTitle,
       description: pageDescription,
@@ -94,12 +101,33 @@ const faqs = [
   {
     q: "Do you work with export buyers?",
     a: "We can work with export-focused buyers based on requirements for the USA, EU, and Middle East."
+  },
+  {
+    q: "Do you also produce Oxford shoes with low MOQ?",
+    a: "Yes, we support Oxford production from 120+ pairs. For sandals, MOQ starts from 12 pairs."
+  },
+  {
+    q: "Can you provide custom packaging and branded box options?",
+    a: "Yes. We can support private label needs such as logo placement, box branding, and packaging details based on your order scope."
+  },
+  {
+    q: "Can we request sampling before full production?",
+    a: "Yes. Sampling can be arranged for made-to-order and OEM programs before bulk confirmation."
   }
 ];
 
 export default function SandalsManufacturerBangladeshPage() {
   return (
     <main>
+      <LandingStructuredData
+        path="/sandals-manufacturer-bangladesh"
+        title={pageTitle}
+        faqs={faqs}
+        breadcrumbs={[
+          { name: "Home", item: "/" },
+          { name: "Sandals Manufacturer in Bangladesh", item: "/sandals-manufacturer-bangladesh" }
+        ]}
+      />
       <section className="relative overflow-hidden border-b border-[var(--hairline-accent)]">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -235,6 +263,28 @@ export default function SandalsManufacturerBangladeshPage() {
                 <li>Modify an existing design or develop a new one</li>
                 <li>Logo embossing and logo printing available</li>
               </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="moq" className="border-y border-[var(--hairline-accent)] py-14 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid gap-6 lg:grid-cols-3">
+            <article className="surface-panel rounded-2xl border p-6">
+              <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">MOQ</p>
+              <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1]">Sandals MOQ</h2>
+              <p className="mt-4 text-base text-[#adb2bd]">Sandals production starts from 12 pairs for wholesale and OEM programs.</p>
+            </article>
+            <article className="surface-panel rounded-2xl border p-6">
+              <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">MOQ</p>
+              <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1]">Oxford MOQ</h2>
+              <p className="mt-4 text-base text-[#adb2bd]">Oxford production starts from 120+ pairs based on style and material planning.</p>
+            </article>
+            <article className="surface-panel rounded-2xl border p-6">
+              <p className="text-xs uppercase tracking-[0.35em] text-[#cdbb8f]">MOQ</p>
+              <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1]">Loafers MOQ</h2>
+              <p className="mt-4 text-base text-[#adb2bd]">Loafers MOQ: to be confirmed based on pattern, construction, and material requirement.</p>
             </article>
           </div>
         </div>
