@@ -4,6 +4,8 @@ import "./globals.css";
 import { Analytics } from "@/components/analytics";
 import { Footer } from "@/components/footer";
 import { HeaderNav } from "@/components/header-nav";
+import { RoutePortfolioShowcase } from "@/components/route-portfolio-showcase";
+import { SeoRoutesTopbar } from "@/components/seo-routes-topbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,8 +33,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body className={`${inter.variable} ${cormorant.variable}`}>
+        <SeoRoutesTopbar />
         <HeaderNav />
         {children}
+        <RoutePortfolioShowcase />
         <Footer />
         <Analytics />
       </body>

@@ -74,7 +74,10 @@ export default function HomePage() {
   ];
 
   const faqItems = [
-    { question: "What is your MOQ?", answer: "MOQ starts from 50 pairs/pieces depending on product type and customization." },
+    {
+      question: "What is your MOQ?",
+      answer: "MOQ varies by category. Loafers MOQ: 48 pairs, to be confirmed based on pattern, construction, and material requirement."
+    },
     { question: "Do you provide sampling?", answer: "Yes. Sampling is available and sample charges apply before bulk production." },
     { question: "What is the lead time?", answer: "Typical lead time is 2-6 weeks based on order quantity and material readiness." },
     { question: "Which countries do you ship to?", answer: "We serve Bangladesh, USA, Europe, and Middle East markets." },
@@ -226,7 +229,7 @@ export default function HomePage() {
           <ul className="space-y-2 text-[var(--muted)]">
             <li>• Custom logo emboss/deboss</li>
             <li>• Sampling available (sample charge applies)</li>
-            <li>• MOQ starts from 50 pcs</li>
+            <li>• Loafers MOQ: 48 pairs (final count confirmed by pattern, construction, and material)</li>
             <li>• Export-ready support</li>
           </ul>
           <Link href="/manufacturing/quote" className="btn-primary">
