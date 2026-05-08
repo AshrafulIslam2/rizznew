@@ -41,7 +41,7 @@ export default function BrandThankYouPage() {
           <section className="mt-4 grid gap-3 sm:grid-cols-2">
             <article className="rounded-xl border border-[#1b2335] bg-[#080d17] p-4 text-center">
               <div className="mx-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#2d364a] text-xs text-[#d8c69f]">☎</div>
-              <h2 className="mt-3 font-serif text-3xl text-[#efe8dd]">We'll call to confirm</h2>
+              <h2 className="mt-3 font-serif text-3xl text-[#efe8dd]">We&apos;ll call to confirm</h2>
               <p className="mt-2 text-xs leading-relaxed text-[#a8b0bd]">
                 Our team will contact you shortly at the provided phone number to verify your order details before dispatch.
               </p>

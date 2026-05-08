@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT } from "@/lib/site";
 import { getBaseUrl } from "@/lib/seo";
@@ -95,7 +95,7 @@ export default function LeatherSandalsWholesalerDhakaPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1506629905607-d405b7d8a4a9?auto=format&fit=crop&w=2200&q=80')"
+              "url('/assets/images/rizz_dubai_golden_sandals/image01.jpg')"
           }}
         />
         <div className="absolute inset-0 bg-[#050507]/78" />
@@ -272,7 +272,7 @@ export default function LeatherSandalsWholesalerDhakaPage() {
               <article className="rounded-xl border border-[var(--hairline-accent)] bg-[#080b13]/80 p-4">
                 <h3 className="text-xl font-semibold text-[#f4eee1]">Ordering Input</h3>
                 <ul className="mt-3 space-y-2 text-sm text-[#d8dde5]">
-                  <li>Men's or women's category</li>
+                  <li>Men&apos;s or women&apos;s category</li>
                   <li>Sizes and total pairs</li>
                   <li>Ready stock or made-to-order</li>
                   <li>Logo embossing and printing needs</li>
@@ -365,3 +365,4 @@ export default function LeatherSandalsWholesalerDhakaPage() {
     </main>
   );
 }
+

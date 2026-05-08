@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -10,17 +10,17 @@ const featuredCollections = [
   {
     title: "Signature Bags",
     href: "/brand/catalog/classic-loafers",
-    image: "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=1400&q=80"
+    image: "/assets/images/rizz_master_color_sandals/image01.jpg"
   },
   {
     title: "Premium Wallets",
     href: "/brand/catalog/leather-wallets",
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=1400&q=80"
+    image: "/assets/images/rizz_simple_sandals/image01.jpg"
   },
   {
     title: "Classic Belts",
     href: "/brand/catalog/formal-belts",
-    image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=1400&q=80"
+    image: "/assets/images/rizz_simple_sandals/image02.jpg"
   }
 ];
 
@@ -31,7 +31,7 @@ const products = [
     sub: "Full-grain Chittagong Leather",
     bdt: "18,500",
     usd: "170",
-    image: "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=1100&q=80"
+    image: "/assets/images/rizz_cholate_sandals/image01.jpg"
   },
   {
     slug: "leather-wallets",
@@ -39,7 +39,7 @@ const products = [
     sub: "Textured Calfskin",
     bdt: "4,200",
     usd: "40",
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=1100&q=80"
+    image: "/assets/images/rizz_dubai_sandals/image04.jpg"
   },
   {
     slug: "classic-loafers",
@@ -47,7 +47,7 @@ const products = [
     sub: "Heavyweight Pull-up Leather",
     bdt: "24,000",
     usd: "220",
-    image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=1100&q=80"
+    image: "/assets/images/rizz_crodile_slide_sandals/image05.jpg"
   },
   {
     slug: "formal-belts",
@@ -55,7 +55,7 @@ const products = [
     sub: "Smooth Finish Leather",
     bdt: "3,500",
     usd: "32",
-    image: "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=1100&q=80"
+    image: "/assets/images/rizz_crodile_slide_sandals/image07.jpg"
   }
 ];
 
@@ -73,7 +73,7 @@ export default function CatalogPage() {
       <section className="relative isolate overflow-hidden border-y border-[var(--hairline-accent)]">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-25"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=1800&q=80')" }}
+          style={{ backgroundImage: "url('/assets/images/rizz_double_bockles-sandals/image02.jpg')" }}
         />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(40,47,67,0.4),rgba(2,4,11,0.95)_65%)]" />
 
@@ -228,3 +228,5 @@ export default function CatalogPage() {
     </main>
   );
 }
+
+

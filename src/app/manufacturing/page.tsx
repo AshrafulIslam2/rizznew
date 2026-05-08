@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export default function ManufacturingPage() {
       <section className="relative overflow-hidden border-y border-[var(--hairline-accent)]">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=2200&q=80')" }}
+          style={{ backgroundImage: "url('/assets/images/rizz_master_color_sandals/image01.jpg')" }}
         />
         <div className="absolute inset-0 bg-[#050507]/80" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/40" />
@@ -104,7 +104,7 @@ export default function ManufacturingPage() {
               <p className="mt-3 text-base text-[#b6bcc7]">Embossing, debossing, foil stamping, and custom hardware integration for your logo.</p>
             </article>
             <article className="rounded-2xl border border-[var(--hairline-accent)] bg-[#080b13]/70 p-7">
-              <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[var(--hairline-accent)] text-lg text-[#d4c59e]">▦</span>
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[var(--hairline-accent)] text-lg text-[#d4c59e]">â–¦</span>
               <h3 className="mt-5 text-2xl font-semibold text-[#f4eee1] sm:text-3xl">Material Sourcing</h3>
               <p className="mt-3 text-base text-[#b6bcc7]">Access to premium full-grain, top-grain, and exotic leathers sourced globally.</p>
             </article>
@@ -131,22 +131,22 @@ export default function ManufacturingPage() {
               {
                 name: "Sandals",
                 desc: "Premium men's sandals with custom tooling and ergonomic soles.",
-                image: "https://images.unsplash.com/photo-1531310197839-ccf54634509e?auto=format&fit=crop&w=1200&q=80"
+                image: "/assets/images/rizz_simple_sandals/image01.jpg"
               },
               {
                 name: "Loafers & Half Loafers",
                 desc: "Classic and modern silhouettes with superior stitching.",
-                image: "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=1200&q=80"
+                image: "/assets/images/rizz_simple_sandals/image02.jpg"
               },
               {
                 name: "Belts",
                 desc: "Full-grain leather belts with custom hardware options.",
-                image: "https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=1200&q=80"
+                image: "/assets/images/rizz_cholate_sandals/image01.jpg"
               },
               {
                 name: "Wallets",
                 desc: "Bifolds, cardholders, and travel wallets with RFID blocking.",
-                image: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=1200&q=80"
+                image: "/assets/images/rizz_dubai_sandals/image04.jpg"
               }
             ].map((item) => (
               <article key={item.name} className="overflow-hidden rounded-2xl border border-[var(--hairline-accent)] bg-[#0a0d15]/80">
@@ -163,3 +163,5 @@ export default function ManufacturingPage() {
     </main>
   );
 }
+
+

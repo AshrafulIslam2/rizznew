@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT } from "@/lib/site";
 import { getBaseUrl } from "@/lib/seo";
@@ -83,7 +83,7 @@ export default function WomensSandalsFactoryChittagongPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1514126128186-e02c9bbef3b9?auto=format&fit=crop&w=2200&q=80')"
+              "url('/assets/images/rizz_slide_multicolor_sandals/image02.jpg')"
           }}
         />
         <div className="absolute inset-0 bg-[#050507]/78" />
@@ -95,7 +95,7 @@ export default function WomensSandalsFactoryChittagongPage() {
             Womens Sandals Factory in Chittagong
           </h1>
           <p className="mt-6 max-w-4xl text-base leading-relaxed text-[#c0c5cf] sm:text-lg lg:text-2xl">
-            Rizz Leather manufactures women's sandals in Chittagong with OEM/private label and wholesale support for Bangladesh buyers.
+            Rizz Leather manufactures women&apos;s sandals in Chittagong with OEM/private label and wholesale support for Bangladesh buyers.
             Sandals MOQ starts from 12 pairs, and we serve Dhaka buyers from our Bakolia factory base.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -199,3 +199,5 @@ export default function WomensSandalsFactoryChittagongPage() {
     </main>
   );
 }
+
+

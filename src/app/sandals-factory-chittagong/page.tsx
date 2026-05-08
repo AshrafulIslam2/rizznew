@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT } from "@/lib/site";
 import { getBaseUrl } from "@/lib/seo";
@@ -42,17 +42,17 @@ const productCategories = [
   {
     title: "PU leather sandals",
     description: "Men's and women's PU leather sandals for wholesale stock and repeat retail supply.",
-    image: "https://images.unsplash.com/photo-1514126128186-e02c9bbef3b9?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_master_color_sandals/image01.jpg"
   },
   {
     title: "Leather sandals",
     description: "Leather options for buyers who need a premium position with durable finishing.",
-    image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_simple_sandals/image01.jpg"
   },
   {
     title: "Slides and flip-flops",
     description: "Produced on request depending on design, sole requirements, and seasonal demand.",
-    image: "https://images.unsplash.com/photo-1506629905607-d405b7d8a4a9?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_simple_sandals/image02.jpg"
   }
 ];
 
@@ -139,7 +139,7 @@ export default function SandalsFactoryChittagongPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&w=2200&q=80')"
+              "url('/assets/images/rizz_cholate_sandals/image01.jpg')"
           }}
         />
         <div className="absolute inset-0 bg-[#050507]/78" />
@@ -258,7 +258,7 @@ export default function SandalsFactoryChittagongPage() {
               <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1] sm:text-4xl lg:text-5xl">Sandals We Manufacture at Our Factory</h2>
             </div>
             <p className="max-w-xl text-base text-[#adb2bd] sm:text-right sm:text-lg">
-              PU leather and leather categories for men's and women's wholesale demand.
+              PU leather and leather categories for men&apos;s and women&apos;s wholesale demand.
             </p>
           </div>
 
@@ -528,3 +528,4 @@ export default function SandalsFactoryChittagongPage() {
     </main>
   );
 }
+

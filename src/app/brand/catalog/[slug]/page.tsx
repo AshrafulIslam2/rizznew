@@ -46,11 +46,11 @@ const catalogData: Record<string, ProductEntry> = {
     colors: ["#05070d", "#4a302d", "#6a4d45"],
     sizes: ["Standard (15\")", "Large (17\")"],
     images: [
-      "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=1500&q=80",
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?auto=format&fit=crop&w=900&q=80"
+      "/assets/images/rizz_master_color_sandals/image01.jpg",
+      "/assets/images/rizz_simple_sandals/image01.jpg",
+      "/assets/images/rizz_simple_sandals/image02.jpg",
+      "/assets/images/rizz_cholate_sandals/image01.jpg",
+      "/assets/images/rizz_dubai_sandals/image04.jpg"
     ],
     description:
       "The Executive Briefcase is the pinnacle of our craftsmanship. Designed to age beautifully, the full-grain leather develops a rich patina over time, telling the story of your journeys.",
@@ -61,19 +61,19 @@ const catalogData: Record<string, ProductEntry> = {
       {
         title: "Heritage Bifold Wallet",
         price: "4,200",
-        image: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=900&q=80",
+        image: "/assets/images/rizz_crodile_slide_sandals/image05.jpg",
         href: "/brand/catalog/leather-wallets"
       },
       {
         title: "Classic Dress Belt",
         price: "3,500",
-        image: "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=900&q=80",
+        image: "/assets/images/rizz_crodile_slide_sandals/image07.jpg",
         href: "/brand/catalog/formal-belts"
       },
       {
         title: "Signature Key Fob",
         price: "1,200",
-        image: "https://images.unsplash.com/photo-1617042375876-a13e36732a04?auto=format&fit=crop&w=900&q=80",
+        image: "/assets/images/rizz_double_bockles-sandals/image02.jpg",
         href: "/brand/catalog/classic-loafers"
       }
     ]
@@ -91,19 +91,19 @@ const catalogData: Record<string, ProductEntry> = {
     colors: ["#0b0d14", "#5e4438", "#7f5f4e"],
     sizes: ["Standard", "Travel"],
     images: [
-      "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=1500&q=80",
-      "https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=80"
+      "/assets/images/rizz_double_bockles-sandals/image03.jpg",
+      "/assets/images/rizz_master_color_sandals/image01.jpg",
+      "/assets/images/rizz_simple_sandals/image01.jpg",
+      "/assets/images/rizz_simple_sandals/image02.jpg"
     ],
     description: "Designed for everyday carry with a slim silhouette and premium feel in hand.",
     specs: "8 card slots, 2 currency sections, 1 hidden pocket, and anti-fray interior finish.",
     craftsmanship: "Stitched with high-tension nylon thread and hand-finished edges.",
     shipping: "Domestic COD available. International delivery available via WhatsApp concierge.",
     completeSet: [
-      { title: "Classic Dress Belt", price: "3,500", image: "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=900&q=80", href: "/brand/catalog/formal-belts" },
-      { title: "Signature Briefcase", price: "18,500", image: "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=900&q=80", href: "/brand/catalog/classic-loafers" },
-      { title: "Leather Card Sleeve", price: "1,600", image: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=900&q=80", href: "/brand/catalog/leather-wallets" }
+      { title: "Classic Dress Belt", price: "3,500", image: "/assets/images/rizz_cholate_sandals/image01.jpg", href: "/brand/catalog/formal-belts" },
+      { title: "Signature Briefcase", price: "18,500", image: "/assets/images/rizz_dubai_sandals/image04.jpg", href: "/brand/catalog/classic-loafers" },
+      { title: "Leather Card Sleeve", price: "1,600", image: "/assets/images/rizz_crodile_slide_sandals/image05.jpg", href: "/brand/catalog/leather-wallets" }
     ]
   },
   "formal-belts": {
@@ -119,19 +119,19 @@ const catalogData: Record<string, ProductEntry> = {
     colors: ["#121319", "#3f2f2b", "#6c4f42"],
     sizes: ["32-34", "36-38"],
     images: [
-      "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=1500&q=80",
-      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=80"
+      "/assets/images/rizz_crodile_slide_sandals/image07.jpg",
+      "/assets/images/rizz_double_bockles-sandals/image02.jpg",
+      "/assets/images/rizz_double_bockles-sandals/image03.jpg",
+      "/assets/images/rizz_master_color_sandals/image01.jpg"
     ],
     description: "Structured strap build with flexibility for all-day comfort.",
     specs: "Width 35mm, nickel buckle, adjustable hole spacing, and reinforced tongue.",
     craftsmanship: "Clean cut edge treatment with polished bevel and protective coating.",
     shipping: "Domestic COD and international shipping available.",
     completeSet: [
-      { title: "Heritage Bifold Wallet", price: "4,200", image: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=900&q=80", href: "/brand/catalog/leather-wallets" },
-      { title: "Executive Briefcase", price: "18,500", image: "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=900&q=80", href: "/brand/catalog/classic-loafers" },
-      { title: "Signature Key Fob", price: "1,200", image: "https://images.unsplash.com/photo-1617042375876-a13e36732a04?auto=format&fit=crop&w=900&q=80", href: "/brand/catalog/formal-belts" }
+      { title: "Heritage Bifold Wallet", price: "4,200", image: "/assets/images/rizz_simple_sandals/image01.jpg", href: "/brand/catalog/leather-wallets" },
+      { title: "Executive Briefcase", price: "18,500", image: "/assets/images/rizz_simple_sandals/image02.jpg", href: "/brand/catalog/classic-loafers" },
+      { title: "Signature Key Fob", price: "1,200", image: "/assets/images/rizz_cholate_sandals/image01.jpg", href: "/brand/catalog/formal-belts" }
     ]
   },
   "mens-sandals": {
@@ -147,19 +147,19 @@ const catalogData: Record<string, ProductEntry> = {
     colors: ["#121319", "#5a3f2f", "#7a5a47"],
     sizes: ["40-42", "43-45"],
     images: [
-      "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?auto=format&fit=crop&w=1500&q=80",
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=900&q=80"
+      "/assets/images/rizz_dubai_sandals/image04.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/image05.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/image07.jpg",
+      "/assets/images/rizz_double_bockles-sandals/image02.jpg"
     ],
     description: "Cushioned, flexible, and premium for daily summer wear.",
     specs: "Padded footbed, anti-slip sole, and breathable leather lining.",
     craftsmanship: "Hand-finished straps and precision buckle placement.",
     shipping: "COD available in Bangladesh. International delivery on request.",
     completeSet: [
-      { title: "Classic Dress Belt", price: "3,500", image: "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=900&q=80", href: "/brand/catalog/formal-belts" },
-      { title: "Heritage Bifold Wallet", price: "4,200", image: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=900&q=80", href: "/brand/catalog/leather-wallets" },
-      { title: "Signature Key Fob", price: "1,200", image: "https://images.unsplash.com/photo-1617042375876-a13e36732a04?auto=format&fit=crop&w=900&q=80", href: "/brand/catalog/mens-sandals" }
+      { title: "Classic Dress Belt", price: "3,500", image: "/assets/images/rizz_double_bockles-sandals/image03.jpg", href: "/brand/catalog/formal-belts" },
+      { title: "Heritage Bifold Wallet", price: "4,200", image: "/assets/images/rizz_master_color_sandals/image01.jpg", href: "/brand/catalog/leather-wallets" },
+      { title: "Signature Key Fob", price: "1,200", image: "/assets/images/rizz_simple_sandals/image01.jpg", href: "/brand/catalog/mens-sandals" }
     ]
   },
   "half-loafers": {
@@ -175,19 +175,19 @@ const catalogData: Record<string, ProductEntry> = {
     colors: ["#0e1119", "#4a352d", "#7b5b4d"],
     sizes: ["40-42", "43-45"],
     images: [
-      "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=1500&q=80",
-      "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=900&q=80"
+      "/assets/images/rizz_simple_sandals/image02.jpg",
+      "/assets/images/rizz_cholate_sandals/image01.jpg",
+      "/assets/images/rizz_dubai_sandals/image04.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/image05.jpg"
     ],
     description: "Soft in-step feel and balanced outsole grip for city movement.",
     specs: "Slip-on profile, lightweight sole, and breathable inner lining.",
     craftsmanship: "Curved seam detailing and reinforced heel counter.",
     shipping: "COD available in Bangladesh. International orders through WhatsApp.",
     completeSet: [
-      { title: "Executive Briefcase", price: "18,500", image: "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=900&q=80", href: "/brand/catalog/classic-loafers" },
-      { title: "Classic Dress Belt", price: "3,500", image: "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=900&q=80", href: "/brand/catalog/formal-belts" },
-      { title: "Heritage Bifold Wallet", price: "4,200", image: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=900&q=80", href: "/brand/catalog/leather-wallets" }
+      { title: "Executive Briefcase", price: "18,500", image: "/assets/images/rizz_crodile_slide_sandals/image07.jpg", href: "/brand/catalog/classic-loafers" },
+      { title: "Classic Dress Belt", price: "3,500", image: "/assets/images/rizz_double_bockles-sandals/image02.jpg", href: "/brand/catalog/formal-belts" },
+      { title: "Heritage Bifold Wallet", price: "4,200", image: "/assets/images/rizz_double_bockles-sandals/image03.jpg", href: "/brand/catalog/leather-wallets" }
     ]
   }
 };
@@ -366,3 +366,4 @@ export default async function BrandProductPage({ params }: Props) {
     </main>
   );
 }
+

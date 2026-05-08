@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -13,14 +13,14 @@ const products = [
     category: "Boots",
     price: "24,000",
     tag: "New",
-    image: "https://images.unsplash.com/photo-1608256246200-53e8b47b8b32?auto=format&fit=crop&w=1000&q=80"
+    image: "/assets/images/rizz_master_color_sandals/image01.jpg"
   },
   {
     name: "The Command Boot",
     slug: "leather-wallets",
     category: "Boots",
     price: "28,500",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1000&q=80"
+    image: "/assets/images/rizz_simple_sandals/image01.jpg"
   },
   {
     name: "Urban Chukka",
@@ -28,14 +28,14 @@ const products = [
     category: "Boots",
     price: "21,000",
     tag: "Bestseller",
-    image: "https://images.unsplash.com/photo-1463100099107-aa0980c362e6?auto=format&fit=crop&w=1000&q=80"
+    image: "/assets/images/rizz_simple_sandals/image02.jpg"
   },
   {
     name: "The Heritage Brogue",
     slug: "mens-sandals",
     category: "Oxfords",
     price: "26,500",
-    image: "https://images.unsplash.com/photo-1531315630201-bb15abeb1653?auto=format&fit=crop&w=1000&q=80"
+    image: "/assets/images/rizz_cholate_sandals/image01.jpg"
   },
   {
     name: "Avant Zip Boot",
@@ -43,14 +43,14 @@ const products = [
     category: "Boots",
     price: "32,000",
     outOfStock: true,
-    image: "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=1000&q=80"
+    image: "/assets/images/rizz_dubai_sandals/image04.jpg"
   },
   {
     name: "Classic Ox Boot",
     slug: "leather-wallets",
     category: "Oxfords",
     price: "25,000",
-    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1000&q=80"
+    image: "/assets/images/rizz_crodile_slide_sandals/image05.jpg"
   }
 ];
 
@@ -143,7 +143,7 @@ export default function BrandProductsPage() {
             <div>
               <div className="mb-4 flex items-center justify-between gap-3">
                 <p className="text-sm text-[#bcc3cf]">
-                  Showing <span className="font-semibold text-[#f0e8dd]">12 results</span> for <span className="font-semibold text-[#f0e8dd]">"Leather Boots"</span>
+                  Showing <span className="font-semibold text-[#f0e8dd]">12 results</span> for <span className="font-semibold text-[#f0e8dd]">&quot;Leather Boots&quot;</span>
                 </p>
                 <button type="button" className="rounded-full border border-[#293245] px-4 py-2 text-xs uppercase tracking-[0.12em] text-[#c2c8d2]">
                   Sort by: Recommended
@@ -218,3 +218,5 @@ export default function BrandProductsPage() {
     </main>
   );
 }
+
+

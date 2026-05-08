@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT } from "@/lib/site";
 import { getBaseUrl } from "@/lib/seo";
@@ -95,7 +95,7 @@ export default function SandalsWholesalerDhakaPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&w=2200&q=80')"
+              "url('/assets/images/rizz_master_color_sandals/image01.jpg')"
           }}
         />
         <div className="absolute inset-0 bg-[#050507]/78" />
@@ -363,3 +363,4 @@ export default function SandalsWholesalerDhakaPage() {
     </main>
   );
 }
+

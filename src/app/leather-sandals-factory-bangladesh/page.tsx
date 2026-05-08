@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT } from "@/lib/site";
 import { getBaseUrl } from "@/lib/seo";
@@ -40,7 +40,7 @@ const productGroups = [
       "Retail-ready finishing and consistent pairing",
       "Size breakdown planning based on your market"
     ],
-    image: "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_dubai_golden_sandals/image01.jpg"
   },
   {
     title: "Women's leather sandals",
@@ -49,7 +49,7 @@ const productGroups = [
       "Casual and fashion-focused variations depending on design",
       "Finishing options as per specification"
     ],
-    image: "https://images.unsplash.com/photo-1514126128186-e02c9bbef3b9?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_dubai_golden_sandals/image02.jpg"
   }
 ];
 
@@ -108,7 +108,7 @@ export default function LeatherSandalsFactoryBangladeshPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1506629905607-d405b7d8a4a9?auto=format&fit=crop&w=2200&q=80')"
+              "url('/assets/images/rizz_crodile_slide_sandals/image03.jpg')"
           }}
         />
         <div className="absolute inset-0 bg-[#050507]/78" />
@@ -195,7 +195,7 @@ export default function LeatherSandalsFactoryBangladeshPage() {
               <h2 className="mt-3 text-3xl font-semibold text-[#f4eee1] sm:text-4xl lg:text-5xl">Leather Sandals Production</h2>
             </div>
             <p className="max-w-xl text-base text-[#adb2bd] sm:text-right sm:text-lg">
-              Repeatable manufacturing support for men's and women's wholesale categories.
+              Repeatable manufacturing support for men&apos;s and women&apos;s wholesale categories.
             </p>
           </div>
 
@@ -426,3 +426,4 @@ export default function LeatherSandalsFactoryBangladeshPage() {
     </main>
   );
 }
+

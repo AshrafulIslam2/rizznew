@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export default function BrandPage() {
       cta: "Enter Store",
       href: "/brand/catalog",
       badge: "BD",
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=1400&q=80"
+      image: "/assets/images/rizz_master_color_sandals/image01.jpg"
     },
     {
       title: "International Orders",
@@ -26,7 +26,7 @@ export default function BrandPage() {
       cta: "Connect Now",
       href: "https://wa.me/8801712345678",
       badge: "WA",
-      image: "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=1400&q=80"
+      image: "/assets/images/rizz_simple_sandals/image01.jpg"
     }
   ];
 
@@ -36,7 +36,7 @@ export default function BrandPage() {
       <div
         className="absolute inset-0 opacity-20"
         style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=1800&q=80')",
+          backgroundImage: "url('/assets/images/rizz_simple_sandals/image02.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center"
         }}
@@ -80,3 +80,5 @@ export default function BrandPage() {
     </main>
   );
 }
+
+

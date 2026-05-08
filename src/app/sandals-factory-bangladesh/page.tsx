@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT } from "@/lib/site";
 import { getBaseUrl } from "@/lib/seo";
@@ -36,17 +36,17 @@ const productCategories = [
   {
     title: "PU leather sandals",
     description: "Men's and women's PU leather sandals for wholesale and repeat retail distribution.",
-    image: "https://images.unsplash.com/photo-1514126128186-e02c9bbef3b9?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_master_color_sandals/image01.jpg"
   },
   {
     title: "Leather sandals",
     description: "Leather sandals with practical finishing for wholesale buyers and brand owners.",
-    image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_simple_sandals/image01.jpg"
   },
   {
     title: "Slides and flip-flops",
     description: "Available on request depending on design, sole, and market planning.",
-    image: "https://images.unsplash.com/photo-1506629905607-d405b7d8a4a9?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_simple_sandals/image02.jpg"
   }
 ];
 
@@ -105,7 +105,7 @@ export default function SandalsFactoryBangladeshPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&w=2200&q=80')"
+              "url('/assets/images/rizz_cholate_sandals/image01.jpg')"
           }}
         />
         <div className="absolute inset-0 bg-[#050507]/78" />
@@ -417,3 +417,4 @@ export default function SandalsFactoryBangladeshPage() {
     </main>
   );
 }
+

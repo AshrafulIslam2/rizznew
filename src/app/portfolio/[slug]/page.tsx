@@ -27,10 +27,10 @@ const brochureData: Record<string, BrochureItem> = {
     materials: ["Full-grain sheep leather", "YKK metal zipper", "Poly satin lining", "Nickel-free snap buttons"],
     construction: ["Double-needle seam reinforcement", "Edge folded cuff finish", "Branded inside label support", "Optional quilt padding"],
     gallery: [
-      "https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?auto=format&fit=crop&w=1500&q=80",
-      "https://images.unsplash.com/photo-1614251056216-f748f76cd228?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1594938328870-9623159c8c99?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1611312449412-6cefac5dc3e4?auto=format&fit=crop&w=1000&q=80"
+      "/assets/images/rizz_master_color_sandals/image01.jpg",
+      "/assets/images/rizz_simple_sandals/image01.jpg",
+      "/assets/images/rizz_simple_sandals/image02.jpg",
+      "/assets/images/rizz_cholate_sandals/image01.jpg"
     ]
   },
   "black-belt": {
@@ -43,10 +43,10 @@ const brochureData: Record<string, BrochureItem> = {
     materials: ["Vegetable-tanned cow leather", "Zinc alloy buckle", "Wax edge sealant", "Anti-rust hardware coating"],
     construction: ["Heat-pressed strap profiling", "Dual-layer stitch reinforcement", "Laser logo debossing option", "Buckle customization by brand"],
     gallery: [
-      "https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=1500&q=80",
-      "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1603252109303-2751441dd157?auto=format&fit=crop&w=1000&q=80"
+      "/assets/images/rizz_dubai_sandals/image04.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/image05.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/image07.jpg",
+      "/assets/images/rizz_double_bockles-sandals/image02.jpg"
     ]
   },
   "leather-wallet": {
@@ -59,10 +59,10 @@ const brochureData: Record<string, BrochureItem> = {
     materials: ["Top-grain calf leather", "RFID protective lining", "Nylon bonded thread", "Soft microfiber interior"],
     construction: ["Skived fold edges", "Multi-pocket die-cut panels", "Hand-burnished edges", "Gift box packaging available"],
     gallery: [
-      "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=1500&q=80",
-      "https://images.unsplash.com/photo-1517254797898-04edd251b297?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1601592993493-7dd0c5a8f9df?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1000&q=80"
+      "/assets/images/rizz_double_bockles-sandals/image03.jpg",
+      "/assets/images/rizz_master_color_sandals/image01.jpg",
+      "/assets/images/rizz_simple_sandals/image01.jpg",
+      "/assets/images/rizz_simple_sandals/image02.jpg"
     ]
   },
   "women-leatherwear": {
@@ -75,10 +75,10 @@ const brochureData: Record<string, BrochureItem> = {
     materials: ["Soft nappa leather", "Breathable inner lining", "Colorfast finishing coat", "Branded hangtag support"],
     construction: ["Pattern grading by size chart", "Waist and cuff reinforcement", "Premium hardware matching", "Final steam and shape set"],
     gallery: [
-      "https://images.unsplash.com/photo-1612423284934-2850a4ea6b0f?auto=format&fit=crop&w=1500&q=80",
-      "https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1551232864-3f0890e580d9?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1000&q=80"
+      "/assets/images/rizz_cholate_sandals/image01.jpg",
+      "/assets/images/rizz_dubai_sandals/image04.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/image05.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/image07.jpg"
     ]
   },
   "craft-detail": {
@@ -91,10 +91,10 @@ const brochureData: Record<string, BrochureItem> = {
     materials: ["Client nominated leather", "Metal hardware options", "Thread color library", "Edge paint color library"],
     construction: ["QC checklist mapping", "Sample revision rounds", "Tolerance documentation", "Client approval archive"],
     gallery: [
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1500&q=80",
-      "https://images.unsplash.com/photo-1603251579431-8041402bdeda?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1518544866330-4e31c8d0f4f5?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=1000&q=80"
+      "/assets/images/rizz_double_bockles-sandals/image02.jpg",
+      "/assets/images/rizz_double_bockles-sandals/image03.jpg",
+      "/assets/images/rizz_master_color_sandals/image01.jpg",
+      "/assets/images/rizz_simple_sandals/image01.jpg"
     ]
   },
   "tanned-hide": {
@@ -107,10 +107,10 @@ const brochureData: Record<string, BrochureItem> = {
     materials: ["Chrome-tanned leather", "Veg-tanned leather", "Pull-up finish", "Embossed grain options"],
     construction: ["Grade segregation", "Moisture-level QC", "Color lot matching", "Cutting plan optimization"],
     gallery: [
-      "https://images.unsplash.com/photo-1518544866330-4e31c8d0f4f5?auto=format&fit=crop&w=1500&q=80",
-      "https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?auto=format&fit=crop&w=1000&q=80"
+      "/assets/images/rizz_simple_sandals/image02.jpg",
+      "/assets/images/rizz_cholate_sandals/image01.jpg",
+      "/assets/images/rizz_dubai_sandals/image04.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/image05.jpg"
     ]
   },
   "textured-leather": {
@@ -123,10 +123,10 @@ const brochureData: Record<string, BrochureItem> = {
     materials: ["Embossed top-grain leather", "Protective top coat", "Texture retention treatment", "Water-resistant finish option"],
     construction: ["Texture consistency validation", "Panel direction control", "Edge polish process", "Batch-level approval cards"],
     gallery: [
-      "https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=1500&q=80",
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1518544866330-4e31c8d0f4f5?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=1000&q=80"
+      "/assets/images/rizz_crodile_slide_sandals/image07.jpg",
+      "/assets/images/rizz_double_bockles-sandals/image02.jpg",
+      "/assets/images/rizz_double_bockles-sandals/image03.jpg",
+      "/assets/images/rizz_master_color_sandals/image01.jpg"
     ]
   },
   "premium-packaging": {
@@ -139,10 +139,10 @@ const brochureData: Record<string, BrochureItem> = {
     materials: ["Rigid paperboard", "Magnetic lid option", "Recycled tissue paper", "Waterproof shipping sleeve"],
     construction: ["Pantone color matching", "Hot-foil logo options", "Drop-test compliant shipper", "Barcode and SKU print support"],
     gallery: [
-      "https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1500&q=80",
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=1000&q=80"
+      "/assets/images/rizz_simple_sandals/image01.jpg",
+      "/assets/images/rizz_simple_sandals/image02.jpg",
+      "/assets/images/rizz_cholate_sandals/image01.jpg",
+      "/assets/images/rizz_dubai_sandals/image04.jpg"
     ]
   }
 };
@@ -250,3 +250,4 @@ export default async function PortfolioBrochurePage({ params }: Props) {
     </main>
   );
 }
+

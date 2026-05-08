@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -75,7 +75,7 @@ export default function FactoryQualityPage() {
           <div className="overflow-hidden border border-[var(--hairline-accent)] bg-[#090c15]">
             <div
               className="aspect-[4/5] bg-cover bg-center lg:aspect-[5/6]"
-              style={{ backgroundImage: "url('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1500&q=80')" }}
+              style={{ backgroundImage: "url('/assets/images/rizz_master_color_sandals/image01.jpg')" }}
             />
           </div>
           <div className="space-y-6">
@@ -102,10 +102,10 @@ export default function FactoryQualityPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1100&q=80",
-              "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=1100&q=80",
-              "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1100&q=80",
-              "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&w=1100&q=80"
+              "/assets/images/rizz_simple_sandals/image01.jpg",
+              "/assets/images/rizz_simple_sandals/image02.jpg",
+              "/assets/images/rizz_cholate_sandals/image01.jpg",
+              "/assets/images/rizz_dubai_sandals/image04.jpg"
             ].map((image, index) => (
               <div key={image} className="overflow-hidden border border-[#151c2c] bg-[#070b14]">
                 <div className="aspect-[16/11] bg-cover bg-center sm:aspect-[4/3]" style={{ backgroundImage: `url('${image}')` }} />
@@ -207,3 +207,5 @@ export default function FactoryQualityPage() {
     </main>
   );
 }
+
+

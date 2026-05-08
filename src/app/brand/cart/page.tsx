@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -31,7 +31,7 @@ const productMap: Record<string, Omit<CartItem, "quantity">> = {
     size: 'Standard (15")',
     color: "Midnight Black",
     unitPrice: 18500,
-    image: "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_master_color_sandals/image01.jpg"
   },
   "leather-wallets": {
     slug: "leather-wallets",
@@ -40,7 +40,7 @@ const productMap: Record<string, Omit<CartItem, "quantity">> = {
     size: "Standard",
     color: "Onyx Black",
     unitPrice: 4200,
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_simple_sandals/image01.jpg"
   },
   "formal-belts": {
     slug: "formal-belts",
@@ -49,7 +49,7 @@ const productMap: Record<string, Omit<CartItem, "quantity">> = {
     size: "36-38",
     color: "Espresso Brown",
     unitPrice: 3500,
-    image: "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_simple_sandals/image02.jpg"
   }
 };
 
@@ -59,21 +59,21 @@ const recommendations = [
     subtitle: "Minimal daily carry",
     price: "1,600",
     href: "/brand/catalog/leather-wallets",
-    image: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=1000&q=80"
+    image: "/assets/images/rizz_cholate_sandals/image01.jpg"
   },
   {
     title: "Signature Key Fob",
     subtitle: "Hand-finished leather",
     price: "1,200",
     href: "/brand/catalog/classic-loafers",
-    image: "https://images.unsplash.com/photo-1617042375876-a13e36732a04?auto=format&fit=crop&w=1000&q=80"
+    image: "/assets/images/rizz_dubai_sandals/image04.jpg"
   },
   {
     title: "Classic Dress Belt",
     subtitle: "Formal essential",
     price: "3,500",
     href: "/brand/catalog/formal-belts",
-    image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=1000&q=80"
+    image: "/assets/images/rizz_crodile_slide_sandals/image05.jpg"
   }
 ];
 
@@ -244,3 +244,5 @@ export default async function BrandCartPage({ searchParams }: CartPageProps) {
     </main>
   );
 }
+
+

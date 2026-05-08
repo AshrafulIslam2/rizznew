@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT } from "@/lib/site";
 import { getBaseUrl } from "@/lib/seo";
@@ -83,7 +83,7 @@ export default function MensSandalsFactoryChittagongPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&w=2200&q=80')"
+              "url('/assets/images/rizz_harmer_sandals/image01.jpg')"
           }}
         />
         <div className="absolute inset-0 bg-[#050507]/78" />
@@ -95,7 +95,7 @@ export default function MensSandalsFactoryChittagongPage() {
             Mens Sandals Factory in Chittagong
           </h1>
           <p className="mt-6 max-w-4xl text-base leading-relaxed text-[#c0c5cf] sm:text-lg lg:text-2xl">
-            Rizz Leather is a Chittagong factory for men's sandals, offering OEM/private label, wholesale supply, and low-MOQ production.
+            Rizz Leather is a Chittagong factory for men&apos;s sandals, offering OEM/private label, wholesale supply, and low-MOQ production.
             Sandals MOQ starts from 12 pairs, and we also supply Dhaka buyers from our Bakolia base.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -138,7 +138,7 @@ export default function MensSandalsFactoryChittagongPage() {
           <div className="mt-6 grid gap-5 lg:grid-cols-3">
             <article className="surface-panel rounded-2xl border p-6">
               <h3 className="text-2xl font-semibold text-[#f4eee1]">OEM</h3>
-              <p className="mt-3 text-[#adb2bd]">New design development and repeat SKU production for men's category buyers.</p>
+              <p className="mt-3 text-[#adb2bd]">New design development and repeat SKU production for men&apos;s category buyers.</p>
             </article>
             <article className="surface-panel rounded-2xl border p-6">
               <h3 className="text-2xl font-semibold text-[#f4eee1]">Private Label</h3>
@@ -199,3 +199,5 @@ export default function MensSandalsFactoryChittagongPage() {
     </main>
   );
 }
+
+

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT } from "@/lib/site";
 import { getBaseUrl } from "@/lib/seo";
@@ -36,17 +36,17 @@ const categories = [
   {
     title: "Men's leather sandals wholesale",
     description: "Retail-ready leather sandals with design variation and size-run planning.",
-    image: "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_dubai_golden_sandals/image01.jpg"
   },
   {
     title: "Women's leather sandals wholesale",
     description: "Casual and fashion-focused options based on design and target market.",
-    image: "https://images.unsplash.com/photo-1514126128186-e02c9bbef3b9?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_dubai_golden_sandals/image02.jpg"
   },
   {
     title: "Private label leather sandals",
     description: "Wholesale leather sourcing with brand customization for repeat SKUs.",
-    image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1200&q=80"
+    image: "/assets/images/rizz_crodile_slide_sandals/image03.jpg"
   }
 ];
 
@@ -119,7 +119,7 @@ export default function LeatherSandalsWholesalerBangladeshPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1506629905607-d405b7d8a4a9?auto=format&fit=crop&w=2200&q=80')"
+              "url('/assets/images/rizz_crodile_slide_sandals/image04.jpg')"
           }}
         />
         <div className="absolute inset-0 bg-[#050507]/78" />
@@ -430,3 +430,4 @@ export default function LeatherSandalsWholesalerBangladeshPage() {
     </main>
   );
 }
+

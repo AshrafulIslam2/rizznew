@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -11,27 +11,27 @@ export default function HomePage() {
     {
       label: "Classic Loafers",
       href: "/brand/catalog?category=Men%27s%20Loafers",
-      image: "https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?auto=format&fit=crop&w=1600&q=80"
+      image: "/assets/images/rizz_master_color_sandals/image01.jpg"
     },
     {
       label: "Sandals",
       href: "/brand/catalog?category=Men%27s%20Sandals",
-      image: "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_simple_sandals/image01.jpg"
     },
     {
       label: "Half Loafers",
       href: "/brand/catalog?category=Half%20Loafers",
-      image: "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_simple_sandals/image02.jpg"
     },
     {
       label: "Belts",
       href: "/brand/catalog?category=Men%27s%20Belts",
-      image: "https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_cholate_sandals/image01.jpg"
     },
     {
       label: "Wallets",
       href: "/brand/catalog?category=Men%27s%20Wallets",
-      image: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_dubai_sandals/image04.jpg"
     }
   ];
 
@@ -40,37 +40,37 @@ export default function HomePage() {
       name: "The Onyx Loafer",
       material: "Full Grain Calfskin",
       href: "/brand/catalog?category=Men%27s%20Loafers",
-      image: "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_crodile_slide_sandals/image05.jpg"
     },
     {
       name: "Cognac Mule",
       material: "Premium Suede",
       href: "/brand/catalog?category=Men%27s%20Sandals",
-      image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_crodile_slide_sandals/image07.jpg"
     },
     {
       name: "Signature Belt",
       material: "Italian Leather",
       href: "/brand/catalog?category=Men%27s%20Belts",
-      image: "https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_double_bockles-sandals/image02.jpg"
     },
     {
       name: "Classic Bifold",
       material: "Vegetable Tanned",
       href: "/brand/catalog?category=Men%27s%20Wallets",
-      image: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_double_bockles-sandals/image03.jpg"
     }
   ];
 
   const portfolioImages = [
-    { src: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=1200&q=80", alt: "Portfolio product line" },
-    { src: "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&w=1200&q=80", alt: "Footwear batch production" },
-    { src: "https://images.unsplash.com/photo-1614252369475-531eba835eb1?auto=format&fit=crop&w=1200&q=80", alt: "Leather craftsmanship details" },
-    { src: "https://images.unsplash.com/photo-1475180098004-ca77a66827be?auto=format&fit=crop&w=1200&q=80", alt: "Factory packaging line" },
-    { src: "https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=1200&q=80", alt: "Portfolio sandals set" },
-    { src: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=1200&q=80", alt: "Wholesale packed cartons" },
-    { src: "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=1200&q=80", alt: "QC inspection table" },
-    { src: "https://images.unsplash.com/photo-1463107971871-fbac9ddb920f?auto=format&fit=crop&w=1200&q=80", alt: "Finished product display" }
+    { src: "/assets/images/rizz_master_color_sandals/image01.jpg", alt: "Portfolio product line" },
+    { src: "/assets/images/rizz_simple_sandals/image01.jpg", alt: "Footwear batch production" },
+    { src: "/assets/images/rizz_simple_sandals/image02.jpg", alt: "Leather craftsmanship details" },
+    { src: "/assets/images/rizz_cholate_sandals/image01.jpg", alt: "Factory packaging line" },
+    { src: "/assets/images/rizz_dubai_sandals/image04.jpg", alt: "Portfolio sandals set" },
+    { src: "/assets/images/rizz_crodile_slide_sandals/image05.jpg", alt: "Wholesale packed cartons" },
+    { src: "/assets/images/rizz_crodile_slide_sandals/image07.jpg", alt: "QC inspection table" },
+    { src: "/assets/images/rizz_double_bockles-sandals/image02.jpg", alt: "Finished product display" }
   ];
 
   const faqItems = [
@@ -92,7 +92,7 @@ export default function HomePage() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=2200&q=80')"
+            backgroundImage: "url('/assets/images/rizzslide.jpg')"
           }}
         />
         <div className="absolute inset-0 bg-[#050507]/75" />
@@ -413,7 +413,7 @@ export default function HomePage() {
           <h2 className="mt-3 text-3xl font-semibold text-white sm:text-4xl lg:text-5xl">Frequently Asked Questions</h2>
         </div>
         <div className="space-y-3">
-          {faqItems.map((item, index) => (
+          {faqItems.map((item) => (
             <details key={item.question} className="group border border-[var(--hairline-accent)] bg-[#0a0d15]/70">
               <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-left">
                 <span className="pr-3 text-base font-medium text-[#f4eee1] sm:text-lg">{item.question}</span>
@@ -427,3 +427,5 @@ export default function HomePage() {
     </main>
   );
 }
+
+

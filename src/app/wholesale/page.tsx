@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -16,19 +16,19 @@ export default function WholesalePage() {
       title: "Jackets & Outerwear",
       desc: "Full-grain calfskin and lambskin. Classic silhouettes designed for longevity.",
       moq: "MOQ: 50 Units",
-      image: "https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_master_color_sandals/image01.jpg"
     },
     {
       title: "Bags & Luggage",
       desc: "Vegetable-tanned weekender bags, briefcases, and totes with solid brass hardware.",
       moq: "MOQ: 30 Units",
-      image: "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_simple_sandals/image01.jpg"
     },
     {
       title: "Small Leather Goods",
       desc: "Precision-stitched wallets, cardholders, and belts. Perfect for corporate gifting.",
       moq: "MOQ: 100 Units",
-      image: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_simple_sandals/image02.jpg"
     }
   ];
 
@@ -106,7 +106,7 @@ export default function WholesalePage() {
           <div className="overflow-hidden border border-[#151c2d] bg-[#070c16]">
             <div
               className="aspect-[16/8] bg-cover bg-center"
-              style={{ backgroundImage: "url('https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=1900&q=80')" }}
+              style={{ backgroundImage: "url('/assets/images/rizz_cholate_sandals/image01.jpg')" }}
             />
           </div>
         </div>
@@ -319,7 +319,7 @@ export default function WholesalePage() {
           <div className="overflow-hidden border border-[#1a2130] bg-[#070b15]">
             <div
               className="aspect-[16/9] bg-cover bg-center"
-              style={{ backgroundImage: "url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1600&q=80')" }}
+              style={{ backgroundImage: "url('/assets/images/rizz_dubai_sandals/image04.jpg')" }}
             />
           </div>
         </div>
@@ -391,3 +391,5 @@ export default function WholesalePage() {
     </main>
   );
 }
+
+

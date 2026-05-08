@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -25,13 +25,13 @@ const checkoutItemsMap: Record<string, CheckoutItem[]> = {
       title: "The Executive Briefcase",
       price: 18500,
       qty: 1,
-      image: "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=700&q=80"
+      image: "/assets/images/rizz_master_color_sandals/image01.jpg"
     },
     {
       title: "Heritage Bifold Wallet",
       price: 4200,
       qty: 1,
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=700&q=80"
+      image: "/assets/images/rizz_simple_sandals/image01.jpg"
     }
   ],
   "leather-wallets": [
@@ -39,13 +39,13 @@ const checkoutItemsMap: Record<string, CheckoutItem[]> = {
       title: "Heritage Bifold Wallet",
       price: 4200,
       qty: 1,
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=700&q=80"
+      image: "/assets/images/rizz_simple_sandals/image02.jpg"
     },
     {
       title: "Classic Dress Belt",
       price: 3500,
       qty: 1,
-      image: "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=700&q=80"
+      image: "/assets/images/rizz_cholate_sandals/image01.jpg"
     }
   ],
   "formal-belts": [
@@ -53,13 +53,13 @@ const checkoutItemsMap: Record<string, CheckoutItem[]> = {
       title: "Classic Dress Belt",
       price: 3500,
       qty: 1,
-      image: "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=700&q=80"
+      image: "/assets/images/rizz_dubai_sandals/image04.jpg"
     },
     {
       title: "Heritage Bifold Wallet",
       price: 4200,
       qty: 1,
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=700&q=80"
+      image: "/assets/images/rizz_crodile_slide_sandals/image05.jpg"
     }
   ]
 };
@@ -229,3 +229,5 @@ export default async function BrandCheckoutPage({ searchParams }: CheckoutPagePr
     </main>
   );
 }
+
+

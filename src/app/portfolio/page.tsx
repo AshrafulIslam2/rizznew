@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -13,42 +13,42 @@ export default function PortfolioPage() {
     {
       slug: "leather-jacket",
       title: "Leather Jacket",
-      image: "https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_master_color_sandals/image01.jpg"
     },
     {
       slug: "black-belt",
       title: "Black Belt",
-      image: "https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_simple_sandals/image01.jpg"
     },
     {
       slug: "leather-wallet",
       title: "Wallet",
-      image: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_simple_sandals/image02.jpg"
     },
     {
       slug: "women-leatherwear",
       title: "Women Leatherwear",
-      image: "https://images.unsplash.com/photo-1612423284934-2850a4ea6b0f?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_cholate_sandals/image01.jpg"
     },
     {
       slug: "craft-detail",
       title: "Craft Detail",
-      image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_dubai_sandals/image04.jpg"
     },
     {
       slug: "tanned-hide",
       title: "Tanned Hide",
-      image: "https://images.unsplash.com/photo-1518544866330-4e31c8d0f4f5?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_crodile_slide_sandals/image05.jpg"
     },
     {
       slug: "textured-leather",
       title: "Textured Leather",
-      image: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_crodile_slide_sandals/image07.jpg"
     },
     {
       slug: "premium-packaging",
       title: "Packaging",
-      image: "https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1200&q=80"
+      image: "/assets/images/rizz_double_bockles-sandals/image02.jpg"
     }
   ];
 
@@ -197,3 +197,5 @@ export default function PortfolioPage() {
     </main>
   );
 }
+
+
