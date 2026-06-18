@@ -1,369 +1,237 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getProductBySlug, getRelatedProducts, getReviews, PRODUCTS } from "@/lib/products";
+import { ProductActions, ImageGallery } from "@/components/product-actions";
 
 type Props = { params: Promise<{ slug: string }> };
 
-type RelatedItem = {
-  title: string;
-  price: string;
-  image: string;
-  href: string;
-};
-
-type ProductEntry = {
-  title: string;
-  summary: string;
-  collection: string;
-  price: string;
-  oldPrice: string;
-  save: string;
-  stock: string;
-  details: string;
-  colorLabel: string;
-  colors: string[];
-  sizes: string[];
-  images: string[];
-  description: string;
-  specs: string;
-  craftsmanship: string;
-  shipping: string;
-  completeSet: RelatedItem[];
-};
-
-const catalogData: Record<string, ProductEntry> = {
-  "classic-loafers": {
-    title: "The Executive Briefcase",
-    summary: "Crafted from full-grain Chittagong leather with a padded laptop compartment and hand-burnished edges.",
-    collection: "Heritage Collection",
-    price: "18,500",
-    oldPrice: "22,000",
-    save: "Save 15%",
-    stock: "In Stock - Ready to Ship",
-    details:
-      "Crafted from full-grain Chittagong leather, the Executive Briefcase is designed for the modern professional. Featuring solid brass hardware, padded laptop compartment, and our signature hand-burnished edges.",
-    colorLabel: "Midnight Black",
-    colors: ["#05070d", "#4a302d", "#6a4d45"],
-    sizes: ["Standard (15\")", "Large (17\")"],
-    images: [
-      "/assets/images/rizz_master_color_sandals/image01.jpg",
-      "/assets/images/rizz_simple_sandals/image01.jpg",
-      "/assets/images/rizz_simple_sandals/image02.jpg",
-      "/assets/images/rizz_cholate_sandals/image01.jpg",
-      "/assets/images/rizz_dubai_sandals/image04.jpg"
-    ],
-    description:
-      "The Executive Briefcase is the pinnacle of our craftsmanship. Designed to age beautifully, the full-grain leather develops a rich patina over time, telling the story of your journeys.",
-    specs: "Width 40cm, Height 30cm, Depth 8cm, dedicated laptop sleeve for up to 17-inch devices, and interior zip organizer.",
-    craftsmanship: "Hand-cut panels, reinforced stitched handles, brass-finished hardware, and edge painting with multi-coat sealing.",
-    shipping: "Domestic COD delivery within 2-3 business days. International shipping timeline and duties are shared before dispatch.",
-    completeSet: [
-      {
-        title: "Heritage Bifold Wallet",
-        price: "4,200",
-        image: "/assets/images/rizz_crodile_slide_sandals/image05.jpg",
-        href: "/brand/catalog/leather-wallets"
-      },
-      {
-        title: "Classic Dress Belt",
-        price: "3,500",
-        image: "/assets/images/rizz_crodile_slide_sandals/image07.jpg",
-        href: "/brand/catalog/formal-belts"
-      },
-      {
-        title: "Signature Key Fob",
-        price: "1,200",
-        image: "/assets/images/rizz_double_bockles-sandals/image02.jpg",
-        href: "/brand/catalog/classic-loafers"
-      }
-    ]
-  },
-  "leather-wallets": {
-    title: "Heritage Bifold Wallet",
-    summary: "Slim bifold wallet in textured calfskin with precise edge finishing and durable lining.",
-    collection: "Signature Accessories",
-    price: "4,200",
-    oldPrice: "5,000",
-    save: "Save 16%",
-    stock: "In Stock - Ready to Ship",
-    details: "A compact daily wallet with optimized slots, clean fold profile, and reinforced stitch lines for long-term use.",
-    colorLabel: "Onyx Black",
-    colors: ["#0b0d14", "#5e4438", "#7f5f4e"],
-    sizes: ["Standard", "Travel"],
-    images: [
-      "/assets/images/rizz_double_bockles-sandals/image03.jpg",
-      "/assets/images/rizz_master_color_sandals/image01.jpg",
-      "/assets/images/rizz_simple_sandals/image01.jpg",
-      "/assets/images/rizz_simple_sandals/image02.jpg"
-    ],
-    description: "Designed for everyday carry with a slim silhouette and premium feel in hand.",
-    specs: "8 card slots, 2 currency sections, 1 hidden pocket, and anti-fray interior finish.",
-    craftsmanship: "Stitched with high-tension nylon thread and hand-finished edges.",
-    shipping: "Domestic COD available. International delivery available via WhatsApp concierge.",
-    completeSet: [
-      { title: "Classic Dress Belt", price: "3,500", image: "/assets/images/rizz_cholate_sandals/image01.jpg", href: "/brand/catalog/formal-belts" },
-      { title: "Signature Briefcase", price: "18,500", image: "/assets/images/rizz_dubai_sandals/image04.jpg", href: "/brand/catalog/classic-loafers" },
-      { title: "Leather Card Sleeve", price: "1,600", image: "/assets/images/rizz_crodile_slide_sandals/image05.jpg", href: "/brand/catalog/leather-wallets" }
-    ]
-  },
-  "formal-belts": {
-    title: "Classic Dress Belt",
-    summary: "Formal leather belt with smooth finish, balanced thickness, and durable buckle hardware.",
-    collection: "Signature Accessories",
-    price: "3,500",
-    oldPrice: "4,100",
-    save: "Save 14%",
-    stock: "In Stock - Ready to Ship",
-    details: "A tailored belt designed to complement formal and smart-casual wardrobes.",
-    colorLabel: "Espresso Brown",
-    colors: ["#121319", "#3f2f2b", "#6c4f42"],
-    sizes: ["32-34", "36-38"],
-    images: [
-      "/assets/images/rizz_crodile_slide_sandals/image07.jpg",
-      "/assets/images/rizz_double_bockles-sandals/image02.jpg",
-      "/assets/images/rizz_double_bockles-sandals/image03.jpg",
-      "/assets/images/rizz_master_color_sandals/image01.jpg"
-    ],
-    description: "Structured strap build with flexibility for all-day comfort.",
-    specs: "Width 35mm, nickel buckle, adjustable hole spacing, and reinforced tongue.",
-    craftsmanship: "Clean cut edge treatment with polished bevel and protective coating.",
-    shipping: "Domestic COD and international shipping available.",
-    completeSet: [
-      { title: "Heritage Bifold Wallet", price: "4,200", image: "/assets/images/rizz_simple_sandals/image01.jpg", href: "/brand/catalog/leather-wallets" },
-      { title: "Executive Briefcase", price: "18,500", image: "/assets/images/rizz_simple_sandals/image02.jpg", href: "/brand/catalog/classic-loafers" },
-      { title: "Signature Key Fob", price: "1,200", image: "/assets/images/rizz_cholate_sandals/image01.jpg", href: "/brand/catalog/formal-belts" }
-    ]
-  },
-  "mens-sandals": {
-    title: "Artisan Leather Sandal",
-    summary: "Comfort-focused sandal with durable leather upper and padded insole.",
-    collection: "Summer Collection",
-    price: "3,200",
-    oldPrice: "3,900",
-    save: "Save 18%",
-    stock: "In Stock - Ready to Ship",
-    details: "Lightweight sandal designed for breathable comfort with premium leather straps.",
-    colorLabel: "Dark Tan",
-    colors: ["#121319", "#5a3f2f", "#7a5a47"],
-    sizes: ["40-42", "43-45"],
-    images: [
-      "/assets/images/rizz_dubai_sandals/image04.jpg",
-      "/assets/images/rizz_crodile_slide_sandals/image05.jpg",
-      "/assets/images/rizz_crodile_slide_sandals/image07.jpg",
-      "/assets/images/rizz_double_bockles-sandals/image02.jpg"
-    ],
-    description: "Cushioned, flexible, and premium for daily summer wear.",
-    specs: "Padded footbed, anti-slip sole, and breathable leather lining.",
-    craftsmanship: "Hand-finished straps and precision buckle placement.",
-    shipping: "COD available in Bangladesh. International delivery on request.",
-    completeSet: [
-      { title: "Classic Dress Belt", price: "3,500", image: "/assets/images/rizz_double_bockles-sandals/image03.jpg", href: "/brand/catalog/formal-belts" },
-      { title: "Heritage Bifold Wallet", price: "4,200", image: "/assets/images/rizz_master_color_sandals/image01.jpg", href: "/brand/catalog/leather-wallets" },
-      { title: "Signature Key Fob", price: "1,200", image: "/assets/images/rizz_simple_sandals/image01.jpg", href: "/brand/catalog/mens-sandals" }
-    ]
-  },
-  "half-loafers": {
-    title: "Urban Half Loafer",
-    summary: "Lightweight half loafer made for effortless daily wear and comfort.",
-    collection: "Urban Classics",
-    price: "5,800",
-    oldPrice: "6,700",
-    save: "Save 13%",
-    stock: "In Stock - Ready to Ship",
-    details: "A streamlined silhouette offering breathable comfort with premium leather finishing.",
-    colorLabel: "Mocha Brown",
-    colors: ["#0e1119", "#4a352d", "#7b5b4d"],
-    sizes: ["40-42", "43-45"],
-    images: [
-      "/assets/images/rizz_simple_sandals/image02.jpg",
-      "/assets/images/rizz_cholate_sandals/image01.jpg",
-      "/assets/images/rizz_dubai_sandals/image04.jpg",
-      "/assets/images/rizz_crodile_slide_sandals/image05.jpg"
-    ],
-    description: "Soft in-step feel and balanced outsole grip for city movement.",
-    specs: "Slip-on profile, lightweight sole, and breathable inner lining.",
-    craftsmanship: "Curved seam detailing and reinforced heel counter.",
-    shipping: "COD available in Bangladesh. International orders through WhatsApp.",
-    completeSet: [
-      { title: "Executive Briefcase", price: "18,500", image: "/assets/images/rizz_crodile_slide_sandals/image07.jpg", href: "/brand/catalog/classic-loafers" },
-      { title: "Classic Dress Belt", price: "3,500", image: "/assets/images/rizz_double_bockles-sandals/image02.jpg", href: "/brand/catalog/formal-belts" },
-      { title: "Heritage Bifold Wallet", price: "4,200", image: "/assets/images/rizz_double_bockles-sandals/image03.jpg", href: "/brand/catalog/leather-wallets" }
-    ]
-  }
-};
+export async function generateStaticParams() {
+  return PRODUCTS.map((p) => ({ slug: p.slug }));
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const entry = catalogData[slug];
-  if (!entry) {
-    return { title: "Product | Rizz Leather" };
-  }
+  const p = getProductBySlug(slug);
+  if (!p) return { title: "Product | RIZZ" };
   return {
-    title: `${entry.title} | Rizz Leather`,
-    description: entry.summary
+    title: `${p.name} — ${p.material} | RIZZ`,
+    description: `${p.description.slice(0, 155)}`,
+    openGraph: {
+      title: p.name,
+      description: p.description.slice(0, 155),
+      images: [{ url: p.images[0] }]
+    }
   };
 }
 
-export default async function BrandProductPage({ params }: Props) {
-  const { slug } = await params;
-  const entry = catalogData[slug];
-  if (!entry) {
-    notFound();
-  }
-
+function StarRating({ rating }: { rating: number }) {
   return (
-    <main className="bg-[#01030a] text-[#f1ede4]">
-      <section className="border-y border-[var(--hairline-accent)] py-8 sm:py-10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid gap-8 xl:grid-cols-[1.3fr_0.9fr] xl:items-start">
-            <div className="grid gap-4 self-start sm:grid-cols-[72px_1fr] sm:gap-5 xl:sticky xl:top-24">
-              <div className="order-2 flex gap-3 overflow-x-auto pb-1 sm:order-1 sm:grid sm:gap-3 sm:overflow-visible">
-                {entry.images.map((image, index) => (
-                  <button
-                    key={`${entry.title}-thumb-${index + 1}`}
-                    type="button"
-                    className={`shrink-0 overflow-hidden rounded-xl border bg-[#050912] ${index === 0 ? "border-[#b9a87f]" : "border-[#1f2738]"}`}
-                    aria-label={`View image ${index + 1}`}
-                  >
-                    <div className="h-16 w-14 bg-cover bg-center sm:h-[78px] sm:w-full" style={{ backgroundImage: `url('${image}')` }} />
-                  </button>
-                ))}
-              </div>
-
-              <div className="order-1 overflow-hidden rounded-2xl border border-[#1b2335] bg-[#050912] sm:order-2">
-                <div className="relative">
-                  <span className="absolute left-4 top-4 rounded-full bg-[#d8c9a3] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#10131b]">
-                    COD Eligible
-                  </span>
-                  <div className="aspect-[4/5] bg-cover bg-center sm:aspect-[16/13]" style={{ backgroundImage: `url('${entry.images[0]}')` }} />
-                </div>
-              </div>
-            </div>
-
-            <aside className="space-y-6">
-              <p className="text-xs uppercase tracking-[0.16em] text-[#b9ad91]">{entry.collection}</p>
-              <h1 className="font-serif text-5xl leading-[1.05] text-[#f2ece1] sm:text-6xl">{entry.title}</h1>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <p className="text-4xl font-semibold text-[#efe9de]">৳ {entry.price}</p>
-                <p className="text-sm text-[#7f8694] line-through">৳ {entry.oldPrice}</p>
-                <span className="rounded-md border border-[#3d3428] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#d4c190]">
-                  {entry.save}
-                </span>
-              </div>
-
-              <p className="text-base text-[#bfd2be]">● {entry.stock}</p>
-              <p className="text-base leading-relaxed text-[#afb5c1]">{entry.details}</p>
-
-              <div className="border-t border-[#1d2435] pt-5">
-                <p className="text-xs uppercase tracking-[0.12em] text-[#a7adb8]">
-                  Color: <span className="font-semibold text-[#d8dde6]">{entry.colorLabel}</span>
-                </p>
-                <div className="mt-3 flex items-center gap-3">
-                  {entry.colors.map((color, index) => (
-                    <button
-                      key={`${entry.title}-color-${index + 1}`}
-                      type="button"
-                      className={`h-9 w-9 rounded-full border ${index === 0 ? "border-[#dfcca2]" : "border-[#5a6272]"}`}
-                      style={{ backgroundColor: color }}
-                      aria-label={`Color option ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="mb-2 flex items-center justify-between text-xs uppercase tracking-[0.12em] text-[#a7adb8]">
-                  <span>Size</span>
-                  <span className="text-[#b8bfc9]">Size Guide</span>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {entry.sizes.map((size, index) => (
-                    <button
-                      key={`${entry.title}-size-${size}`}
-                      type="button"
-                      className={`rounded-xl border px-4 py-3 text-xs font-semibold uppercase tracking-[0.1em] ${
-                        index === 0 ? "border-[#cdbd97] bg-[#17130c] text-[#efe2c2]" : "border-[#323b4d] bg-transparent text-[#c0c6d0]"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-[#1e2537] bg-[#080d18] p-4 text-sm text-[#b5bbc7]">
-                <p className="font-medium text-[#d9dee7]">COD Available in Bangladesh</p>
-                <p className="mt-1 text-xs text-[#8f97a6]">Order now and pay upon delivery. Delivery within 2-3 business days.</p>
-              </div>
-
-              <Link
-                href={`/brand/cart?product=${slug}`}
-                className="inline-flex min-h-[54px] w-full items-center justify-center rounded-full border border-[#d8c69f] bg-[#d8c69f] px-8 text-sm font-semibold uppercase tracking-[0.2em] text-[#10131a] no-underline"
-              >
-                Add to Cart
-              </Link>
-              <Link
-                href="https://wa.me/8801712345678"
-                className="inline-flex min-h-[54px] w-full items-center justify-center rounded-full border border-[#1f6947] bg-transparent px-8 text-sm font-semibold uppercase tracking-[0.2em] text-[#35d673] no-underline"
-              >
-                WhatsApp to Order Internationally
-              </Link>
-
-              <div className="space-y-1 border-t border-[#1d2435] pt-4">
-                <details open className="border-b border-[#1d2435] py-4">
-                  <summary className="cursor-pointer list-none text-sm font-semibold uppercase tracking-[0.1em] text-[#d8dde6]">Description</summary>
-                  <p className="mt-3 text-sm leading-relaxed text-[#aeb4bf]">{entry.description}</p>
-                </details>
-                <details className="border-b border-[#1d2435] py-4">
-                  <summary className="cursor-pointer list-none text-sm font-semibold uppercase tracking-[0.1em] text-[#d8dde6]">Dimensions & Specs</summary>
-                  <p className="mt-3 text-sm leading-relaxed text-[#aeb4bf]">{entry.specs}</p>
-                </details>
-                <details className="border-b border-[#1d2435] py-4">
-                  <summary className="cursor-pointer list-none text-sm font-semibold uppercase tracking-[0.1em] text-[#d8dde6]">Craftsmanship & Materials</summary>
-                  <p className="mt-3 text-sm leading-relaxed text-[#aeb4bf]">{entry.craftsmanship}</p>
-                </details>
-                <details className="border-b border-[#1d2435] py-4">
-                  <summary className="cursor-pointer list-none text-sm font-semibold uppercase tracking-[0.1em] text-[#d8dde6]">Shipping & Returns</summary>
-                  <p className="mt-3 text-sm leading-relaxed text-[#aeb4bf]">{entry.shipping}</p>
-                </details>
-              </div>
-            </aside>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-10 sm:py-14">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="mb-8 text-center">
-            <h2 className="font-serif text-5xl text-[#f2ece1] sm:text-6xl">Complete the Set</h2>
-            <p className="mt-2 text-xs uppercase tracking-[0.18em] text-[#b9ad91]">Perfectly Paired Accessories</p>
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-3">
-            {entry.completeSet.map((item) => (
-              <article key={item.title} className="rounded-2xl border border-[#1d2435] bg-[#090d17] p-4">
-                <div className="overflow-hidden rounded-xl bg-[#070b14]">
-                  <div className="aspect-[16/10] bg-cover bg-center" style={{ backgroundImage: `url('${item.image}')` }} />
-                </div>
-                <div className="mt-4 flex items-end justify-between gap-3">
-                  <div>
-                    <h3 className="font-serif text-3xl text-[#efe8dd]">{item.title}</h3>
-                    <p className="mt-2 text-3xl font-semibold text-[#efe9de]">৳ {item.price}</p>
-                  </div>
-                  <Link
-                    href={item.href}
-                    className="inline-flex min-h-[34px] items-center justify-center rounded-full border border-[#3a4359] px-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#d6c7a0] no-underline"
-                  >
-                    Add
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-    </main>
+    <span className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <svg key={i} width="12" height="12" viewBox="0 0 12 12" fill={i <= rating ? "var(--gold)" : "none"} stroke="var(--gold-dim)" strokeWidth="1">
+          <polygon points="6,1 7.5,4.5 11,4.5 8.5,7 9.5,11 6,8.5 2.5,11 3.5,7 1,4.5 4.5,4.5" />
+        </svg>
+      ))}
+    </span>
   );
 }
 
+const fmt = (n: number) => `৳ ${n.toLocaleString("en-US")}`;
+
+export default async function ProductDetailPage({ params }: Props) {
+  const { slug } = await params;
+  const product = getProductBySlug(slug);
+  if (!product) notFound();
+
+  const related = getRelatedProducts(slug, 4);
+  const reviews = getReviews(slug);
+  const avgRating = Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length);
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    image: product.images,
+    brand: { "@type": "Brand", name: "RIZZ" },
+    offers: {
+      "@type": "Offer",
+      price: product.price,
+      priceCurrency: "BDT",
+      availability: "https://schema.org/InStock",
+      seller: { "@type": "Organization", name: "RIZZ Leather" }
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: avgRating,
+      reviewCount: reviews.length,
+      bestRating: 5,
+      worstRating: 1
+    }
+  };
+
+  const faqItems = [
+    { q: "What is the return policy?", a: "We accept returns within 7 days of delivery for unworn items in original condition. See our Returns page for full details." },
+    { q: "How do I care for this leather?", a: "Use a soft dry cloth after each wear. Apply a leather conditioner every 3–4 months. Keep away from direct sunlight when storing." },
+    { q: "Is COD available for this product?", a: "Yes. Cash on Delivery is available for all products across Bangladesh. You pay when your order arrives." },
+    { q: "How long does delivery take?", a: "Inside Dhaka: 1–2 business days. Outside Dhaka: 2–4 business days." }
+  ];
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <main>
+        {/* Breadcrumb */}
+        <nav className="border-b border-[var(--hairline)] px-5 py-3 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)] lg:px-8">
+          <div className="mx-auto flex max-w-7xl items-center gap-2">
+            <Link href="/" className="hover:text-[var(--text)] transition-colors">Home</Link>
+            <span className="opacity-40">›</span>
+            <Link href="/brand/catalog" className="hover:text-[var(--text)] transition-colors">Shop</Link>
+            <span className="opacity-40">›</span>
+            <Link href={`/brand/catalog?category=${encodeURIComponent(product.category)}`} className="hover:text-[var(--text)] transition-colors">{product.category}</Link>
+            <span className="opacity-40">›</span>
+            <span className="text-[var(--gold-dim)]">{product.name}</span>
+          </div>
+        </nav>
+
+        {/* Product */}
+        <section className="mx-auto max-w-7xl px-5 py-10 lg:px-8 lg:py-16">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
+            <ImageGallery images={product.images} name={product.name} />
+
+            <div>
+              <p className="text-[9px] uppercase tracking-[0.4em] text-[var(--gold-dim)]">{product.collection}</p>
+              <h1 className="mt-2 font-serif text-4xl leading-tight text-[var(--cream)] sm:text-5xl">{product.name}</h1>
+              <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]">{product.material}</p>
+
+              {/* Rating summary */}
+              <div className="mt-3 flex items-center gap-2">
+                <StarRating rating={avgRating} />
+                <span className="text-[10px] text-[var(--muted)]">({reviews.length} reviews)</span>
+              </div>
+
+              <div className="my-6 border-t border-[var(--hairline)]" />
+
+              <ProductActions product={product} />
+
+              {/* Accordion */}
+              <div className="mt-8 space-y-0 border-t border-[var(--hairline)]">
+                {[
+                  { title: "Description", body: product.description },
+                  { title: "Specs & Dimensions", body: product.specs },
+                  { title: "Craftsmanship & Materials", body: product.craftsmanship },
+                  { title: "Shipping & Returns", body: "COD delivery in 2–4 business days across Bangladesh. Returns accepted within 7 days of delivery for unworn items. International shipping available via WhatsApp." }
+                ].map((item) => (
+                  <details key={item.title} className="group border-b border-[var(--hairline)]">
+                    <summary className="flex cursor-pointer list-none items-center justify-between py-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--cream)]">
+                      {item.title}
+                      <span className="text-[var(--gold-dim)] transition-transform group-open:rotate-45">+</span>
+                    </summary>
+                    <p className="pb-4 text-sm leading-relaxed text-[var(--muted)]">{item.body}</p>
+                  </details>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Reviews */}
+        <section className="border-t border-[var(--hairline)] py-14 lg:py-20">
+          <div className="mx-auto max-w-7xl px-5 lg:px-8">
+            <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-[9px] uppercase tracking-[0.45em] text-[var(--gold-dim)]">Verified Buyers</p>
+                <h2 className="mt-2 font-serif text-3xl text-[var(--cream)] sm:text-4xl">Customer Reviews</h2>
+              </div>
+              <div className="flex items-center gap-3">
+                <StarRating rating={avgRating} />
+                <span className="text-sm text-[var(--muted)]">{avgRating}.0 out of 5 · {reviews.length} reviews</span>
+              </div>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {reviews.map((review, i) => (
+                <article key={i} className="border border-[var(--border)] bg-[var(--surface)] p-6">
+                  <div className="mb-3 flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-[var(--cream)]">{review.name}</p>
+                      <p className="mt-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]">{review.date}</p>
+                    </div>
+                    <StarRating rating={review.rating} />
+                  </div>
+                  <p className="text-sm leading-relaxed text-[var(--muted)]">{review.body}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Recommended */}
+        <section className="border-t border-[var(--hairline)] py-14 lg:py-20">
+          <div className="mx-auto max-w-7xl px-5 lg:px-8">
+            <div className="mb-10">
+              <p className="text-[9px] uppercase tracking-[0.45em] text-[var(--gold-dim)]">You May Also Like</p>
+              <h2 className="mt-2 font-serif text-3xl text-[var(--cream)] sm:text-4xl">Recommended</h2>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+              {related.map((p) => (
+                <Link key={p.slug} href={`/brand/catalog/${p.slug}`} className="group block no-underline">
+                  <div className="relative overflow-hidden bg-[var(--surface)]">
+                    <div
+                      className="h-[260px] bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.04]"
+                      style={{ backgroundImage: `url('${p.images[0]}')` }}
+                    />
+                    {p.badge && (
+                      <span className={`absolute left-3 top-3 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.2em] ${
+                        p.badge === "Bestseller" ? "bg-[var(--gold)] text-[#0a0806]" : "bg-[var(--surface)] border border-[var(--hairline)] text-[var(--gold-light)]"
+                      }`}>{p.badge}</span>
+                    )}
+                  </div>
+                  <div className="mt-3 space-y-1">
+                    <h3 className="font-serif text-base text-[var(--cream)]">{p.name}</h3>
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--muted)]">{p.material}</p>
+                    <p className="text-sm text-[var(--gold-light)]">{fmt(p.price)}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="border-t border-[var(--hairline)] bg-[var(--surface)] py-14">
+          <div className="mx-auto max-w-2xl px-5 lg:px-8">
+            <h2 className="mb-8 font-serif text-2xl text-[var(--cream)] sm:text-3xl">Product FAQs</h2>
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "FAQPage",
+                  mainEntity: faqItems.map((item) => ({
+                    "@type": "Question",
+                    name: item.q,
+                    acceptedAnswer: { "@type": "Answer", text: item.a }
+                  }))
+                })
+              }}
+            />
+            <div className="space-y-2">
+              {faqItems.map((item) => (
+                <details key={item.q} className="group border border-[var(--border)] bg-[var(--bg)]">
+                  <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4">
+                    <span className="pr-4 text-sm font-medium text-[var(--cream)]">{item.q}</span>
+                    <span className="shrink-0 text-[var(--gold-dim)] transition-transform group-open:rotate-45">+</span>
+                  </summary>
+                  <p className="border-t border-[var(--border)] px-5 py-4 text-sm leading-relaxed text-[var(--muted)]">{item.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+    </>
+  );
+}

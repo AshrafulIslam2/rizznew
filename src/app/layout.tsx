@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@/components/analytics";
-import { Footer } from "@/components/footer";
-import { HeaderNav } from "@/components/header-nav";
-import { RoutePortfolioShowcase } from "@/components/route-portfolio-showcase";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { CartProvider } from "@/lib/cart-context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,24 +19,25 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Rizz Leather",
-  description: "OEM, wholesale, and brand leather products from Chittagong, Bangladesh.",
+  title: "RIZZ — Luxury Leather Footwear & Accessories",
+  description:
+    "Artisan leather footwear and accessories handcrafted in Chittagong, Bangladesh. Shop loafers, sandals, belts, and wallets. COD available nationwide.",
   openGraph: {
-    title: "Rizz Leather",
-    description: "OEM, wholesale, and brand leather products from Chittagong, Bangladesh.",
+    title: "RIZZ — Luxury Leather",
+    description: "Artisan leather footwear and accessories, crafted in Chittagong.",
     type: "website"
   }
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={`${inter.variable} ${cormorant.variable}`}>
-        {/* <SeoRoutesTopbar /> */}
-        <HeaderNav />
-        {children}
-        <RoutePortfolioShowcase />
-        <Footer />
+        <CartProvider>
+          <SiteHeader />
+          {children}
+          <SiteFooter />
+        </CartProvider>
         <Analytics />
       </body>
     </html>

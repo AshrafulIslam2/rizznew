@@ -2,97 +2,89 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Thank You | Rizz Leather",
-  description: "Order received confirmation."
+  title: "Order Confirmed | RIZZ",
+  description: "Your RIZZ order has been received. We will call to confirm before dispatch."
 };
 
-export default function BrandThankYouPage() {
+function genOrderId() {
+  return `RZ-${Math.floor(Math.random() * 90000) + 10000}`;
+}
+
+export default function ThankYouPage() {
+  const orderId = genOrderId();
+
   return (
-    <main className="bg-[#02040b] text-[#f2ede2]">
-      <section className="border-y border-[var(--hairline-accent)] py-6 sm:py-7">
-        <div className="mx-auto max-w-4xl px-4 sm:px-5">
-          <div className="text-center">
-            <div className="mx-auto inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#2a3242] bg-[#090d17] text-lg text-[#d8c69f]">
-              ✓
-            </div>
-            <h1 className="mt-3 font-serif text-5xl text-[#f4ede2] sm:text-6xl">Thank You</h1>
-            <p className="mt-2 text-xs uppercase tracking-[0.2em] text-[#c6b791]">Your order has been received</p>
+    <main>
+      <section className="border-b border-[var(--hairline)] bg-[var(--surface)] py-14 text-center">
+        <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-full border border-[var(--gold-dim)] text-2xl text-[var(--gold)]">
+          ✓
+        </div>
+        <h1 className="mt-5 font-serif text-4xl text-[var(--cream)] sm:text-5xl">Order Confirmed</h1>
+        <p className="mt-2 text-sm text-[var(--muted)]">Thank you for choosing RIZZ. We will call you to confirm before dispatch.</p>
+      </section>
+
+      <div className="mx-auto max-w-3xl px-5 py-12 lg:px-8">
+        {/* Order details */}
+        <div className="grid gap-px border border-[var(--border)] bg-[var(--border)] sm:grid-cols-3">
+          <div className="bg-[var(--surface)] px-6 py-5">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]">Order Number</p>
+            <p className="mt-2 font-serif text-2xl text-[var(--cream)]}">#{orderId}</p>
           </div>
-
-          <section className="mt-5 rounded-xl border border-[#1b2335] bg-[#080d17] p-3 sm:p-4">
-            <div className="grid gap-3 text-left sm:grid-cols-3 sm:gap-0">
-              <div className="sm:border-r sm:border-[#1b2335] sm:pr-4">
-                <p className="text-[10px] uppercase tracking-[0.14em] text-[#98a0ad]">Order Number</p>
-                <p className="mt-1.5 text-2xl text-[#f2ebdf]">#RZ-8492-BD</p>
-              </div>
-              <div className="sm:border-r sm:border-[#1b2335] sm:px-4">
-                <p className="text-[10px] uppercase tracking-[0.14em] text-[#98a0ad]">Expected Delivery</p>
-                <p className="mt-1.5 text-2xl text-[#f2ebdf]">2-4 Business Days</p>
-                <p className="mt-1 text-xs text-[#8490a0]">Inside Bangladesh</p>
-              </div>
-              <div className="sm:pl-4">
-                <p className="text-[10px] uppercase tracking-[0.14em] text-[#98a0ad]">COD Amount Due</p>
-                <p className="mt-1.5 text-2xl font-semibold text-[#d8c69f]">৳ 22,780</p>
-                <p className="mt-1 text-xs text-[#8490a0]">Payable upon delivery</p>
-              </div>
-            </div>
-          </section>
-
-          <section className="mt-4 grid gap-3 sm:grid-cols-2">
-            <article className="rounded-xl border border-[#1b2335] bg-[#080d17] p-4 text-center">
-              <div className="mx-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#2d364a] text-xs text-[#d8c69f]">☎</div>
-              <h2 className="mt-3 font-serif text-3xl text-[#efe8dd]">We&apos;ll call to confirm</h2>
-              <p className="mt-2 text-xs leading-relaxed text-[#a8b0bd]">
-                Our team will contact you shortly at the provided phone number to verify your order details before dispatch.
-              </p>
-            </article>
-
-            <article className="rounded-xl border border-[#1b2335] bg-[#080d17] p-4 text-center">
-              <div className="mx-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#2d364a] text-xs text-[#d8c69f]">◉</div>
-              <h2 className="mt-3 font-serif text-3xl text-[#efe8dd]">Need modifications?</h2>
-              <p className="mt-2 text-xs leading-relaxed text-[#a8b0bd]">
-                For international inquiries, order changes, or cancellations, please reach out to our dedicated support.
-              </p>
-              <Link
-                href="https://wa.me/8801712345678"
-                className="mt-3 inline-flex min-h-[30px] items-center justify-center rounded-full border border-[#2f384b] px-4 text-[9px] font-semibold uppercase tracking-[0.14em] text-[#d7c89f] no-underline"
-              >
-                WhatsApp Support
-              </Link>
-            </article>
-          </section>
-
-          <div className="mt-6 border-t border-[#151c2d] pt-5 text-center">
-            <Link
-              href="/brand/catalog"
-              className="inline-flex min-h-[40px] items-center justify-center rounded-full border border-[#d8c69f] bg-[#d8c69f] px-7 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#11141b] no-underline"
-            >
-              Continue Shopping
-            </Link>
-
-            <div className="mx-auto mt-6 max-w-2xl">
-              <h3 className="font-serif text-4xl text-[#efe8dd] sm:text-5xl">Track / Check Order Status</h3>
-              <p className="mt-2 text-xs text-[#99a2b0]">Enter your details below to check status without logging in.</p>
-              <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-                <input
-                  className="min-h-[38px] rounded-full border border-[#263044] bg-[#070b15] px-3.5 text-xs text-[#ece6db] outline-none placeholder:text-[#5f6775]"
-                  placeholder="Order Number (e.g. #RZ-84)"
-                />
-                <input
-                  className="min-h-[38px] rounded-full border border-[#263044] bg-[#070b15] px-3.5 text-xs text-[#ece6db] outline-none placeholder:text-[#5f6775]"
-                  placeholder="Phone Number"
-                />
-                <button
-                  type="button"
-                  className="min-h-[38px] rounded-full border border-[#2f384b] px-5 text-[9px] font-semibold uppercase tracking-[0.14em] text-[#d7c89f]"
-                >
-                  Lookup
-                </button>
-              </div>
-            </div>
+          <div className="bg-[var(--surface)] px-6 py-5">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]">Expected Delivery</p>
+            <p className="mt-2 font-serif text-xl text-[var(--cream)]">2–4 Business Days</p>
+            <p className="mt-1 text-[10px] text-[var(--muted)]">Across Bangladesh</p>
+          </div>
+          <div className="bg-[var(--surface)] px-6 py-5">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]">Payment</p>
+            <p className="mt-2 font-serif text-xl text-[var(--cream)]">Cash on Delivery</p>
+            <p className="mt-1 text-[10px] text-[var(--muted)]">Pay when it arrives</p>
           </div>
         </div>
-      </section>
+
+        {/* What happens next */}
+        <div className="mt-8 space-y-4">
+          <h2 className="font-serif text-2xl text-[var(--cream)]">What happens next</h2>
+          {[
+            { step: "01", title: "Confirmation Call", body: "Our team will call the phone number you provided to verify your order details and confirm delivery address." },
+            { step: "02", title: "Dispatch", body: "Once confirmed, your order is packed and dispatched the same or next business day. You'll receive an SMS from our courier." },
+            { step: "03", title: "Delivery", body: "Your courier will arrive with the package. You pay the full amount in cash and receive your piece." }
+          ].map((item) => (
+            <div key={item.step} className="flex gap-5 border border-[var(--border)] bg-[var(--surface)] p-5">
+              <span className="font-serif text-3xl text-[var(--gold-dim)] opacity-60">{item.step}</span>
+              <div>
+                <h3 className="font-medium text-[var(--cream)]">{item.title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-[var(--muted)]">{item.body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Modifications */}
+        <div className="mt-8 border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
+          <h3 className="font-serif text-xl text-[var(--cream)]">Need to modify or cancel?</h3>
+          <p className="mt-2 text-sm text-[var(--muted)]">Contact us as soon as possible before dispatch. Once shipped, cancellations are not possible.</p>
+          <div className="mt-5 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <a
+              href="https://wa.me/8801750514197"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-ghost w-full sm:w-auto flex items-center justify-center gap-2"
+            >
+              WhatsApp Support
+            </a>
+            <Link href="/contact" className="btn-ghost w-full sm:w-auto">
+              Contact Us
+            </Link>
+          </div>
+        </div>
+
+        <div className="mt-10 text-center">
+          <Link href="/brand/catalog" className="btn-primary inline-flex">
+            Continue Shopping
+          </Link>
+        </div>
+      </div>
     </main>
   );
 }

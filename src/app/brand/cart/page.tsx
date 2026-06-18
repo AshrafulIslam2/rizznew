@@ -1,159 +1,94 @@
-﻿import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
+import Image from "next/image";
+import { useCart } from "@/lib/cart-context";
+import { PRODUCTS } from "@/lib/products";
 
-export const metadata: Metadata = {
-  title: "Cart | Rizz Leather",
-  description: "Review your selected products before secure checkout."
-};
+const fmt = (n: number) => `৳ ${n.toLocaleString("en-US")}`;
 
-type CartPageProps = {
-  searchParams: Promise<{
-    product?: string;
-  }>;
-};
+const SHIPPING = 120;
+const FREE_SHIPPING_THRESHOLD = 5000;
 
-type CartItem = {
-  slug: string;
-  title: string;
-  subtitle: string;
-  size: string;
-  color: string;
-  unitPrice: number;
-  quantity: number;
-  image: string;
-};
+export default function CartPage() {
+  const { items, removeItem, updateQty, total, count } = useCart();
 
-const productMap: Record<string, Omit<CartItem, "quantity">> = {
-  "classic-loafers": {
-    slug: "classic-loafers",
-    title: "The Executive Briefcase",
-    subtitle: "Heritage Collection",
-    size: 'Standard (15")',
-    color: "Midnight Black",
-    unitPrice: 18500,
-    image: "/assets/images/rizz_master_color_sandals/image01.jpg"
-  },
-  "leather-wallets": {
-    slug: "leather-wallets",
-    title: "Heritage Bifold Wallet",
-    subtitle: "Signature Accessories",
-    size: "Standard",
-    color: "Onyx Black",
-    unitPrice: 4200,
-    image: "/assets/images/rizz_simple_sandals/image01.jpg"
-  },
-  "formal-belts": {
-    slug: "formal-belts",
-    title: "Classic Dress Belt",
-    subtitle: "Signature Accessories",
-    size: "36-38",
-    color: "Espresso Brown",
-    unitPrice: 3500,
-    image: "/assets/images/rizz_simple_sandals/image02.jpg"
-  }
-};
-
-const recommendations = [
-  {
-    title: "Leather Card Sleeve",
-    subtitle: "Minimal daily carry",
-    price: "1,600",
-    href: "/brand/catalog/leather-wallets",
-    image: "/assets/images/rizz_cholate_sandals/image01.jpg"
-  },
-  {
-    title: "Signature Key Fob",
-    subtitle: "Hand-finished leather",
-    price: "1,200",
-    href: "/brand/catalog/classic-loafers",
-    image: "/assets/images/rizz_dubai_sandals/image04.jpg"
-  },
-  {
-    title: "Classic Dress Belt",
-    subtitle: "Formal essential",
-    price: "3,500",
-    href: "/brand/catalog/formal-belts",
-    image: "/assets/images/rizz_crodile_slide_sandals/image05.jpg"
-  }
-];
-
-const assuranceItems = [
-  {
-    icon: "🛡",
-    title: "Secure Cash on Delivery",
-    detail: "Pay only when you receive your order."
-  },
-  {
-    icon: "✓",
-    title: "100% Authentic Leather",
-    detail: "Handcrafted in Chittagong, Bangladesh."
-  },
-  {
-    icon: "🚚",
-    title: "Fast Local Delivery",
-    detail: "2-3 business days nationwide."
-  }
-];
-
-const formatBdt = (value: number) => `৳ ${value.toLocaleString("en-US")}`;
-
-export default async function BrandCartPage({ searchParams }: CartPageProps) {
-  const { product } = await searchParams;
-  const selected = product ? productMap[product] : productMap["classic-loafers"];
-
-  const cartItems: CartItem[] = [
-    {
-      ...(selected ?? productMap["classic-loafers"]),
-      quantity: 1
-    },
-    {
-      ...productMap["leather-wallets"],
-      quantity: 1
-    }
-  ];
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
-  const shipping = 180;
-  const discount = 700;
-  const total = subtotal + shipping - discount;
+  const related = PRODUCTS.filter((p) => !items.some((i) => i.slug === p.slug)).slice(0, 3);
+  const shippingCost = total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING;
+  const grandTotal = total + shippingCost;
 
   return (
-    <main className="bg-[#02040b] text-[#f2ede2]">
-      <section className="border-y border-[var(--hairline-accent)] py-6 sm:py-7">
-        <div className="mx-auto max-w-6xl px-4 sm:px-5">
-          <div className="mb-5 sm:mb-6">
-            <p className="text-xs uppercase tracking-[0.2em] text-[#c6b791]">Checkout</p>
-            <h1 className="mt-2 font-serif text-4xl leading-[1.02] text-[#f4eee3] sm:text-5xl">Your Cart</h1>
-            <p className="mt-2 max-w-2xl text-sm text-[#aeb4bf] sm:text-base">
-              Review selected pieces, confirm delivery details, and proceed to secure checkout.
-            </p>
-          </div>
+    <main>
+      {/* Header */}
+      <section className="border-b border-[var(--hairline)] bg-[var(--surface)] py-10 text-center">
+        <p className="text-[9px] uppercase tracking-[0.5em] text-[var(--gold-dim)]">Review</p>
+        <h1 className="mt-2 font-serif text-4xl text-[var(--cream)] sm:text-5xl">Your Cart</h1>
+        {count > 0 && (
+          <p className="mt-2 text-sm text-[var(--muted)]">{count} {count === 1 ? "item" : "items"}</p>
+        )}
+      </section>
 
-          <div className="grid gap-4 xl:grid-cols-[1.35fr_0.85fr] xl:items-start">
-            <div className="space-y-3">
-              {cartItems.map((item) => (
-                <article key={`${item.slug}-${item.size}`} className="rounded-2xl border border-[#1e2537] bg-[#090d18] p-3 sm:p-4">
-                  <div className="grid gap-3 sm:grid-cols-[112px_1fr] sm:items-center">
-                    <div className="overflow-hidden rounded-xl border border-[#20283a] bg-[#060a14]">
-                      <div className="aspect-[4/3] bg-cover bg-center" style={{ backgroundImage: `url('${item.image}')` }} />
+      <div className="mx-auto max-w-7xl px-5 py-10 lg:px-8">
+        {items.length === 0 ? (
+          <div className="py-24 text-center">
+            <p className="font-serif text-2xl text-[var(--cream)]">Your cart is empty</p>
+            <p className="mt-2 text-sm text-[var(--muted)]">Discover the collection and find something you love.</p>
+            <Link href="/brand/catalog" className="btn-primary mt-8 inline-flex">
+              Shop Now
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:items-start">
+            {/* Items */}
+            <div className="space-y-4">
+              {items.map((item) => (
+                <article
+                  key={`${item.slug}-${item.size}-${item.color}`}
+                  className="grid grid-cols-[96px_1fr] gap-5 border border-[var(--border)] bg-[var(--surface)] p-4 sm:grid-cols-[120px_1fr] sm:p-5"
+                >
+                  <div
+                    className="h-24 bg-cover bg-center sm:h-[120px]"
+                    style={{ backgroundImage: `url('${item.image}')` }}
+                  />
+                  <div className="flex flex-col justify-between gap-2">
+                    <div>
+                      <h2 className="font-serif text-xl text-[var(--cream)]">{item.name}</h2>
+                      <div className="mt-1 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.18em] text-[var(--muted)]">
+                        <span>Size: {item.size}</span>
+                        <span>·</span>
+                        <span>Colour: {item.color}</span>
+                      </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <p className="text-[10px] uppercase tracking-[0.14em] text-[#b6ac93]">{item.subtitle}</p>
-                      <h2 className="font-serif text-2xl leading-[1.05] text-[#eee7dc] sm:text-3xl">{item.title}</h2>
-                      <div className="flex flex-wrap gap-1.5 text-[10px] uppercase tracking-[0.12em] text-[#b3bac7]">
-                        <span className="rounded-full border border-[#2f3749] px-2.5 py-0.5">Size: {item.size}</span>
-                        <span className="rounded-full border border-[#2f3749] px-2.5 py-0.5">Color: {item.color}</span>
-                        <span className="rounded-full border border-[#2f3749] px-2.5 py-0.5">Qty: {item.quantity}</span>
-                      </div>
-                      <div className="flex items-center justify-between gap-4">
-                        <p className="text-2xl font-semibold text-[#efe9de]">{formatBdt(item.unitPrice)}</p>
-                        <Link
-                          href={`/brand/catalog/${item.slug}`}
-                          className="inline-flex min-h-[30px] items-center justify-center rounded-full border border-[#3a4359] px-3 text-[9px] font-semibold uppercase tracking-[0.14em] text-[#d6c7a0] no-underline"
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      {/* Qty */}
+                      <div className="inline-flex items-center border border-[var(--border-soft)]">
+                        <button
+                          type="button"
+                          onClick={() => updateQty(item.slug, item.size, item.color, item.quantity - 1)}
+                          className="h-9 w-9 flex items-center justify-center text-[var(--muted)] hover:text-[var(--text)] transition-colors"
                         >
-                          Edit Item
-                        </Link>
+                          −
+                        </button>
+                        <span className="w-10 text-center text-sm text-[var(--cream)]">{item.quantity}</span>
+                        <button
+                          type="button"
+                          onClick={() => updateQty(item.slug, item.size, item.color, item.quantity + 1)}
+                          className="h-9 w-9 flex items-center justify-center text-[var(--muted)] hover:text-[var(--text)] transition-colors"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <span className="text-sm font-medium text-[var(--gold-light)]">{fmt(item.price * item.quantity)}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeItem(item.slug, item.size, item.color)}
+                          className="text-[10px] uppercase tracking-[0.2em] text-[var(--muted)] hover:text-red-400 transition-colors"
+                        >
+                          Remove
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -161,88 +96,84 @@ export default async function BrandCartPage({ searchParams }: CartPageProps) {
               ))}
             </div>
 
-            <aside className="rounded-2xl border border-[#20283a] bg-[#080c16] p-4 sm:p-5 xl:sticky xl:top-16">
-              <h3 className="font-serif text-3xl text-[#f0eadf]">Order Summary</h3>
-              <div className="mt-4 space-y-3 border-y border-[#1f2638] py-4 text-xs text-[#c0c6d1] sm:text-sm">
-                <div className="flex items-center justify-between">
+            {/* Summary */}
+            <aside className="border border-[var(--border)] bg-[var(--surface)] p-6 lg:sticky lg:top-24">
+              <h2 className="font-serif text-2xl text-[var(--cream)]">Order Summary</h2>
+
+              <div className="mt-5 space-y-3 border-t border-[var(--hairline)] pt-5 text-sm text-[var(--muted)]">
+                <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>{formatBdt(subtotal)}</span>
+                  <span className="text-[var(--cream)]">{fmt(total)}</span>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between">
                   <span>Shipping</span>
-                  <span>{formatBdt(shipping)}</span>
+                  <span className={shippingCost === 0 ? "text-emerald-400" : "text-[var(--cream)]"}>
+                    {shippingCost === 0 ? "Free" : fmt(shippingCost)}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between text-[#8fe6af]">
-                  <span>Discount</span>
-                  <span>- {formatBdt(discount)}</span>
-                </div>
+                {shippingCost > 0 && (
+                  <p className="text-[10px] text-[var(--muted)]">
+                    Add {fmt(FREE_SHIPPING_THRESHOLD - total)} more for free shipping
+                  </p>
+                )}
               </div>
 
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-[#b6ac93]">Total</p>
-                <p className="text-3xl font-semibold text-[#efe9de]">{formatBdt(total)}</p>
+              <div className="mt-4 flex items-center justify-between border-t border-[var(--hairline)] pt-4">
+                <span className="text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]">Total</span>
+                <span className="font-serif text-2xl text-[var(--cream)]">{fmt(grandTotal)}</span>
               </div>
 
-              <Link
-                href={`/brand/checkout?product=${selected?.slug ?? "classic-loafers"}`}
-                className="mt-4 inline-flex min-h-[44px] w-full items-center justify-center rounded-full border border-[#d8c69f] bg-[#d8c69f] px-6 text-xs font-semibold uppercase tracking-[0.16em] text-[#10131a] no-underline"
-              >
-                Proceed to COD Checkout
-              </Link>
-              <Link
-                href="https://wa.me/8801712345678"
-                className="mt-2 inline-flex min-h-[44px] w-full items-center justify-center rounded-full border border-[#145638] px-6 text-xs font-semibold uppercase tracking-[0.14em] text-[#27d366] no-underline"
-              >
-                WhatsApp for Intl Orders
+              <p className="mt-2 text-[10px] text-[var(--muted)]">Payable upon delivery (COD)</p>
+
+              <Link href="/brand/checkout" className="btn-primary mt-5 w-full text-center">
+                Proceed to Checkout
               </Link>
 
-              <div className="mt-4 space-y-2">
-                {assuranceItems.map((item) => (
-                  <article key={item.title} className="rounded-lg border border-[#182033] bg-[#050913] px-3 py-2.5">
-                    <div className="flex items-start gap-2.5">
-                      <span className="text-sm leading-none text-[#d7c89f]">{item.icon}</span>
-                      <div>
-                        <h4 className="text-sm font-semibold text-[#e6e0d4]">{item.title}</h4>
-                        <p className="text-xs text-[#9ea6b4]">{item.detail}</p>
-                      </div>
-                    </div>
-                  </article>
+              <Link href="/brand/catalog" className="mt-3 block text-center text-[10px] uppercase tracking-[0.25em] text-[var(--muted)] hover:text-[var(--text)] transition-colors">
+                Continue Shopping
+              </Link>
+
+              <div className="mt-6 space-y-2 border-t border-[var(--hairline)] pt-5">
+                {[
+                  { icon: "✓", text: "Cash on Delivery — no advance payment" },
+                  { icon: "✓", text: "7-day returns on unworn items" },
+                  { icon: "✓", text: "Genuine leather, guaranteed" }
+                ].map((item) => (
+                  <p key={item.text} className="flex items-center gap-2 text-[10px] text-[var(--muted)]">
+                    <span className="text-[var(--gold-dim)]">{item.icon}</span>
+                    {item.text}
+                  </p>
                 ))}
               </div>
             </aside>
           </div>
-        </div>
-      </section>
+        )}
 
-      <section className="py-7 sm:py-8">
-        <div className="mx-auto max-w-6xl px-4 sm:px-5">
-          <div className="mb-5 text-center">
-            <p className="text-[10px] uppercase tracking-[0.18em] text-[#c6b791]">You may also like</p>
-            <h2 className="mt-2 font-serif text-4xl text-[#f2ece1] sm:text-5xl">Curated Add-Ons</h2>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {recommendations.map((item) => (
-              <Link
-                key={item.title}
-                href={item.href}
-                className="block rounded-2xl border border-[#1d2435] bg-[#090d18] p-3 no-underline transition hover:border-[#2b3449]"
-              >
-                <div className="overflow-hidden rounded-xl border border-[#20283a] bg-[#060a14]">
-                  <div className="aspect-[16/12] bg-cover bg-center transition duration-500 hover:scale-[1.03]" style={{ backgroundImage: `url('${item.image}')` }} />
-                </div>
-                <div className="mt-3">
-                  <h3 className="font-serif text-2xl text-[#efe8dd]">{item.title}</h3>
-                  <p className="mt-1 text-xs text-[#aeb4bf]">{item.subtitle}</p>
-                  <p className="mt-2 text-2xl font-semibold text-[#efe9de]">৳ {item.price}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+        {/* You may also like */}
+        {related.length > 0 && (
+          <section className="mt-16 border-t border-[var(--hairline)] pt-14">
+            <p className="mb-2 text-[9px] uppercase tracking-[0.45em] text-[var(--gold-dim)]">Suggested</p>
+            <h2 className="mb-8 font-serif text-2xl text-[var(--cream)]">You May Also Like</h2>
+            <div className="grid gap-5 sm:grid-cols-3">
+              {related.map((p) => (
+                <Link key={p.slug} href={`/brand/catalog/${p.slug}`} className="group block no-underline">
+                  <div className="overflow-hidden bg-[var(--surface)]">
+                    <div
+                      className="h-[200px] bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.04]"
+                      style={{ backgroundImage: `url('${p.images[0]}')` }}
+                    />
+                  </div>
+                  <div className="mt-3">
+                    <h3 className="font-serif text-base text-[var(--cream)]">{p.name}</h3>
+                    <p className="mt-0.5 text-[10px] uppercase tracking-[0.18em] text-[var(--muted)]">{p.material}</p>
+                    <p className="mt-1 text-sm text-[var(--gold-light)]">{fmt(p.price)}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </main>
   );
 }
-
-

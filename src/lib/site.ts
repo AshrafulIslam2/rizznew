@@ -1,35 +1,35 @@
 export const CONTACT = {
-  whatsappDisplay: "+8801750514197",
+  whatsappDisplay: "+880 175 051 4197",
   whatsappNumber: "8801750514197",
   email: "rizzleatherbd@gmail.com",
   location: "Chittagong, Bangladesh",
-  shipping: "Bangladesh + USA + Europe + Middle East"
+  shipping: "Bangladesh · USA · Europe · Middle East"
 };
 
 export const NAV_LINKS = [
-  { label: "Home", href: "/" },
-  { label: "Manufacturing (OEM)", href: "/manufacturing" },
-  { label: "Wholesale", href: "/wholesale" },
-  { label: "Our Brand (Catalog)", href: "/brand" },
-  { label: "Factory & Quality", href: "/factory-quality" },
+  { label: "New Arrivals", href: "/brand/catalog?sort=new" },
+  { label: "Collections", href: "/brand/catalog" },
+  { label: "Loafers", href: "/brand/catalog?category=Men%27s%20Loafers" },
+  { label: "Sandals", href: "/brand/catalog?category=Men%27s%20Sandals" },
+  { label: "Accessories", href: "/brand/catalog?category=Men%27s%20Belts" },
   { label: "Materials", href: "/materials" },
-  { label: "Portfolio", href: "/portfolio" },
+  { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" }
 ] as const;
 
 export const QUICK_LINKS = [
-  { label: "Home", href: "/" },
-  { label: "OEM", href: "/manufacturing" },
-  { label: "Wholesale", href: "/wholesale" },
-  { label: "Catalog", href: "/brand/catalog" },
-  { label: "Portfolio", href: "/portfolio" },
-  { label: "Contact", href: "/contact" }
+  { label: "New Arrivals", href: "/brand/catalog?sort=new" },
+  { label: "Collections", href: "/brand/catalog" },
+  { label: "Loafers", href: "/brand/catalog?category=Men%27s%20Loafers" },
+  { label: "Sandals", href: "/brand/catalog?category=Men%27s%20Sandals" },
+  { label: "Accessories", href: "/brand/catalog?category=Men%27s%20Belts" },
+  { label: "Wallets", href: "/brand/catalog?category=Men%27s%20Wallets" }
 ] as const;
 
 export const POLICY_LINKS = [
   { label: "Privacy Policy", href: "/policies/privacy" },
-  { label: "Terms", href: "/policies/terms" },
+  { label: "Terms of Service", href: "/policies/terms" },
   { label: "Shipping Policy", href: "/policies/shipping" },
-  { label: "Return/Refund (Brand orders)", href: "/policies/returns" },
+  { label: "Returns & Exchanges", href: "/policies/returns" },
   { label: "Cookie Policy", href: "/policies/cookie" }
 ] as const;
