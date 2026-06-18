@@ -9,6 +9,7 @@ const fmt = (n: number) => `৳ ${n.toLocaleString("en-US")}`;
 
 const SHIPPING = 120;
 const FREE_THRESHOLD = 5000;
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3040/api";
 
 const DIVISIONS = ["Dhaka", "Chittagong", "Rajshahi", "Khulna", "Barishal", "Sylhet", "Rangpur", "Mymensingh"];
 
@@ -23,6 +24,7 @@ export default function CheckoutPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [placing, setPlacing] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const shipping = total >= FREE_THRESHOLD ? 0 : SHIPPING;
   const grandTotal = total + shipping;
@@ -53,9 +55,41 @@ export default function CheckoutPage() {
     if (items.length === 0) return;
 
     setPlacing(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    clear();
-    router.push("/brand/thank-you");
+    setSubmitError(null);
+    try {
+      const res = await fetch(`${API}/orders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer_name: `${form.firstName} ${form.lastName}`.trim(),
+          customer_phone: form.phone,
+          division: form.division,
+          district: form.district,
+          area: form.area,
+          address: form.postal ? `${form.address} (Postal: ${form.postal})` : form.address,
+          items: items.map((i) => ({
+            slug: i.slug,
+            name: i.name,
+            price: i.price,
+            size: i.size,
+            color: i.color,
+            quantity: i.quantity,
+            image: i.image,
+          })),
+          subtotal: total,
+          shipping_fee: shipping,
+          total: grandTotal,
+          payment_method: "COD",
+          notes: form.note || undefined,
+        }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      clear();
+      router.push("/brand/thank-you");
+    } catch {
+      setSubmitError("Could not place your order. Please check your connection and try again.");
+      setPlacing(false);
+    }
   }
 
   const inputCls = (field: string) =>
@@ -238,6 +272,10 @@ export default function CheckoutPage() {
               <span className="font-serif text-2xl text-[var(--cream)]">{fmt(grandTotal)}</span>
             </div>
             <p className="mt-1 text-[10px] text-[var(--muted)]">Payable on delivery</p>
+
+            {submitError && (
+              <p className="mt-3 text-xs text-red-400">{submitError}</p>
+            )}
 
             <button
               type="submit"

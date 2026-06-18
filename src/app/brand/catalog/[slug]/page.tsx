@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProductBySlug, getRelatedProducts, getReviews, PRODUCTS, type Product } from "@/lib/products";
+import { getProductBySlug, getRelatedProducts, getReviews, PRODUCTS, type Product, type ProductVariant, type ProductVideo, type Category } from "@/lib/products";
 import { ProductActions, ImageGallery } from "@/components/product-actions";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -39,15 +39,40 @@ function StarRating({ rating }: { rating: number }) {
 
 const fmt = (n: number) => `৳ ${n.toLocaleString("en-US")}`;
 
+function toYoutubeEmbed(url: string): { embedUrl: string; thumbnail: string } | null {
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/);
+  if (!match) return null;
+  const id = match[1];
+  return { embedUrl: `https://www.youtube.com/embed/${id}`, thumbnail: `https://img.youtube.com/vi/${id}/hqdefault.jpg` };
+}
+
+const COLOR_HEX_MAP: Record<string, string> = {
+  tan: "#C19A6B",
+  black: "#1a1a1a",
+  brown: "#5C4033",
+  cognac: "#9A463D",
+  burgundy: "#5E2129",
+  navy: "#1B2A4A",
+  tobacco: "#5A3A22",
+  olive: "#4B5320",
+  grey: "#808080",
+  gray: "#808080",
+  white: "#F0EDE8",
+};
+
 async function fetchProductBySlugFromApi(slug: string) {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3040/api';
-    const res = await fetch(`${apiUrl}/products`, { next: { revalidate: 60 } });
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (!Array.isArray(data)) return null;
-    const found = (data as Record<string, unknown>[]).find((p) => p.slug === slug);
-    return found ?? null;
+    const listRes = await fetch(`${apiUrl}/products`, { next: { revalidate: 60 } });
+    if (!listRes.ok) return null;
+    const list = await listRes.json();
+    if (!Array.isArray(list)) return null;
+    const found = (list as Record<string, unknown>[]).find((p) => p.slug === slug);
+    if (!found?.id) return null;
+    // List endpoint omits variants/media/faqs — fetch the full record by id.
+    const detailRes = await fetch(`${apiUrl}/products/${found.id}`, { next: { revalidate: 60 } });
+    if (!detailRes.ok) return found;
+    return await detailRes.json();
   } catch {
     return null;
   }
@@ -57,22 +82,78 @@ export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
   // Try API first, fall back to hardcoded
   const apiProduct = await fetchProductBySlugFromApi(slug) as Record<string, unknown> | null;
-  const product = getProductBySlug(slug) ?? (apiProduct ? {
-    slug: apiProduct.slug,
-    name: apiProduct.name,
-    material: apiProduct.material ?? '',
-    category: (apiProduct.category as Record<string, unknown> | null)?.name ?? 'Loafers',
-    price: apiProduct.price ?? (apiProduct.variants as {price: number}[] | undefined)?.[0]?.price ?? 0,
-    oldPrice: apiProduct.compare_at_price ?? null,
-    badge: null,
-    sizes: (apiProduct.variants as {attributes?: {size?: string}}[] | undefined)?.map((v) => v.attributes?.size).filter(Boolean) ?? [],
-    colors: [],
-    images: (apiProduct.media as {media_url: string}[] | undefined)?.map((m) => m.media_url) ?? (apiProduct.images as {image_url: string}[] | undefined)?.map((i) => i.image_url) ?? [],
-    description: apiProduct.description ?? apiProduct.short_description ?? '',
-    specs: '',
-    craftsmanship: '',
-    collection: '',
-  } as unknown as Product : null);
+
+  let product: Product | null = getProductBySlug(slug) ?? null;
+
+  if (!product && apiProduct) {
+    const rawVariants = (apiProduct.variants as Record<string, unknown>[] | undefined) ?? [];
+    const variants: ProductVariant[] = rawVariants.map((v) => {
+      const attrs = (v.attributes as { size?: string; color?: string } | null) ?? {};
+      return {
+        sku: v.sku as string,
+        size: attrs.size ?? "",
+        color: attrs.color ?? "",
+        price: Number(v.price ?? 0),
+        salePrice: v.sale_price != null ? Number(v.sale_price) : null,
+        stock: Number(v.stock_qty ?? 0),
+      };
+    });
+
+    const sizes = Array.from(new Set(variants.map((v) => v.size).filter(Boolean)));
+    const colorLabels = Array.from(new Set(variants.map((v) => v.color).filter(Boolean)));
+    const colors = colorLabels.map((label) => ({
+      label,
+      hex: COLOR_HEX_MAP[label.toLowerCase()] ?? "#8B7355",
+    }));
+
+    const cheapestVariant = variants.length
+      ? variants.reduce((min, v) => ((v.salePrice ?? v.price) < (min.salePrice ?? min.price) ? v : min))
+      : null;
+
+    const basePrice = Number(apiProduct.price ?? 0);
+    const price = cheapestVariant ? (cheapestVariant.salePrice ?? cheapestVariant.price) : basePrice;
+    const compareAt = Number(apiProduct.compare_at_price ?? 0);
+    const oldPrice = cheapestVariant?.salePrice
+      ? cheapestVariant.price
+      : (compareAt > price ? compareAt : null);
+
+    product = {
+      slug: apiProduct.slug as string,
+      name: apiProduct.name as string,
+      material: (apiProduct.material as string) ?? "",
+      category: ((apiProduct.category as Record<string, unknown> | null)?.name as Category) ?? "Loafers",
+      price,
+      oldPrice,
+      badge: null,
+      sizes,
+      colors,
+      images: (() => {
+        const media = apiProduct.media as { media_url: string; media_type?: string }[] | undefined;
+        if (media && media.length > 0) {
+          const imgs = media.filter((m) => m.media_type !== "VIDEO").map((m) => m.media_url);
+          if (imgs.length > 0) return imgs;
+        }
+        return (apiProduct.images as { image_url: string }[] | undefined)?.map((i) => i.image_url) ?? [];
+      })(),
+      description: (apiProduct.description as string) ?? (apiProduct.short_description as string) ?? "",
+      specs: "",
+      craftsmanship: "",
+      collection: "",
+      variants,
+      videos: ((apiProduct.media as { media_url: string; media_type?: string; title?: string | null }[] | undefined) ?? [])
+        .filter((m) => m.media_type === "VIDEO")
+        .map((m) => {
+          const yt = toYoutubeEmbed(m.media_url);
+          return {
+            url: m.media_url,
+            embedUrl: yt?.embedUrl ?? m.media_url,
+            thumbnail: yt?.thumbnail ?? "",
+            title: m.title ?? "Product video",
+          } as ProductVideo;
+        }),
+    };
+  }
+
   if (!product) notFound();
 
   const related = getRelatedProducts(slug, 4);
@@ -129,7 +210,7 @@ export default async function ProductDetailPage({ params }: Props) {
         {/* Product */}
         <section className="mx-auto max-w-7xl px-5 py-10 lg:px-8 lg:py-16">
           <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
-            <ImageGallery images={product.images} name={product.name} />
+            <ImageGallery images={product.images} videos={product.videos ?? []} name={product.name} />
 
             <div>
               <p className="text-[9px] uppercase tracking-[0.4em] text-[var(--gold-dim)]">{product.collection}</p>

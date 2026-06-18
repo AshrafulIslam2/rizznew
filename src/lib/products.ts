@@ -1,5 +1,21 @@
 export type Category = "Loafers" | "Sandals" | "Belts" | "Wallets" | "Half Loafers";
 
+export type ProductVariant = {
+  sku: string;
+  size: string;
+  color: string;
+  price: number;
+  salePrice: number | null;
+  stock: number;
+};
+
+export type ProductVideo = {
+  url: string;
+  embedUrl: string;
+  thumbnail: string;
+  title: string;
+};
+
 export type Product = {
   slug: string;
   name: string;
@@ -15,6 +31,8 @@ export type Product = {
   specs: string;
   craftsmanship: string;
   collection: string;
+  variants?: ProductVariant[];
+  videos?: ProductVideo[];
 };
 
 export const PRODUCTS: Product[] = [

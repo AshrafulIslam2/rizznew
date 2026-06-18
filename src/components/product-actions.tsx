@@ -3,20 +3,39 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
-import type { Product } from "@/lib/products";
+import type { Product, ProductVideo } from "@/lib/products";
 
 export function ProductActions({ product }: { product: Product }) {
   const { addItem, count } = useCart();
   const router = useRouter();
 
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState(product.colors[0] ?? { label: "Default", hex: "#8B7355" });
+  const variants = product.variants ?? [];
+
+  // Default to the cheapest variant, if any exist.
+  const cheapestVariant = variants.length
+    ? variants.reduce((min, v) => ((v.salePrice ?? v.price) < (min.salePrice ?? min.price) ? v : min))
+    : null;
+
+  const [selectedSize, setSelectedSize] = useState<string | null>(cheapestVariant?.size || null);
+  const [selectedColor, setSelectedColor] = useState(
+    (cheapestVariant && product.colors.find((c) => c.label === cheapestVariant.color))
+      ?? product.colors[0]
+      ?? { label: "", hex: "#8B7355" }
+  );
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [error, setError] = useState(false);
 
+  const currentVariant =
+    variants.find((v) => v.size === selectedSize && (!selectedColor.label || v.color === selectedColor.label))
+    ?? variants.find((v) => v.size === selectedSize)
+    ?? cheapestVariant;
+
+  const displayPrice = currentVariant ? (currentVariant.salePrice ?? currentVariant.price) : product.price;
+  const displayOldPrice = currentVariant?.salePrice ? currentVariant.price : (product.oldPrice && product.oldPrice > displayPrice ? product.oldPrice : null);
+
   function handleAdd() {
-    if (!selectedSize) {
+    if (product.sizes.length > 0 && !selectedSize) {
       setError(true);
       setTimeout(() => setError(false), 2000);
       return;
@@ -24,8 +43,8 @@ export function ProductActions({ product }: { product: Product }) {
     addItem({
       slug: product.slug,
       name: product.name,
-      price: product.price,
-      size: selectedSize,
+      price: displayPrice,
+      size: selectedSize ?? "",
       color: selectedColor.label,
       quantity: qty,
       image: product.images[0]
@@ -35,7 +54,7 @@ export function ProductActions({ product }: { product: Product }) {
   }
 
   function handleBuyNow() {
-    if (!selectedSize) {
+    if (product.sizes.length > 0 && !selectedSize) {
       setError(true);
       setTimeout(() => setError(false), 2000);
       return;
@@ -43,8 +62,8 @@ export function ProductActions({ product }: { product: Product }) {
     addItem({
       slug: product.slug,
       name: product.name,
-      price: product.price,
-      size: selectedSize,
+      price: displayPrice,
+      size: selectedSize ?? "",
       color: selectedColor.label,
       quantity: qty,
       image: product.images[0]
@@ -58,12 +77,12 @@ export function ProductActions({ product }: { product: Product }) {
     <div className="space-y-6">
       {/* Price */}
       <div className="flex flex-wrap items-baseline gap-3">
-        <span className="font-serif text-4xl text-[var(--cream)]">{fmt(product.price)}</span>
-        {product.oldPrice && (
+        <span className="font-serif text-4xl text-[var(--cream)]">{fmt(displayPrice)}</span>
+        {displayOldPrice && (
           <>
-            <span className="text-base text-[var(--muted)] line-through">{fmt(product.oldPrice)}</span>
+            <span className="text-base text-[var(--muted)] line-through">{fmt(displayOldPrice)}</span>
             <span className="border border-[var(--gold-dim)] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.2em] text-[var(--gold-light)]">
-              Save {fmt(product.oldPrice - product.price)}
+              Save {fmt(displayOldPrice - displayPrice)}
             </span>
           </>
         )}
@@ -76,58 +95,62 @@ export function ProductActions({ product }: { product: Product }) {
       </p>
 
       {/* Color */}
-      <div>
-        <p className="mb-3 text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]">
-          Colour: <span className="text-[var(--text)]">{selectedColor.label}</span>
-        </p>
-        <div className="flex gap-3">
-          {product.colors.map((c) => (
-            <button
-              key={c.label}
-              type="button"
-              onClick={() => setSelectedColor(c)}
-              title={c.label}
-              className={`h-8 w-8 rounded-full border-2 transition-all ${
-                selectedColor.label === c.label
-                  ? "border-[var(--gold)] scale-110"
-                  : "border-[var(--border-soft)] hover:border-[var(--gold-dim)]"
-              }`}
-              style={{ backgroundColor: c.hex }}
-            />
-          ))}
+      {product.colors.length > 0 && (
+        <div>
+          <p className="mb-3 text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]">
+            Colour: <span className="text-[var(--text)]">{selectedColor.label}</span>
+          </p>
+          <div className="flex gap-3">
+            {product.colors.map((c) => (
+              <button
+                key={c.label}
+                type="button"
+                onClick={() => setSelectedColor(c)}
+                title={c.label}
+                className={`h-8 w-8 rounded-full border-2 transition-all ${
+                  selectedColor.label === c.label
+                    ? "border-[var(--gold)] scale-110"
+                    : "border-[var(--border-soft)] hover:border-[var(--gold-dim)]"
+                }`}
+                style={{ backgroundColor: c.hex }}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Size */}
-      <div>
-        <div className="mb-3 flex items-center justify-between">
-          <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]">
-            Size {selectedSize ? <span className="text-[var(--text)]">— {selectedSize}</span> : null}
-          </p>
-          <button type="button" className="text-[10px] uppercase tracking-[0.2em] text-[var(--gold-dim)] hover:text-[var(--gold-light)] transition-colors">
-            Size Guide
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {product.sizes.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => { setSelectedSize(s); setError(false); }}
-              className={`min-w-[48px] border px-3 py-2 text-[10px] uppercase tracking-[0.18em] transition-all ${
-                selectedSize === s
-                  ? "border-[var(--gold)] text-[var(--gold-light)] bg-[var(--gold-tint)]"
-                  : "border-[var(--border-soft)] text-[var(--muted)] hover:border-[var(--gold-dim)] hover:text-[var(--text)]"
-              }`}
-            >
-              {s}
+      {product.sizes.length > 0 && (
+        <div>
+          <div className="mb-3 flex items-center justify-between">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]">
+              Size {selectedSize ? <span className="text-[var(--text)]">— {selectedSize}</span> : null}
+            </p>
+            <button type="button" className="text-[10px] uppercase tracking-[0.2em] text-[var(--gold-dim)] hover:text-[var(--gold-light)] transition-colors">
+              Size Guide
             </button>
-          ))}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {product.sizes.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => { setSelectedSize(s); setError(false); }}
+                className={`min-w-[48px] border px-3 py-2 text-[10px] uppercase tracking-[0.18em] transition-all ${
+                  selectedSize === s
+                    ? "border-[var(--gold)] text-[var(--gold-light)] bg-[var(--gold-tint)]"
+                    : "border-[var(--border-soft)] text-[var(--muted)] hover:border-[var(--gold-dim)] hover:text-[var(--text)]"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+          {error && (
+            <p className="mt-2 text-xs text-red-400">Please select a size before adding to cart.</p>
+          )}
         </div>
-        {error && (
-          <p className="mt-2 text-xs text-red-400">Please select a size before adding to cart.</p>
-        )}
-      </div>
+      )}
 
       {/* Quantity */}
       <div>
@@ -188,38 +211,64 @@ export function ProductActions({ product }: { product: Product }) {
   );
 }
 
-export function ImageGallery({ images, name }: { images: string[]; name: string }) {
+type GalleryItem =
+  | { type: "image"; url: string }
+  | { type: "video"; url: string; embedUrl: string; thumbnail: string; title: string };
+
+export function ImageGallery({ images, videos = [], name }: { images: string[]; videos?: ProductVideo[]; name: string }) {
+  const items: GalleryItem[] = [
+    ...images.map((url): GalleryItem => ({ type: "image", url })),
+    ...videos.map((v): GalleryItem => ({ type: "video", url: v.url, embedUrl: v.embedUrl, thumbnail: v.thumbnail, title: v.title })),
+  ];
   const [active, setActive] = useState(0);
+  const current = items[active];
 
   return (
     <div className="grid gap-3 sm:grid-cols-[80px_1fr] xl:sticky xl:top-24">
       {/* Thumbnails */}
       <div className="order-2 flex gap-2 overflow-x-auto pb-1 sm:order-1 sm:flex-col sm:overflow-visible">
-        {images.map((img, i) => (
+        {items.map((item, i) => (
           <button
             key={i}
             type="button"
             onClick={() => setActive(i)}
-            className={`shrink-0 overflow-hidden border transition-all ${
+            className={`relative shrink-0 overflow-hidden border transition-all ${
               active === i ? "border-[var(--gold)]" : "border-[var(--border-soft)] hover:border-[var(--gold-dim)]"
             }`}
           >
             <div
               className="h-16 w-14 bg-cover bg-center sm:h-[72px] sm:w-full"
-              style={{ backgroundImage: `url('${img}')` }}
+              style={{ backgroundImage: `url('${item.type === "video" ? item.thumbnail : item.url}')` }}
             />
+            {item.type === "video" && (
+              <span className="absolute inset-0 flex items-center justify-center bg-black/30">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z" /></svg>
+              </span>
+            )}
           </button>
         ))}
       </div>
 
-      {/* Main image */}
+      {/* Main media */}
       <div className="order-1 overflow-hidden bg-[var(--surface)] sm:order-2">
-        <div
-          className="aspect-[4/5] bg-cover bg-center transition-all duration-300"
-          style={{ backgroundImage: `url('${images[active]}')` }}
-          role="img"
-          aria-label={name}
-        />
+        {current?.type === "video" ? (
+          <div className="aspect-[4/5]">
+            <iframe
+              src={current.embedUrl}
+              title={current.title}
+              className="h-full w-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        ) : (
+          <div
+            className="aspect-[4/5] bg-cover bg-center transition-all duration-300"
+            style={{ backgroundImage: `url('${current?.url ?? ""}')` }}
+            role="img"
+            aria-label={name}
+          />
+        )}
       </div>
     </div>
   );
