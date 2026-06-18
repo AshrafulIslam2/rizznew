@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { NAV_LINKS } from "@/lib/site";
 import { useCart } from "@/lib/cart-context";
 
+const DEFAULT_ANNOUNCEMENT = "Complimentary shipping on orders above ৳5,000  ·  COD available nationwide";
+
 const shopNav = [NAV_LINKS[0], NAV_LINKS[1], NAV_LINKS[2], NAV_LINKS[3], NAV_LINKS[4]];
 const infoNav = [NAV_LINKS[5], NAV_LINKS[6], NAV_LINKS[7]];
 
@@ -13,7 +15,20 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [announcementText, setAnnouncementText] = useState(DEFAULT_ANNOUNCEMENT);
   const { count } = useCart();
+
+  useEffect(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3040/api';
+    fetch(`${apiUrl}/branding`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.announcement_bar_active && data?.announcement_bar_text) {
+          setAnnouncementText(data.announcement_bar_text);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
@@ -51,7 +66,7 @@ export function SiteHeader() {
     <>
       {/* Announcement Bar */}
       <div className="border-b border-[var(--hairline)] bg-[var(--bg)] text-center py-2.5 text-[10px] uppercase tracking-[0.3em] text-[var(--gold-dim)]">
-        Complimentary shipping on orders above ৳5,000 &nbsp;·&nbsp; COD available nationwide
+        {announcementText}
       </div>
 
       {/* Main Header */}

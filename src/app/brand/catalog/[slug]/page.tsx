@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProductBySlug, getRelatedProducts, getReviews, PRODUCTS } from "@/lib/products";
+import { getProductBySlug, getRelatedProducts, getReviews, PRODUCTS, type Product } from "@/lib/products";
 import { ProductActions, ImageGallery } from "@/components/product-actions";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -39,9 +39,40 @@ function StarRating({ rating }: { rating: number }) {
 
 const fmt = (n: number) => `৳ ${n.toLocaleString("en-US")}`;
 
+async function fetchProductBySlugFromApi(slug: string) {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3040/api';
+    const res = await fetch(`${apiUrl}/products`, { next: { revalidate: 60 } });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data)) return null;
+    const found = (data as Record<string, unknown>[]).find((p) => p.slug === slug);
+    return found ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  // Try API first, fall back to hardcoded
+  const apiProduct = await fetchProductBySlugFromApi(slug) as Record<string, unknown> | null;
+  const product = getProductBySlug(slug) ?? (apiProduct ? {
+    slug: apiProduct.slug,
+    name: apiProduct.name,
+    material: apiProduct.material ?? '',
+    category: (apiProduct.category as Record<string, unknown> | null)?.name ?? 'Loafers',
+    price: apiProduct.price ?? (apiProduct.variants as {price: number}[] | undefined)?.[0]?.price ?? 0,
+    oldPrice: apiProduct.compare_at_price ?? null,
+    badge: null,
+    sizes: (apiProduct.variants as {attributes?: {size?: string}}[] | undefined)?.map((v) => v.attributes?.size).filter(Boolean) ?? [],
+    colors: [],
+    images: (apiProduct.media as {media_url: string}[] | undefined)?.map((m) => m.media_url) ?? (apiProduct.images as {image_url: string}[] | undefined)?.map((i) => i.image_url) ?? [],
+    description: apiProduct.description ?? apiProduct.short_description ?? '',
+    specs: '',
+    craftsmanship: '',
+    collection: '',
+  } as unknown as Product : null);
   if (!product) notFound();
 
   const related = getRelatedProducts(slug, 4);

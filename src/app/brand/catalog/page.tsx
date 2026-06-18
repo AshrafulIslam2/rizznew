@@ -1,8 +1,44 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { PRODUCTS, PRICE_RANGES } from "@/lib/products";
+import { PRODUCTS, PRICE_RANGES, type Product } from "@/lib/products";
 import { CatalogFilters, PaginationBar } from "@/components/catalog-client";
+
+async function fetchProductsFromApi(): Promise<Product[]> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3040/api';
+    const res = await fetch(`${apiUrl}/products`, { next: { revalidate: 60 } });
+    if (!res.ok) return PRODUCTS;
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) return PRODUCTS;
+    const seen = new Set<string>();
+    return data.filter((p: any) => {
+      if (seen.has(p.slug)) return false;
+      seen.add(p.slug);
+      return true;
+    }).map((p: any) => {
+      const fallback = PRODUCTS.find((fp) => fp.slug === p.slug);
+      return fallback ?? {
+        slug: p.slug,
+        name: p.name,
+        material: p.material ?? '',
+        category: p.category?.name ?? 'Loafers',
+        price: p.price ?? p.variants?.[0]?.price ?? 0,
+        oldPrice: p.compare_at_price ?? null,
+        badge: p.tags?.includes('new') ? 'New' : p.tags?.includes('bestseller') ? 'Bestseller' : p.is_featured ? 'Bestseller' : null,
+        sizes: [],
+        colors: [],
+        images: p.media?.map((m: any) => m.media_url) ?? p.images?.map((i: any) => i.image_url) ?? [],
+        description: p.description ?? p.short_description ?? '',
+        specs: '',
+        craftsmanship: '',
+        collection: '',
+      } as Product;
+    });
+  } catch {
+    return PRODUCTS;
+  }
+}
 
 export const metadata: Metadata = {
   title: "Shop All — Luxury Leather Footwear & Accessories | RIZZ",
@@ -59,8 +95,10 @@ export default async function CatalogPage({ searchParams }: Props) {
   const size = params.size ?? "";
   const page = Math.max(1, Number(params.page ?? "1"));
 
+  const allProducts = await fetchProductsFromApi();
+
   // Filter
-  let filtered = [...PRODUCTS];
+  let filtered = [...allProducts];
 
   if (category !== "all") {
     filtered = filtered.filter((p) => p.category === category);
@@ -149,8 +187,8 @@ export default async function CatalogPage({ searchParams }: Props) {
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-              {paginated.map((product) => (
-                <Link key={product.slug} href={`/brand/catalog/${product.slug}`} className="group block no-underline">
+              {paginated.map((product, idx) => (
+                <Link key={`p-${idx}-${product.slug}`} href={`/brand/catalog/${product.slug}`} className="group block no-underline">
                   <div className="relative overflow-hidden bg-[var(--surface)]">
                     <div
                       className="h-[300px] bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.04] sm:h-[340px]"

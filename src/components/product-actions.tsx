@@ -10,7 +10,7 @@ export function ProductActions({ product }: { product: Product }) {
   const router = useRouter();
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState(product.colors[0]);
+  const [selectedColor, setSelectedColor] = useState(product.colors[0] ?? { label: "Default", hex: "#8B7355" });
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [error, setError] = useState(false);
