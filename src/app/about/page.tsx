@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getSeoOverride, buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "About RIZZ — Artisan Leather from Chittagong",
-  description:
-    "RIZZ is a luxury leather brand founded in Chittagong, Bangladesh. We make handcrafted footwear and accessories using genuine leather, sold directly with COD across the country.",
-  openGraph: {
-    title: "About RIZZ",
-    description: "Artisan leather footwear and accessories, handcrafted in Chittagong, Bangladesh."
-  }
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const override = await getSeoOverride("about");
+  return buildMetadata({
+    path: "/about",
+    defaultTitle: "About RIZZ — Artisan Leather from Chittagong, Bangladesh",
+    defaultDescription:
+      "RIZZ is a luxury leather brand founded in Chittagong, Bangladesh. We make handcrafted footwear and accessories using genuine leather, sold directly with COD across the country.",
+    defaultImage: "/assets/images/rizz_master_color_sandals/image01.jpg",
+    override,
+  });
+}
 
 const values = [
   {

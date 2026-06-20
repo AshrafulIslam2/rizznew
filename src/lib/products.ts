@@ -17,6 +17,7 @@ export type ProductVideo = {
 };
 
 export type Product = {
+  id?: string;
   slug: string;
   name: string;
   material: string;
@@ -359,6 +360,19 @@ export const PRODUCTS: Product[] = [
 
 export function getProductBySlug(slug: string): Product | null {
   return PRODUCTS.find((p) => p.slug === slug) ?? null;
+}
+
+/**
+ * Card/list price for an API product: the lowest effective (sale or base) price
+ * across its variants, since variant pricing is the source of truth once variants
+ * exist. Falls back to the product's own base price only when it has no variants.
+ */
+export function getApiProductCardPrice(p: { price?: number | null; variants?: { price: number; sale_price?: number | null }[] }): number {
+  if (p.variants && p.variants.length > 0) {
+    const effective = p.variants.map((v) => v.sale_price ?? v.price);
+    return Math.min(...effective);
+  }
+  return p.price ?? 0;
 }
 
 export function getRelatedProducts(slug: string, count = 4): Product[] {

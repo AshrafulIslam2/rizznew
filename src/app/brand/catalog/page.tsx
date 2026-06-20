@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { PRODUCTS, PRICE_RANGES, type Product } from "@/lib/products";
+import { PRODUCTS, PRICE_RANGES, getApiProductCardPrice, type Product } from "@/lib/products";
 import { CatalogFilters, PaginationBar } from "@/components/catalog-client";
+import { getSeoOverride, buildMetadata } from "@/lib/seo";
 
 async function fetchProductsFromApi(): Promise<Product[]> {
   try {
@@ -18,13 +19,23 @@ async function fetchProductsFromApi(): Promise<Product[]> {
       return true;
     }).map((p: any) => {
       const fallback = PRODUCTS.find((fp) => fp.slug === p.slug);
-      return fallback ?? {
+      if (fallback) return fallback;
+
+      const price = getApiProductCardPrice(p);
+      const cheapestVariant = (p.variants ?? []).length > 0
+        ? p.variants.reduce((min: any, v: any) => ((v.sale_price ?? v.price) < (min.sale_price ?? min.price) ? v : min))
+        : null;
+      const oldPrice = cheapestVariant?.sale_price
+        ? cheapestVariant.price
+        : (p.compare_at_price && p.compare_at_price > price ? p.compare_at_price : null);
+
+      return {
         slug: p.slug,
         name: p.name,
         material: p.material ?? '',
         category: p.category?.name ?? 'Loafers',
-        price: p.price ?? p.variants?.[0]?.price ?? 0,
-        oldPrice: p.compare_at_price ?? null,
+        price,
+        oldPrice,
         badge: p.tags?.includes('new') ? 'New' : p.tags?.includes('bestseller') ? 'Bestseller' : p.is_featured ? 'Bestseller' : null,
         sizes: [],
         colors: [],
@@ -40,15 +51,16 @@ async function fetchProductsFromApi(): Promise<Product[]> {
   }
 }
 
-export const metadata: Metadata = {
-  title: "Shop All — Luxury Leather Footwear & Accessories | RIZZ",
-  description:
-    "Browse the full RIZZ collection — handcrafted loafers, sandals, belts, and wallets. Filter by category, price, and size. COD available across Bangladesh.",
-  openGraph: {
-    title: "Shop All | RIZZ Leather",
-    description: "Handcrafted leather footwear and accessories from Chittagong."
-  }
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const override = await getSeoOverride("catalog");
+  return buildMetadata({
+    path: "/brand/catalog",
+    defaultTitle: "Shop All — Luxury Leather Footwear & Accessories | RIZZ",
+    defaultDescription:
+      "Browse the full RIZZ collection — handcrafted loafers, sandals, belts, and wallets. Genuine leather. Filter by category, price, and size. COD available across Bangladesh.",
+    override,
+  });
+}
 
 const PAGE_SIZE = 8;
 

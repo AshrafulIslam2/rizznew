@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
@@ -12,6 +12,18 @@ const FREE_THRESHOLD = 5000;
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3040/api";
 
 const DIVISIONS = ["Dhaka", "Chittagong", "Rajshahi", "Khulna", "Barishal", "Sylhet", "Rangpur", "Mymensingh"];
+
+type CalcResult = {
+  subtotal: number;
+  discount_amount: number;
+  shipping_fee: number;
+  free_shipping: boolean;
+  free_gifts: { product_id: string; name: string; image: string | null; price: number }[];
+  total: number;
+  applied_campaigns: { id: string; name: string; code: string | null }[];
+  code_valid: boolean | null;
+  code_message: string | null;
+};
 
 export default function CheckoutPage() {
   const { items, total, clear } = useCart();
@@ -26,8 +38,46 @@ export default function CheckoutPage() {
   const [placing, setPlacing] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const shipping = total >= FREE_THRESHOLD ? 0 : SHIPPING;
-  const grandTotal = total + shipping;
+  const [promoInput, setPromoInput] = useState("");
+  const [appliedCode, setAppliedCode] = useState("");
+  const [calc, setCalc] = useState<CalcResult | null>(null);
+  const [calcLoading, setCalcLoading] = useState(false);
+
+  const baseShipping = total >= FREE_THRESHOLD ? 0 : SHIPPING;
+
+  useEffect(() => {
+    if (items.length === 0) return;
+    setCalcLoading(true);
+    const ctrl = new AbortController();
+    fetch(`${API}/campaigns/calculate-cart`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal: ctrl.signal,
+      body: JSON.stringify({
+        items: items.map((i) => ({ product_id: i.productId, price: i.price, quantity: i.quantity })).filter((i) => i.product_id),
+        shipping_fee: baseShipping,
+        code: appliedCode || undefined,
+      }),
+    })
+      .then((r) => r.ok ? r.json() : null)
+      .then((data: CalcResult | null) => setCalc(data))
+      .catch(() => {})
+      .finally(() => setCalcLoading(false));
+    return () => ctrl.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, appliedCode, baseShipping]);
+
+  const shipping = calc ? calc.shipping_fee : baseShipping;
+  const discount = calc?.discount_amount ?? 0;
+  const grandTotal = calc ? calc.total : total + shipping;
+
+  function applyPromo() {
+    setAppliedCode(promoInput.trim());
+  }
+  function removePromo() {
+    setAppliedCode("");
+    setPromoInput("");
+  }
 
   function set(field: string, value: string | boolean) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -78,6 +128,10 @@ export default function CheckoutPage() {
           })),
           subtotal: total,
           shipping_fee: shipping,
+          discount_amount: discount,
+          promo_code: appliedCode || undefined,
+          campaign_ids: calc?.applied_campaigns.map((c) => c.id) ?? [],
+          free_gifts: calc?.free_gifts ?? [],
           total: grandTotal,
           payment_method: "COD",
           notes: form.note || undefined,
@@ -250,11 +304,48 @@ export default function CheckoutPage() {
               ))}
             </div>
 
+            {/* Promo code */}
+            <div className="mt-5 border-t border-[var(--hairline)] pt-5">
+              <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">Promo Code</span>
+              {appliedCode ? (
+                <div className="mt-2 flex items-center justify-between border border-[var(--gold-dim)] bg-[var(--gold-tint)] px-3 py-2">
+                  <span className="font-mono text-xs uppercase text-[var(--gold-light)]">{appliedCode}</span>
+                  <button type="button" onClick={removePromo} className="text-[10px] uppercase tracking-[0.2em] text-[var(--muted)] hover:text-red-400 transition-colors">
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-2 flex gap-2">
+                  <input
+                    value={promoInput}
+                    onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                    placeholder="Enter code"
+                    className="flex-1 border border-[var(--border-soft)] bg-[var(--bg)] px-3 py-2 text-sm uppercase text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--gold-dim)]"
+                  />
+                  <button type="button" onClick={applyPromo} disabled={!promoInput.trim() || calcLoading} className="btn-outline px-4 text-[10px] disabled:opacity-50">
+                    Apply
+                  </button>
+                </div>
+              )}
+              {calc?.code_message && (
+                <p className="mt-1.5 text-xs text-red-400">{calc.code_message}</p>
+              )}
+              {calc?.code_valid && (
+                <p className="mt-1.5 text-xs text-emerald-400">Promo code applied!</p>
+              )}
+            </div>
+
             <div className="mt-5 space-y-2 border-t border-[var(--hairline)] pt-5 text-sm text-[var(--muted)]">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span className="text-[var(--cream)]">{fmt(total)}</span>
               </div>
+              {discount > 0 && (
+                <div className="flex justify-between">
+                  <span>Discount{calc && calc.applied_campaigns.length > 0 ? ` (${calc.applied_campaigns.map((c) => c.name).join(", ")})` : ""}</span>
+                  <span className="text-emerald-400">−{fmt(discount)}</span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span>Shipping</span>
                 <span className={shipping === 0 ? "text-emerald-400" : "text-[var(--cream)]"}>
@@ -266,6 +357,15 @@ export default function CheckoutPage() {
                 <span className="text-emerald-400">Free</span>
               </div>
             </div>
+
+            {calc && calc.free_gifts.length > 0 && (
+              <div className="mt-4 space-y-2 border border-emerald-800 bg-emerald-950/30 px-3 py-3">
+                <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-400">🎁 Free Gift Included</p>
+                {calc.free_gifts.map((g) => (
+                  <p key={g.product_id} className="text-xs text-[var(--muted)]">{g.name}</p>
+                ))}
+              </div>
+            )}
 
             <div className="mt-4 flex items-baseline justify-between border-t border-[var(--hairline)] pt-4">
               <span className="text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]">Total Due</span>

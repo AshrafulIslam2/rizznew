@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getSeoOverride, buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Materials — The Leather We Choose | RIZZ",
-  description: "The genuine leathers RIZZ uses — full-grain calfskin, premium suede, vegetable-tanned, and crocodile-emboss. Sourced from the finest tanneries.",
-  openGraph: {
-    title: "Materials | RIZZ",
-    description: "Genuine leather, hand-selected for grain, weight, and how it ages."
-  }
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const override = await getSeoOverride("materials");
+  return buildMetadata({
+    path: "/materials",
+    defaultTitle: "Materials — The Leather We Choose | RIZZ",
+    defaultDescription: "The genuine leathers RIZZ uses — full-grain calfskin, premium suede, vegetable-tanned, and crocodile-emboss. Sourced from the finest tanneries.",
+    override,
+  });
+}
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3040/api";
 

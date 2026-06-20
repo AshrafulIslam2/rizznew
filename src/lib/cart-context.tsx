@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 
 export type CartItem = {
+  productId?: string;
   slug: string;
   name: string;
   price: number;

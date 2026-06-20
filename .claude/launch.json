@@ -7,6 +7,13 @@
       "runtimeArgs": ["run", "dev"],
       "port": 3000,
       "autoPort": true
+    },
+    {
+      "name": "admin",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd /d F:\\rizz_admin_panel && npm run dev -- -p 4001"],
+      "port": 4001,
+      "autoPort": true
     }
   ]
 }

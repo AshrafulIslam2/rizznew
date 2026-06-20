@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 import { CONTACT } from "@/lib/site";
+import { getSeoOverride, buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Contact | Rizz Leather",
-  description: "Contact Rizz Leather for OEM, wholesale, and catalog inquiries."
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const override = await getSeoOverride("contact");
+  return buildMetadata({
+    path: "/contact",
+    defaultTitle: "Contact RIZZ Leather — Chittagong, Bangladesh",
+    defaultDescription: "Get in touch with RIZZ Leather via WhatsApp or email. Cash on Delivery across Bangladesh, international shipping available.",
+    override,
+  });
+}
 
 export default function ContactPage() {
   return (

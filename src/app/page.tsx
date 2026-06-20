@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getApiProductCardPrice } from "@/lib/products";
+import { getSeoOverride, buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "RIZZ — Luxury Leather Footwear & Accessories",
-  description: "Artisan leather footwear and accessories. Crafted in Chittagong, worn worldwide."
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const override = await getSeoOverride("home");
+  return buildMetadata({
+    path: "/",
+    defaultTitle: "RIZZ — Luxury Leather Footwear & Accessories | Bangladesh",
+    defaultDescription: "Artisan leather footwear and accessories handcrafted in Chittagong, Bangladesh. Genuine leather loafers, sandals, belts, and wallets. Cash on Delivery nationwide.",
+    defaultImage: "/assets/images/rizzslide.jpg",
+    override,
+  });
+}
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3040/api";
 
@@ -44,6 +52,26 @@ async function getCategories() {
   }
 }
 
+async function getActiveCampaigns() {
+  try {
+    const res = await fetch(`${API}/campaigns/active`, { next: { revalidate: 30 } });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
+function campaignBadge(c: Record<string, unknown>): string {
+  if (c.discount_type === "PERCENT") return `${c.discount_value}% OFF`;
+  if (c.discount_type === "FIXED") return `৳${c.discount_value} OFF`;
+  if (c.discount_type === "BOGO") return `BUY ${c.buy_qty} GET ${c.get_qty} FREE`;
+  if (c.free_shipping) return "FREE DELIVERY";
+  if (c.free_gift_product_id) return "FREE GIFT";
+  return "OFFER";
+}
+
 // ── Fallback static data ──────────────────────────────────────────────────────
 
 const fallbackArrivals = [
@@ -73,7 +101,7 @@ const fallbackBrandBar = ["Genuine Leather", "Hand-Stitched", "COD Nationwide", 
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
-  const [hero, brandbar, editorial, materialsSection, quote, cta, apiProducts, apiCategories] =
+  const [hero, brandbar, editorial, materialsSection, quote, cta, apiProducts, apiCategories, campaigns] =
     await Promise.all([
       getSection("hero"),
       getSection("brandbar"),
@@ -83,6 +111,7 @@ export default async function HomePage() {
       getSection("cta"),
       getFeaturedProducts(),
       getCategories(),
+      getActiveCampaigns(),
     ]);
 
   // Hero data
@@ -106,10 +135,11 @@ export default async function HomePage() {
         const images = (p.media as {media_url: string}[] | undefined)?.map(m => m.media_url)
           ?? (p.images as {image_url: string}[] | undefined)?.map(i => i.image_url)
           ?? [];
+        const cardPrice = getApiProductCardPrice(p as { price?: number; variants?: { price: number; sale_price?: number | null }[] });
         return {
           name: p.name as string,
           material: (p.material as string) || "Genuine Leather",
-          price: p.price ? `৳ ${Number(p.price).toLocaleString("en-US")}` : "Contact for Price",
+          price: cardPrice > 0 ? `৳ ${cardPrice.toLocaleString("en-US")}` : "Contact for Price",
           badge: (p.tags as string[] | undefined)?.includes("new") ? "New"
             : (p.tags as string[] | undefined)?.includes("bestseller") ? "Bestseller"
             : p.is_featured ? "Bestseller" : null,
@@ -195,6 +225,38 @@ export default async function HomePage() {
           ])}
         </div>
       </div>
+
+      {/* ── Campaigns ─────────────────────────────────────────── */}
+      {campaigns.length > 0 && (
+        <section className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-20">
+          <div className="mb-10">
+            <p className="text-[9px] uppercase tracking-[0.45em] text-[var(--gold-dim)]">Limited Time</p>
+            <h2 className="mt-3 text-3xl text-[var(--cream)] sm:text-4xl">Active Campaigns</h2>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2">
+            {campaigns.map((c: Record<string, unknown>) => (
+              <Link
+                key={c.id as string}
+                href={`/brand/catalog${(c.product_ids as string[])?.length ? `?campaign=${c.id}` : ""}`}
+                className="group relative block overflow-hidden no-underline"
+              >
+                <div
+                  className="h-[220px] bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.04] sm:h-[260px]"
+                  style={{ backgroundImage: `url('${(c.image_url as string) || "/assets/images/rizz_crodile_slide_sandals/image05.jpg"}')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                <span className="absolute left-4 top-4 bg-[var(--gold)] px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.25em] text-[#0a0806]">
+                  {campaignBadge(c)}
+                </span>
+                <div className="absolute bottom-5 left-5 right-5">
+                  <h3 className="font-serif text-2xl text-[var(--cream)]">{(c.headline as string) || (c.name as string)}</h3>
+                  {(c.body as string) && <p className="mt-1 text-xs text-[#cfcac3]">{c.body as string}</p>}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── New Arrivals ─────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28">

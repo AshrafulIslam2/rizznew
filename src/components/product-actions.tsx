@@ -26,9 +26,30 @@ export function ProductActions({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
   const [error, setError] = useState(false);
 
+  // Sizes available for a given color, and colors available for a given size — derived from real variants.
+  const sizesForColor = (color: string) => variants.filter((v) => v.color === color).map((v) => v.size);
+  const colorsForSize = (size: string) => variants.filter((v) => v.size === size).map((v) => v.color);
+
+  function handleSelectSize(size: string) {
+    setError(false);
+    const available = colorsForSize(size);
+    if (available.length > 0 && !available.includes(selectedColor.label)) {
+      const nextColor = product.colors.find((c) => c.label === available[0]);
+      if (nextColor) setSelectedColor(nextColor);
+    }
+    setSelectedSize(size);
+  }
+
+  function handleSelectColor(c: { label: string; hex: string }) {
+    const available = sizesForColor(c.label);
+    if (available.length > 0 && selectedSize && !available.includes(selectedSize)) {
+      setSelectedSize(available[0]);
+    }
+    setSelectedColor(c);
+  }
+
   const currentVariant =
-    variants.find((v) => v.size === selectedSize && (!selectedColor.label || v.color === selectedColor.label))
-    ?? variants.find((v) => v.size === selectedSize)
+    variants.find((v) => v.size === selectedSize && v.color === selectedColor.label)
     ?? cheapestVariant;
 
   const displayPrice = currentVariant ? (currentVariant.salePrice ?? currentVariant.price) : product.price;
@@ -41,6 +62,7 @@ export function ProductActions({ product }: { product: Product }) {
       return;
     }
     addItem({
+      productId: product.id,
       slug: product.slug,
       name: product.name,
       price: displayPrice,
@@ -60,6 +82,7 @@ export function ProductActions({ product }: { product: Product }) {
       return;
     }
     addItem({
+      productId: product.id,
       slug: product.slug,
       name: product.name,
       price: displayPrice,
@@ -89,10 +112,17 @@ export function ProductActions({ product }: { product: Product }) {
       </div>
 
       {/* Stock */}
-      <p className="flex items-center gap-2 text-sm text-emerald-400">
-        <span className="inline-block h-2 w-2 rounded-full bg-emerald-400" />
-        In stock — ready to dispatch
-      </p>
+      {currentVariant && currentVariant.stock <= 0 ? (
+        <p className="flex items-center gap-2 text-sm text-red-400">
+          <span className="inline-block h-2 w-2 rounded-full bg-red-400" />
+          Out of stock
+        </p>
+      ) : (
+        <p className="flex items-center gap-2 text-sm text-emerald-400">
+          <span className="inline-block h-2 w-2 rounded-full bg-emerald-400" />
+          In stock — ready to dispatch
+        </p>
+      )}
 
       {/* Color */}
       {product.colors.length > 0 && (
@@ -101,20 +131,23 @@ export function ProductActions({ product }: { product: Product }) {
             Colour: <span className="text-[var(--text)]">{selectedColor.label}</span>
           </p>
           <div className="flex gap-3">
-            {product.colors.map((c) => (
-              <button
-                key={c.label}
-                type="button"
-                onClick={() => setSelectedColor(c)}
-                title={c.label}
-                className={`h-8 w-8 rounded-full border-2 transition-all ${
-                  selectedColor.label === c.label
-                    ? "border-[var(--gold)] scale-110"
-                    : "border-[var(--border-soft)] hover:border-[var(--gold-dim)]"
-                }`}
-                style={{ backgroundColor: c.hex }}
-              />
-            ))}
+            {product.colors.map((c) => {
+              const isAvailable = !selectedSize || colorsForSize(selectedSize).includes(c.label);
+              return (
+                <button
+                  key={c.label}
+                  type="button"
+                  onClick={() => handleSelectColor(c)}
+                  title={c.label}
+                  className={`h-8 w-8 rounded-full border-2 transition-all ${
+                    selectedColor.label === c.label
+                      ? "border-[var(--gold)] scale-110"
+                      : "border-[var(--border-soft)] hover:border-[var(--gold-dim)]"
+                  } ${!isAvailable ? "opacity-30" : ""}`}
+                  style={{ backgroundColor: c.hex }}
+                />
+              );
+            })}
           </div>
         </div>
       )}
@@ -131,20 +164,23 @@ export function ProductActions({ product }: { product: Product }) {
             </button>
           </div>
           <div className="flex flex-wrap gap-2">
-            {product.sizes.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => { setSelectedSize(s); setError(false); }}
-                className={`min-w-[48px] border px-3 py-2 text-[10px] uppercase tracking-[0.18em] transition-all ${
-                  selectedSize === s
-                    ? "border-[var(--gold)] text-[var(--gold-light)] bg-[var(--gold-tint)]"
-                    : "border-[var(--border-soft)] text-[var(--muted)] hover:border-[var(--gold-dim)] hover:text-[var(--text)]"
-                }`}
-              >
-                {s}
-              </button>
-            ))}
+            {product.sizes.map((s) => {
+              const isAvailable = !selectedColor.label || sizesForColor(selectedColor.label).includes(s);
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => handleSelectSize(s)}
+                  className={`min-w-[48px] border px-3 py-2 text-[10px] uppercase tracking-[0.18em] transition-all ${
+                    selectedSize === s
+                      ? "border-[var(--gold)] text-[var(--gold-light)] bg-[var(--gold-tint)]"
+                      : "border-[var(--border-soft)] text-[var(--muted)] hover:border-[var(--gold-dim)] hover:text-[var(--text)]"
+                  } ${!isAvailable ? "opacity-30" : ""}`}
+                >
+                  {s}
+                </button>
+              );
+            })}
           </div>
           {error && (
             <p className="mt-2 text-xs text-red-400">Please select a size before adding to cart.</p>

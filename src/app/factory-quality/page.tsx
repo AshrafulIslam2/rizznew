@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getSeoOverride, buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Our Craft — Factory & Quality | RIZZ",
-  description: "How RIZZ leather goods are made — selection, cutting, stitching, and finishing, by hand, in Chittagong, Bangladesh.",
-  openGraph: {
-    title: "Our Craft | RIZZ",
-    description: "Handcrafted leather footwear and accessories from Chittagong."
-  }
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const override = await getSeoOverride("factory-quality");
+  return buildMetadata({
+    path: "/factory-quality",
+    defaultTitle: "Our Craft — Factory & Quality | RIZZ",
+    defaultDescription: "How RIZZ leather goods are made — selection, cutting, stitching, and finishing, by hand, in Chittagong, Bangladesh.",
+    override,
+  });
+}
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3040/api";
 

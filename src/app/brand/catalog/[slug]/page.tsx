@@ -13,15 +13,40 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = getProductBySlug(slug);
-  if (!p) return { title: "Product | RIZZ" };
-  return {
-    title: `${p.name} — ${p.material} | RIZZ`,
-    description: `${p.description.slice(0, 155)}`,
-    openGraph: {
-      title: p.name,
+  if (p) {
+    return {
+      title: `${p.name} — ${p.material} | RIZZ`,
       description: p.description.slice(0, 155),
-      images: [{ url: p.images[0] }]
-    }
+      alternates: { canonical: `/brand/catalog/${p.slug}` },
+      openGraph: {
+        title: p.name,
+        description: p.description.slice(0, 155),
+        images: [{ url: p.images[0] }],
+        type: "website",
+      },
+    };
+  }
+
+  const apiProduct = await fetchProductBySlugFromApi(slug) as Record<string, unknown> | null;
+  if (!apiProduct) return { title: "Product | RIZZ" };
+
+  const name = apiProduct.name as string;
+  const material = (apiProduct.material as string) || "Genuine Leather";
+  const fallbackDescription = `${name} — handcrafted ${material.toLowerCase()} from RIZZ Leather, Chittagong, Bangladesh. Genuine leather. Cash on Delivery nationwide.`;
+  const title = (apiProduct.meta_title as string) || `${name} — ${material} | RIZZ`;
+  const description = ((apiProduct.meta_description as string) || (apiProduct.short_description as string) || fallbackDescription).slice(0, 160);
+  const image = (apiProduct.media as { media_url: string }[] | undefined)?.[0]?.media_url;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/brand/catalog/${slug}` },
+    openGraph: {
+      title,
+      description,
+      images: image ? [{ url: image }] : undefined,
+      type: "website",
+    },
   };
 }
 
@@ -118,6 +143,7 @@ export default async function ProductDetailPage({ params }: Props) {
       : (compareAt > price ? compareAt : null);
 
     product = {
+      id: apiProduct.id as string,
       slug: apiProduct.slug as string,
       name: apiProduct.name as string,
       material: (apiProduct.material as string) ?? "",
@@ -157,8 +183,18 @@ export default async function ProductDetailPage({ params }: Props) {
   if (!product) notFound();
 
   const related = getRelatedProducts(slug, 4);
-  const reviews = getReviews(slug);
-  const avgRating = Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length);
+
+  const apiReviews = ((apiProduct?.reviews as Record<string, unknown>[] | undefined) ?? [])
+    .filter((r) => r.status === "active")
+    .map((r) => ({
+      name: r.customer_name as string,
+      date: new Date(r.created_at as string).toLocaleDateString("en-US", { month: "long", year: "numeric" }).toUpperCase(),
+      rating: (r.rating as number) ?? 5,
+      body: (r.comment as string) ?? "",
+      image: r.customer_image_url as string | undefined,
+    }));
+  const reviews = apiReviews.length > 0 ? apiReviews : getReviews(slug);
+  const avgRating = reviews.length > 0 ? Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) : 0;
 
   const schema = {
     "@context": "https://schema.org",
@@ -166,12 +202,15 @@ export default async function ProductDetailPage({ params }: Props) {
     name: product.name,
     description: product.description,
     image: product.images,
+    material: product.material,
+    category: product.category,
     brand: { "@type": "Brand", name: "RIZZ" },
     offers: {
       "@type": "Offer",
       price: product.price,
       priceCurrency: "BDT",
       availability: "https://schema.org/InStock",
+      areaServed: { "@type": "Country", name: "Bangladesh" },
       seller: { "@type": "Organization", name: "RIZZ Leather" }
     },
     aggregateRating: {
@@ -183,16 +222,31 @@ export default async function ProductDetailPage({ params }: Props) {
     }
   };
 
-  const faqItems = [
-    { q: "What is the return policy?", a: "We accept returns within 7 days of delivery for unworn items in original condition. See our Returns page for full details." },
-    { q: "How do I care for this leather?", a: "Use a soft dry cloth after each wear. Apply a leather conditioner every 3–4 months. Keep away from direct sunlight when storing." },
-    { q: "Is COD available for this product?", a: "Yes. Cash on Delivery is available for all products across Bangladesh. You pay when your order arrives." },
-    { q: "How long does delivery take?", a: "Inside Dhaka: 1–2 business days. Outside Dhaka: 2–4 business days." }
-  ];
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "/" },
+      { "@type": "ListItem", position: 2, name: "Shop", item: "/brand/catalog" },
+      { "@type": "ListItem", position: 3, name: product.category, item: `/brand/catalog?category=${encodeURIComponent(product.category)}` },
+      { "@type": "ListItem", position: 4, name: product.name, item: `/brand/catalog/${product.slug}` }
+    ]
+  };
+
+  const apiFaqs = (apiProduct?.faqs as { question: string; answer: string }[] | undefined) ?? [];
+  const faqItems = apiFaqs.length > 0
+    ? apiFaqs.map((f) => ({ q: f.question, a: f.answer }))
+    : [
+        { q: "What is the return policy?", a: "We accept returns within 7 days of delivery for unworn items in original condition. See our Returns page for full details." },
+        { q: "How do I care for this leather?", a: "Use a soft dry cloth after each wear. Apply a leather conditioner every 3–4 months. Keep away from direct sunlight when storing." },
+        { q: "Is COD available for this product?", a: "Yes. Cash on Delivery is available for all products across Bangladesh. You pay when your order arrives." },
+        { q: "How long does delivery take?", a: "Inside Dhaka: 1–2 business days. Outside Dhaka: 2–4 business days." }
+      ];
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <main>
         {/* Breadcrumb */}
         <nav className="border-b border-[var(--hairline)] px-5 py-3 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)] lg:px-8">
@@ -266,9 +320,14 @@ export default async function ProductDetailPage({ params }: Props) {
               {reviews.map((review, i) => (
                 <article key={i} className="border border-[var(--border)] bg-[var(--surface)] p-6">
                   <div className="mb-3 flex items-start justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-[var(--cream)]">{review.name}</p>
-                      <p className="mt-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]">{review.date}</p>
+                    <div className="flex items-center gap-3">
+                      {"image" in review && review.image && (
+                        <img src={review.image} alt={review.name} className="h-9 w-9 rounded-full object-cover" />
+                      )}
+                      <div>
+                        <p className="text-sm font-medium text-[var(--cream)]">{review.name}</p>
+                        <p className="mt-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]">{review.date}</p>
+                      </div>
                     </div>
                     <StarRating rating={review.rating} />
                   </div>
