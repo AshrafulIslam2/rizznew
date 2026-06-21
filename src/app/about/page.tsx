@@ -91,7 +91,7 @@ export default function AboutPage() {
           <h2 className="mt-3 font-serif text-3xl text-[var(--cream)] sm:text-4xl">Where it begins</h2>
           <div className="mt-6 space-y-5 text-sm leading-loose text-[var(--muted)]">
             <p>
-              RIZZ was founded in 2018 in a workshop in Chittagong's leather district — the same streets where Bangladeshi leather has been cut, stitched, and exported for over a century. We started with one question: why couldn't the people who make luxury leather goods also sell them directly, at honest prices?
+              RIZZ was founded in 2019 in a workshop in Chittagong's leather district — the same streets where Bangladeshi leather has been cut, stitched, and exported for over a century. We started with one question: why couldn't the people who make luxury leather goods also sell them directly, at honest prices?
             </p>
             <p>
               Most of the world's high-end leather goods pass through many hands before they reach a customer. Each hand adds a margin. The craftsman who made the piece sees very little of what the customer pays. We wanted to change that — for our customers and for our craftsmen.
