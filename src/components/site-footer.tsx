@@ -1,7 +1,22 @@
 import Link from "next/link";
 import { CONTACT, POLICY_LINKS } from "@/lib/site";
 
-export function SiteFooter() {
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3040/api";
+
+async function getCategories(): Promise<{ slug: string; name: string }[]> {
+  try {
+    const res = await fetch(`${API}/categories`, { next: { revalidate: 300 } });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.filter((c: any) => c.is_active).map((c: any) => ({ slug: c.slug, name: c.name }));
+  } catch {
+    return [];
+  }
+}
+
+export async function SiteFooter() {
+  const categories = await getCategories();
   return (
     <footer className="border-t border-[var(--hairline)] bg-[#050505]">
       {/* Newsletter */}
@@ -44,10 +59,12 @@ export function SiteFooter() {
             <p className="mb-5 text-[9px] uppercase tracking-[0.35em] text-[var(--gold-dim)]">Shop</p>
             <ul className="space-y-3 text-xs uppercase tracking-[0.18em] text-[var(--muted)]">
               <li><Link href="/brand/catalog?sort=new" className="hover:text-[var(--text)] transition-colors">New Arrivals</Link></li>
-              <li><Link href="/brand/catalog?category=Men%27s%20Loafers" className="hover:text-[var(--text)] transition-colors">Loafers</Link></li>
-              <li><Link href="/brand/catalog?category=Men%27s%20Sandals" className="hover:text-[var(--text)] transition-colors">Sandals</Link></li>
-              <li><Link href="/brand/catalog?category=Men%27s%20Belts" className="hover:text-[var(--text)] transition-colors">Belts</Link></li>
-              <li><Link href="/brand/catalog?category=Men%27s%20Wallets" className="hover:text-[var(--text)] transition-colors">Wallets</Link></li>
+              <li><Link href="/brand/catalog" className="hover:text-[var(--text)] transition-colors">All Products</Link></li>
+              {categories.map((cat) => (
+                <li key={cat.slug}>
+                  <Link href={`/brand/catalog?category=${cat.slug}`} className="hover:text-[var(--text)] transition-colors">{cat.name}</Link>
+                </li>
+              ))}
             </ul>
           </div>
 

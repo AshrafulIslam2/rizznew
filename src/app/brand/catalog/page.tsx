@@ -33,7 +33,8 @@ async function fetchProductsFromApi(): Promise<Product[]> {
         slug: p.slug,
         name: p.name,
         material: p.material ?? '',
-        category: p.category?.name ?? 'Loafers',
+        category: p.category?.name ?? 'Uncategorized',
+        categorySlug: p.category?.slug ?? '',
         price,
         oldPrice,
         badge: p.tags?.includes('new') ? 'New' : p.tags?.includes('bestseller') ? 'Bestseller' : p.is_featured ? 'Bestseller' : null,
@@ -48,6 +49,21 @@ async function fetchProductsFromApi(): Promise<Product[]> {
     });
   } catch {
     return PRODUCTS;
+  }
+}
+
+async function fetchCategories(): Promise<{ slug: string; name: string }[]> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3040/api';
+    const res = await fetch(`${apiUrl}/categories`, { next: { revalidate: 300 } });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data
+      .filter((c: any) => c.is_active)
+      .map((c: any) => ({ slug: c.slug, name: c.name }));
+  } catch {
+    return [];
   }
 }
 
@@ -107,13 +123,16 @@ export default async function CatalogPage({ searchParams }: Props) {
   const size = params.size ?? "";
   const page = Math.max(1, Number(params.page ?? "1"));
 
-  const allProducts = await fetchProductsFromApi();
+  const [allProducts, categories] = await Promise.all([
+    fetchProductsFromApi(),
+    fetchCategories(),
+  ]);
 
   // Filter
   let filtered = [...allProducts];
 
   if (category !== "all") {
-    filtered = filtered.filter((p) => p.category === category);
+    filtered = filtered.filter((p) => p.categorySlug === category);
   }
 
   if (priceLabel) {
@@ -187,6 +206,7 @@ export default async function CatalogPage({ searchParams }: Props) {
               activePrice={priceLabel}
               activeSort={sort}
               activeSize={size}
+              categories={categories}
             />
           </Suspense>
 

@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3040/api";
 
-async function getSection(key: string) {
+async function getSection(key: string): Promise<Record<string, any> | null> {
   try {
     const res = await fetch(`${API}/homepage/${key}`, { next: { revalidate: 60 } });
     if (!res.ok) return null;
@@ -116,8 +116,8 @@ export default async function HomePage() {
 
   // Hero data
   const heroImage = hero?.image || "/assets/images/rizzslide.jpg";
-  const heroHeadline = hero?.headline || "Crafted for\nthose who know.";
-  const heroSubtext = hero?.subtext || "Artisan leather footwear and accessories.\nEach piece made by hand. None made in haste.";
+  const heroHeadline: string = hero?.headline || "Crafted for\nthose who know.";
+  const heroSubtext: string = hero?.subtext || "Artisan leather footwear and accessories.\nEach piece made by hand. None made in haste.";
   const heroCtaPrimary = { label: hero?.cta_primary_label || "Shop the Collection", href: hero?.cta_primary_href || "/brand/catalog" };
   const heroCtaSecondary = { label: hero?.cta_secondary_label || "New Arrivals", href: hero?.cta_secondary_href || "/brand/catalog?sort=new" };
   const heroLocation = hero?.location_tag || "Chittagong · Bangladesh";
@@ -152,7 +152,7 @@ export default async function HomePage() {
   // Editorial banner
   const editorialImage = editorial?.image || "/assets/images/rizz_crodile_slide_sandals/image07.jpg";
   const editorialTag = editorial?.tag || "The Signature";
-  const editorialHeadline = editorial?.headline || "Made for men\nof distinction.";
+  const editorialHeadline: string = editorial?.headline || "Made for men\nof distinction.";
   const editorialBody = editorial?.body || "Every Rizz piece begins as a single hide — selected, cut, and shaped by craftsmen who have spent decades understanding leather.";
   const editorialBtn = { label: editorial?.button_label || "Our Craft", href: editorial?.button_href || "/factory-quality" };
 
@@ -161,7 +161,7 @@ export default async function HomePage() {
     ? (apiCategories as Record<string, unknown>[]).slice(0, 5).map((cat, i) => ({
         label: cat.name as string,
         sub: (cat.description as string | undefined) || "Explore Collection",
-        href: `/brand/catalog?category=${encodeURIComponent(cat.name as string)}`,
+        href: `/brand/catalog?category=${encodeURIComponent(cat.slug as string)}`,
         image: (cat.thumbnail_image as string | undefined) || fallbackCategories[i % fallbackCategories.length]?.image || "/assets/images/rizz_master_color_sandals/image01.jpg",
         span: fallbackCategories[i % fallbackCategories.length]?.span || "lg:col-span-3"
       }))
@@ -174,7 +174,7 @@ export default async function HomePage() {
       : fallbackMaterials;
 
   // Quote section
-  const quoteText = quote?.text || "Luxury is not about the price.\nIt is about how something makes you feel every time you wear it.";
+  const quoteText: string = quote?.text || "Luxury is not about the price.\nIt is about how something makes you feel every time you wear it.";
   const quoteAttribution = quote?.attribution || "— Rizz Atelier, Chittagong";
 
   // CTA section

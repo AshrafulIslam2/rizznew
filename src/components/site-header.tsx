@@ -3,20 +3,36 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { NAV_LINKS } from "@/lib/site";
 import { useCart } from "@/lib/cart-context";
+
+type ApiCategory = { id: string; slug: string; name: string; parent_id: string | null; is_active: boolean };
+type NavCategory = { label: string; href: string; children: { label: string; href: string }[] };
+
+function titleCase(s: string) {
+  return s.replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 const DEFAULT_ANNOUNCEMENT = "Complimentary shipping on orders above ৳5,000  ·  COD available nationwide";
 
-const shopNav = [NAV_LINKS[0], NAV_LINKS[1], NAV_LINKS[2], NAV_LINKS[3], NAV_LINKS[4]];
-const infoNav = [NAV_LINKS[5], NAV_LINKS[6], NAV_LINKS[7]];
+const infoNav = [
+  { label: "Materials", href: "/materials" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+];
 
 export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [announcementText, setAnnouncementText] = useState(DEFAULT_ANNOUNCEMENT);
+  const [categoryNav, setCategoryNav] = useState<NavCategory[]>([]);
   const { count } = useCart();
+
+  const shopNav: NavCategory[] = [
+    { label: "New Arrivals", href: "/brand/catalog?sort=new", children: [] },
+    { label: "Collections", href: "/brand/catalog", children: [] },
+    ...categoryNav,
+  ];
 
   useEffect(() => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3040/api';
@@ -26,6 +42,25 @@ export function SiteHeader() {
         if (data?.announcement_bar_active && data?.announcement_bar_text) {
           setAnnouncementText(data.announcement_bar_text);
         }
+      })
+      .catch(() => {});
+
+    // Only real, admin-managed categories ever appear in the nav. A category with a
+    // parent shows nested under its parent (e.g. Belt/Wallet under Accessories).
+    fetch(`${apiUrl}/categories`)
+      .then((r) => r.json())
+      .then((data: ApiCategory[]) => {
+        if (!Array.isArray(data)) return;
+        const active = data.filter((c) => c.is_active);
+        const topLevel = active.filter((c) => !c.parent_id);
+        const nav = topLevel.map((c) => ({
+          label: titleCase(c.name),
+          href: `/brand/catalog?category=${c.slug}`,
+          children: active
+            .filter((child) => child.parent_id === c.id)
+            .map((child) => ({ label: titleCase(child.name), href: `/brand/catalog?category=${child.slug}` })),
+        }));
+        setCategoryNav(nav);
       })
       .catch(() => {});
   }, []);
@@ -119,13 +154,27 @@ export function SiteHeader() {
             {/* Left Nav */}
             <nav className="flex items-center gap-7 text-[11px] uppercase tracking-[0.22em]">
               {shopNav.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className={`transition-colors ${isActive(item.href) ? "text-[var(--gold-light)]" : "text-[var(--muted)] hover:text-[var(--text)]"}`}
-                >
-                  {item.label}
-                </Link>
+                <div key={item.label} className="group relative">
+                  <Link
+                    href={item.href}
+                    className={`transition-colors ${isActive(item.href) ? "text-[var(--gold-light)]" : "text-[var(--muted)] hover:text-[var(--text)]"}`}
+                  >
+                    {item.label}
+                  </Link>
+                  {item.children.length > 0 && (
+                    <div className="absolute left-0 top-full hidden min-w-[160px] flex-col border border-[var(--border)] bg-[#0a0a0a] py-2 group-hover:flex">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.label}
+                          href={child.href}
+                          className="px-4 py-2 text-[var(--muted)] transition-colors hover:text-[var(--gold-light)]"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </nav>
 
@@ -193,6 +242,21 @@ export function SiteHeader() {
                     >
                       {item.label}
                     </Link>
+                    {item.children.length > 0 && (
+                      <ul className="ml-4 space-y-1 border-l border-[var(--border)] pl-3">
+                        {item.children.map((child) => (
+                          <li key={child.label}>
+                            <Link
+                              href={child.href}
+                              onClick={() => setOpen(false)}
+                              className="block py-2 text-xs uppercase tracking-[0.16em] text-[var(--muted)] transition-colors hover:text-[var(--gold-light)]"
+                            >
+                              {child.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </li>
                 ))}
               </ul>

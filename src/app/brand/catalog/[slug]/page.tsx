@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProductBySlug, getRelatedProducts, getReviews, PRODUCTS, type Product, type ProductVariant, type ProductVideo, type Category } from "@/lib/products";
+import { getProductBySlug, getRelatedProducts, getReviews, PRODUCTS, type Product, type ProductVariant, type ProductVideo } from "@/lib/products";
 import { ProductActions, ImageGallery } from "@/components/product-actions";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -147,7 +147,8 @@ export default async function ProductDetailPage({ params }: Props) {
       slug: apiProduct.slug as string,
       name: apiProduct.name as string,
       material: (apiProduct.material as string) ?? "",
-      category: ((apiProduct.category as Record<string, unknown> | null)?.name as Category) ?? "Loafers",
+      category: ((apiProduct.category as Record<string, unknown> | null)?.name as string) ?? "Uncategorized",
+      categorySlug: ((apiProduct.category as Record<string, unknown> | null)?.slug as string) ?? "",
       price,
       oldPrice,
       badge: null,
@@ -228,7 +229,7 @@ export default async function ProductDetailPage({ params }: Props) {
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "/" },
       { "@type": "ListItem", position: 2, name: "Shop", item: "/brand/catalog" },
-      { "@type": "ListItem", position: 3, name: product.category, item: `/brand/catalog?category=${encodeURIComponent(product.category)}` },
+      { "@type": "ListItem", position: 3, name: product.category, item: `/brand/catalog?category=${product.categorySlug ?? ""}` },
       { "@type": "ListItem", position: 4, name: product.name, item: `/brand/catalog/${product.slug}` }
     ]
   };
@@ -255,7 +256,7 @@ export default async function ProductDetailPage({ params }: Props) {
             <span className="opacity-40">›</span>
             <Link href="/brand/catalog" className="hover:text-[var(--text)] transition-colors">Shop</Link>
             <span className="opacity-40">›</span>
-            <Link href={`/brand/catalog?category=${encodeURIComponent(product.category)}`} className="hover:text-[var(--text)] transition-colors">{product.category}</Link>
+            <Link href={`/brand/catalog?category=${product.categorySlug ?? ""}`} className="hover:text-[var(--text)] transition-colors">{product.category}</Link>
             <span className="opacity-40">›</span>
             <span className="text-[var(--gold-dim)]">{product.name}</span>
           </div>
@@ -321,7 +322,7 @@ export default async function ProductDetailPage({ params }: Props) {
                 <article key={i} className="border border-[var(--border)] bg-[var(--surface)] p-6">
                   <div className="mb-3 flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      {"image" in review && review.image && (
+                      {review.image && (
                         <img src={review.image} alt={review.name} className="h-9 w-9 rounded-full object-cover" />
                       )}
                       <div>

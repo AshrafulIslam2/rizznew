@@ -3,17 +3,17 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
-import type { Category } from "@/lib/products";
-import { CATEGORIES, PRICE_RANGES, SORT_OPTIONS } from "@/lib/products";
+import { PRICE_RANGES, SORT_OPTIONS } from "@/lib/products";
 
 type Props = {
   activeCategory: string;
   activePrice: string;
   activeSort: string;
   activeSize: string;
+  categories: { slug: string; name: string }[];
 };
 
-export function CatalogFilters({ activeCategory, activePrice, activeSort, activeSize }: Props) {
+export function CatalogFilters({ activeCategory, activePrice, activeSort, activeSize, categories }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -82,18 +82,18 @@ export function CatalogFilters({ activeCategory, activePrice, activeSort, active
         >
           All
         </button>
-        {CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <button
-            key={cat}
+            key={cat.slug}
             type="button"
-            onClick={() => set("category", cat)}
+            onClick={() => set("category", cat.slug)}
             className={`px-5 py-2 text-[10px] uppercase tracking-[0.22em] border transition-colors ${
-              activeCategory === cat
+              activeCategory === cat.slug
                 ? "border-[var(--gold)] text-[var(--gold-light)] bg-[var(--gold-tint)]"
                 : "border-[var(--border-soft)] text-[var(--muted)] hover:border-[var(--gold-dim)]"
             }`}
           >
-            {cat}
+            {cat.name}
           </button>
         ))}
       </div>

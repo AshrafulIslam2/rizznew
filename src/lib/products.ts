@@ -21,7 +21,8 @@ export type Product = {
   slug: string;
   name: string;
   material: string;
-  category: Category;
+  category: string;
+  categorySlug?: string;
   price: number;
   oldPrice: number | null;
   badge: "New" | "Bestseller" | "Sale" | null;
@@ -399,7 +400,7 @@ export const SORT_OPTIONS = [
   { label: "New Arrivals", value: "new" }
 ] as const;
 
-export const REVIEWS: Record<string, Array<{ name: string; rating: number; date: string; body: string }>> = {
+export const REVIEWS: Record<string, Array<{ name: string; rating: number; date: string; body: string; image?: string }>> = {
   "onyx-loafer": [
     { name: "Rafiqul H.", rating: 5, date: "March 2025", body: "Exceptional quality. The leather feels substantial and the fit is precise. I've worn them every week for three months and they're only getting better." },
     { name: "Tanvir A.", rating: 5, date: "February 2025", body: "COD made it easy to try. I expected good — I got great. The craftsmanship is visible in person in a way photos can't capture." },
