@@ -1,23 +1,38 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProductBySlug, getRelatedProducts, getReviews, PRODUCTS, type Product, type ProductVariant, type ProductVideo } from "@/lib/products";
+import { getProductBySlug, getReviews, fetchAllProducts, pickRelatedProducts, PRODUCTS, type Product, type ProductVariant, type ProductVideo } from "@/lib/products";
 import { ProductActions, ImageGallery } from "@/components/product-actions";
+import { VisitorCounter } from "@/components/visitor-counter";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ slug: string }>; searchParams?: Promise<{ lang?: string }> };
 
 export async function generateStaticParams() {
   return PRODUCTS.map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const sp = searchParams ? await searchParams : {};
+  const lang = sp.lang === "bn" ? "bn" : "en";
+
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rizzleather.com";
+  const canonical = `/brand/catalog/${slug}`;
+  const hreflang = {
+    canonical,
+    languages: {
+      "en": `${baseUrl}/brand/catalog/${slug}`,
+      "bn": `${baseUrl}/brand/catalog/${slug}?lang=bn`,
+      "x-default": `${baseUrl}/brand/catalog/${slug}`,
+    },
+  };
+
   const p = getProductBySlug(slug);
   if (p) {
     return {
       title: `${p.name} — ${p.material} | RIZZ`,
       description: p.description.slice(0, 155),
-      alternates: { canonical: `/brand/catalog/${p.slug}` },
+      alternates: hreflang,
       openGraph: {
         title: p.name,
         description: p.description.slice(0, 155),
@@ -30,22 +45,36 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const apiProduct = await fetchProductBySlugFromApi(slug) as Record<string, unknown> | null;
   if (!apiProduct) return { title: "Product | RIZZ" };
 
+  // Find Bangla translation if available
+  const translations = (apiProduct.translations as { lang_code: string; name?: string; short_description?: string; description?: string; seo_title?: string; seo_description?: string }[] | undefined) ?? [];
+  const bnTranslation = translations.find((t) => t.lang_code === "bn");
+
   const name = apiProduct.name as string;
   const material = (apiProduct.material as string) || "Genuine Leather";
   const fallbackDescription = `${name} — handcrafted ${material.toLowerCase()} from RIZZ Leather, Chittagong, Bangladesh. Genuine leather. Cash on Delivery nationwide.`;
-  const title = (apiProduct.meta_title as string) || `${name} — ${material} | RIZZ`;
-  const description = ((apiProduct.meta_description as string) || (apiProduct.short_description as string) || fallbackDescription).slice(0, 160);
   const image = (apiProduct.media as { media_url: string }[] | undefined)?.[0]?.media_url;
+
+  // Use Bangla content if lang=bn and translation exists, otherwise English
+  const title = lang === "bn" && bnTranslation
+    ? (bnTranslation.seo_title || `${bnTranslation.name} | RIZZ Leather`)
+    : ((apiProduct.meta_title as string) || `${name} — ${material} | RIZZ`);
+
+  const description = lang === "bn" && bnTranslation
+    ? (bnTranslation.seo_description || bnTranslation.short_description || fallbackDescription).slice(0, 160)
+    : ((apiProduct.meta_description as string) || (apiProduct.short_description as string) || fallbackDescription).slice(0, 160);
+
+  const ogLocale = lang === "bn" ? "bn_BD" : "en_US";
 
   return {
     title,
     description,
-    alternates: { canonical: `/brand/catalog/${slug}` },
+    alternates: hreflang,
     openGraph: {
       title,
       description,
       images: image ? [{ url: image }] : undefined,
       type: "website",
+      locale: ogLocale,
     },
   };
 }
@@ -103,8 +132,11 @@ async function fetchProductBySlugFromApi(slug: string) {
   }
 }
 
-export default async function ProductDetailPage({ params }: Props) {
+export default async function ProductDetailPage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const sp = searchParams ? await searchParams : {};
+  const lang = sp.lang === "bn" ? "bn" : "en";
+
   // Try API first, fall back to hardcoded
   const apiProduct = await fetchProductBySlugFromApi(slug) as Record<string, unknown> | null;
 
@@ -163,8 +195,8 @@ export default async function ProductDetailPage({ params }: Props) {
         return (apiProduct.images as { image_url: string }[] | undefined)?.map((i) => i.image_url) ?? [];
       })(),
       description: (apiProduct.description as string) ?? (apiProduct.short_description as string) ?? "",
-      specs: "",
-      craftsmanship: "",
+      specs: (apiProduct.specs as string) ?? "",
+      craftsmanship: (apiProduct.craftsmanship as string) ?? "",
       collection: "",
       variants,
       videos: ((apiProduct.media as { media_url: string; media_type?: string; title?: string | null }[] | undefined) ?? [])
@@ -179,11 +211,21 @@ export default async function ProductDetailPage({ params }: Props) {
           } as ProductVideo;
         }),
     };
+
+    if (lang === "bn") {
+      const translations = (apiProduct.translations as { lang_code: string; name?: string; short_description?: string; description?: string }[] | undefined) ?? [];
+      const bnTranslation = translations.find((t) => t.lang_code === "bn");
+      if (bnTranslation) {
+        product.name = bnTranslation.name || product.name;
+        product.description = bnTranslation.description || bnTranslation.short_description || product.description;
+      }
+    }
   }
 
   if (!product) notFound();
 
-  const related = getRelatedProducts(slug, 4);
+  const allProducts = await fetchAllProducts();
+  const related = pickRelatedProducts(allProducts, product, 4);
 
   const apiReviews = ((apiProduct?.reviews as Record<string, unknown>[] | undefined) ?? [])
     .filter((r) => r.status === "active")
@@ -234,9 +276,11 @@ export default async function ProductDetailPage({ params }: Props) {
     ]
   };
 
-  const apiFaqs = (apiProduct?.faqs as { question: string; answer: string }[] | undefined) ?? [];
-  const faqItems = apiFaqs.length > 0
-    ? apiFaqs.map((f) => ({ q: f.question, a: f.answer }))
+  const allApiFaqs = (apiProduct?.faqs as { question: string; answer: string; lang_code?: string }[] | undefined) ?? [];
+  const apiFaqs = allApiFaqs.filter((f) => (f.lang_code ?? "en") === lang);
+  const apiFaqsFallback = apiFaqs.length > 0 ? apiFaqs : allApiFaqs.filter((f) => (f.lang_code ?? "en") === "en");
+  const faqItems = apiFaqsFallback.length > 0
+    ? apiFaqsFallback.map((f) => ({ q: f.question, a: f.answer }))
     : [
         { q: "What is the return policy?", a: "We accept returns within 7 days of delivery for unworn items in original condition. See our Returns page for full details." },
         { q: "How do I care for this leather?", a: "Use a soft dry cloth after each wear. Apply a leather conditioner every 3–4 months. Keep away from direct sunlight when storing." },
@@ -278,6 +322,10 @@ export default async function ProductDetailPage({ params }: Props) {
                 <span className="text-[10px] text-[var(--muted)]">({reviews.length} reviews)</span>
               </div>
 
+              <div className="mt-3">
+                <VisitorCounter productId={product.id ?? product.slug} />
+              </div>
+
               <div className="my-6 border-t border-[var(--hairline)]" />
 
               <ProductActions product={product} />
@@ -289,7 +337,7 @@ export default async function ProductDetailPage({ params }: Props) {
                   { title: "Specs & Dimensions", body: product.specs },
                   { title: "Craftsmanship & Materials", body: product.craftsmanship },
                   { title: "Shipping & Returns", body: "COD delivery in 2–4 business days across Bangladesh. Returns accepted within 7 days of delivery for unworn items. International shipping available via WhatsApp." }
-                ].map((item) => (
+                ].filter((item) => item.body && item.body.trim()).map((item) => (
                   <details key={item.title} className="group border-b border-[var(--hairline)]">
                     <summary className="flex cursor-pointer list-none items-center justify-between py-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--cream)]">
                       {item.title}
@@ -385,19 +433,22 @@ export default async function ProductDetailPage({ params }: Props) {
                   mainEntity: faqItems.map((item) => ({
                     "@type": "Question",
                     name: item.q,
-                    acceptedAnswer: { "@type": "Answer", text: item.a }
-                  }))
-                })
-              }}
+                    acceptedAnswer: { "@type": "Answer", text: item.a },
+                  })),
+                }) }}
             />
-            <div className="space-y-2">
-              {faqItems.map((item) => (
-                <details key={item.q} className="group border border-[var(--border)] bg-[var(--bg)]">
-                  <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4">
-                    <span className="pr-4 text-sm font-medium text-[var(--cream)]">{item.q}</span>
-                    <span className="shrink-0 text-[var(--gold-dim)] transition-transform group-open:rotate-45">+</span>
+            <div className="space-y-4">
+              {faqItems.map((item, i) => (
+                <details key={i} className="group rounded-xl border border-[var(--border)] bg-[var(--bg)] open:border-[var(--gold-dim)]">
+                  <summary className="flex cursor-pointer items-center justify-between px-5 py-4 text-sm font-medium text-[var(--text)] list-none">
+                    <span>{item.q}</span>
+                    <svg className="ml-4 shrink-0 transition-transform group-open:rotate-180" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M3 6L8 11L13 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
                   </summary>
-                  <p className="border-t border-[var(--border)] px-5 py-4 text-sm leading-relaxed text-[var(--muted)]">{item.a}</p>
+                  <div className="border-t border-[var(--hairline)] px-5 py-4 text-sm text-[var(--muted)] leading-relaxed">
+                    {item.a}
+                  </div>
                 </details>
               ))}
             </div>

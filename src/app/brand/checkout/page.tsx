@@ -1,17 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
 
 const fmt = (n: number) => `৳ ${n.toLocaleString("en-US")}`;
 
-const SHIPPING = 120;
-const FREE_THRESHOLD = 5000;
+const DEFAULT_SHIPPING = 60;
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3040/api";
-
-const DIVISIONS = ["Dhaka", "Chittagong", "Rajshahi", "Khulna", "Barishal", "Sylhet", "Rangpur", "Mymensingh"];
 
 type CalcResult = {
   subtotal: number;
@@ -30,8 +27,7 @@ export default function CheckoutPage() {
   const router = useRouter();
 
   const [form, setForm] = useState({
-    firstName: "", lastName: "", phone: "", email: "",
-    division: "", district: "", area: "", address: "", postal: "",
+    name: "", phone: "", email: "", address: "",
     note: "", agreed: false
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -43,8 +39,6 @@ export default function CheckoutPage() {
   const [calc, setCalc] = useState<CalcResult | null>(null);
   const [calcLoading, setCalcLoading] = useState(false);
 
-  const baseShipping = total >= FREE_THRESHOLD ? 0 : SHIPPING;
-
   useEffect(() => {
     if (items.length === 0) return;
     setCalcLoading(true);
@@ -55,7 +49,6 @@ export default function CheckoutPage() {
       signal: ctrl.signal,
       body: JSON.stringify({
         items: items.map((i) => ({ product_id: i.productId, price: i.price, quantity: i.quantity })).filter((i) => i.product_id),
-        shipping_fee: baseShipping,
         code: appliedCode || undefined,
       }),
     })
@@ -65,9 +58,36 @@ export default function CheckoutPage() {
       .finally(() => setCalcLoading(false));
     return () => ctrl.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, appliedCode, baseShipping]);
+  }, [items, appliedCode]);
 
-  const shipping = calc ? calc.shipping_fee : baseShipping;
+  const orderPlaced = useRef(false);
+  const lastSentPhone = useRef("");
+
+  // Capture phone+email as a checkout lead (debounced) so admin can follow up
+  // with people who started checkout but didn't place an order.
+  useEffect(() => {
+    const phoneValid = /^(\+?880|0)1[3-9]\d{8}$/.test(form.phone.replace(/\s/g, ""));
+    if (!phoneValid || orderPlaced.current) return;
+    if (form.phone === lastSentPhone.current) return;
+
+    const timer = setTimeout(() => {
+      lastSentPhone.current = form.phone;
+      fetch(`${API}/checkout-leads`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name.trim() || undefined,
+          phone: form.phone,
+          email: form.email || undefined,
+          cart_total: total,
+        }),
+      }).catch(() => {});
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [form.phone, form.email, form.name, total]);
+
+  const shipping = calc ? calc.shipping_fee : DEFAULT_SHIPPING;
   const discount = calc?.discount_amount ?? 0;
   const grandTotal = calc ? calc.total : total + shipping;
 
@@ -86,13 +106,9 @@ export default function CheckoutPage() {
 
   function validate() {
     const e: Record<string, string> = {};
-    if (!form.firstName.trim()) e.firstName = "Required";
-    if (!form.lastName.trim()) e.lastName = "Required";
+    if (!form.name.trim()) e.name = "Required";
     if (!form.phone.trim() || !/^(\+?880|0)1[3-9]\d{8}$/.test(form.phone.replace(/\s/g, "")))
       e.phone = "Enter a valid Bangladesh phone number";
-    if (!form.division) e.division = "Required";
-    if (!form.district.trim()) e.district = "Required";
-    if (!form.area.trim()) e.area = "Required";
     if (!form.address.trim()) e.address = "Required";
     if (!form.agreed) e.agreed = "You must agree to the COD policy";
     return e;
@@ -111,12 +127,10 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customer_name: `${form.firstName} ${form.lastName}`.trim(),
+          customer_name: form.name.trim(),
           customer_phone: form.phone,
-          division: form.division,
-          district: form.district,
-          area: form.area,
-          address: form.postal ? `${form.address} (Postal: ${form.postal})` : form.address,
+          customer_email: form.email || undefined,
+          address: form.address,
           items: items.map((i) => ({
             slug: i.slug,
             name: i.name,
@@ -138,6 +152,7 @@ export default function CheckoutPage() {
         }),
       });
       if (!res.ok) throw new Error(await res.text());
+      orderPlaced.current = true;
       clear();
       router.push("/brand/thank-you");
     } catch {
@@ -174,22 +189,15 @@ export default function CheckoutPage() {
         <div className="mx-auto max-w-7xl grid gap-8 px-5 py-10 lg:grid-cols-[1fr_380px] lg:items-start lg:px-8">
           {/* Left */}
           <div className="space-y-6">
-            {/* Contact */}
+            {/* Contact + Address */}
             <section className="border border-[var(--border)] bg-[var(--surface)] p-6">
-              <h2 className="font-serif text-2xl text-[var(--cream)]">1. Contact Information</h2>
+              <h2 className="font-serif text-2xl text-[var(--cream)]">1. Your Information</h2>
               <div className="mt-5 space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label>
-                    <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">First Name *</span>
-                    <input className={inputCls("firstName")} placeholder="Rafiqul" value={form.firstName} onChange={(e) => set("firstName", e.target.value)} />
-                    {errors.firstName && <p className="mt-1 text-[10px] text-red-400">{errors.firstName}</p>}
-                  </label>
-                  <label>
-                    <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">Last Name *</span>
-                    <input className={inputCls("lastName")} placeholder="Islam" value={form.lastName} onChange={(e) => set("lastName", e.target.value)} />
-                    {errors.lastName && <p className="mt-1 text-[10px] text-red-400">{errors.lastName}</p>}
-                  </label>
-                </div>
+                <label>
+                  <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">Full Name *</span>
+                  <input className={inputCls("name")} placeholder="Rafiqul Islam" value={form.name} onChange={(e) => set("name", e.target.value)} />
+                  {errors.name && <p className="mt-1 text-[10px] text-red-400">{errors.name}</p>}
+                </label>
                 <label>
                   <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">Phone Number (Bangladesh) *</span>
                   <input className={inputCls("phone")} placeholder="01XXXXXXXXX" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
@@ -200,54 +208,17 @@ export default function CheckoutPage() {
                   <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">Email (Optional)</span>
                   <input className={inputCls("email")} placeholder="For order tracking" type="email" value={form.email} onChange={(e) => set("email", e.target.value)} />
                 </label>
-              </div>
-            </section>
-
-            {/* Delivery */}
-            <section className="border border-[var(--border)] bg-[var(--surface)] p-6">
-              <h2 className="font-serif text-2xl text-[var(--cream)]">2. Delivery Address</h2>
-              <div className="mt-5 space-y-4">
                 <label>
-                  <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">Division *</span>
-                  <select
-                    className={inputCls("division")}
-                    value={form.division}
-                    onChange={(e) => set("division", e.target.value)}
-                  >
-                    <option value="">Select Division</option>
-                    {DIVISIONS.map((d) => <option key={d} value={d}>{d}</option>)}
-                  </select>
-                  {errors.division && <p className="mt-1 text-[10px] text-red-400">{errors.division}</p>}
-                </label>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label>
-                    <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">District *</span>
-                    <input className={inputCls("district")} placeholder="e.g. Chattogram" value={form.district} onChange={(e) => set("district", e.target.value)} />
-                    {errors.district && <p className="mt-1 text-[10px] text-red-400">{errors.district}</p>}
-                  </label>
-                  <label>
-                    <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">Upazila / Area *</span>
-                    <input className={inputCls("area")} placeholder="e.g. Agrabad" value={form.area} onChange={(e) => set("area", e.target.value)} />
-                    {errors.area && <p className="mt-1 text-[10px] text-red-400">{errors.area}</p>}
-                  </label>
-                </div>
-                <label>
-                  <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">Street Address *</span>
-                  <input className={inputCls("address")} placeholder="House No, Road, Block" value={form.address} onChange={(e) => set("address", e.target.value)} />
+                  <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">Delivery Address *</span>
+                  <input className={inputCls("address")} placeholder="House, Road, Area, District" value={form.address} onChange={(e) => set("address", e.target.value)} />
                   {errors.address && <p className="mt-1 text-[10px] text-red-400">{errors.address}</p>}
                 </label>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label>
-                    <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">Postal Code (Optional)</span>
-                    <input className={inputCls("postal")} placeholder="e.g. 4000" value={form.postal} onChange={(e) => set("postal", e.target.value)} />
-                  </label>
-                </div>
               </div>
             </section>
 
             {/* Payment */}
             <section className="border border-[var(--border)] bg-[var(--surface)] p-6">
-              <h2 className="font-serif text-2xl text-[var(--cream)]">3. Payment Method</h2>
+              <h2 className="font-serif text-2xl text-[var(--cream)]">2. Payment Method</h2>
               <div className="mt-5">
                 <div className="border border-[var(--gold-dim)] bg-[var(--gold-tint)] p-4">
                   <div className="flex items-start justify-between gap-4">

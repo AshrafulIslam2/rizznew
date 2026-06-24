@@ -1,56 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { PRODUCTS, PRICE_RANGES, getApiProductCardPrice, type Product } from "@/lib/products";
+import { PRICE_RANGES, fetchAllProducts } from "@/lib/products";
 import { CatalogFilters, PaginationBar } from "@/components/catalog-client";
 import { getSeoOverride, buildMetadata } from "@/lib/seo";
-
-async function fetchProductsFromApi(): Promise<Product[]> {
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3040/api';
-    const res = await fetch(`${apiUrl}/products`, { next: { revalidate: 60 } });
-    if (!res.ok) return PRODUCTS;
-    const data = await res.json();
-    if (!Array.isArray(data) || data.length === 0) return PRODUCTS;
-    const seen = new Set<string>();
-    return data.filter((p: any) => {
-      if (seen.has(p.slug)) return false;
-      seen.add(p.slug);
-      return true;
-    }).map((p: any) => {
-      const fallback = PRODUCTS.find((fp) => fp.slug === p.slug);
-      if (fallback) return fallback;
-
-      const price = getApiProductCardPrice(p);
-      const cheapestVariant = (p.variants ?? []).length > 0
-        ? p.variants.reduce((min: any, v: any) => ((v.sale_price ?? v.price) < (min.sale_price ?? min.price) ? v : min))
-        : null;
-      const oldPrice = cheapestVariant?.sale_price
-        ? cheapestVariant.price
-        : (p.compare_at_price && p.compare_at_price > price ? p.compare_at_price : null);
-
-      return {
-        slug: p.slug,
-        name: p.name,
-        material: p.material ?? '',
-        category: p.category?.name ?? 'Uncategorized',
-        categorySlug: p.category?.slug ?? '',
-        price,
-        oldPrice,
-        badge: p.tags?.includes('new') ? 'New' : p.tags?.includes('bestseller') ? 'Bestseller' : p.is_featured ? 'Bestseller' : null,
-        sizes: [],
-        colors: [],
-        images: p.media?.map((m: any) => m.media_url) ?? p.images?.map((i: any) => i.image_url) ?? [],
-        description: p.description ?? p.short_description ?? '',
-        specs: '',
-        craftsmanship: '',
-        collection: '',
-      } as Product;
-    });
-  } catch {
-    return PRODUCTS;
-  }
-}
 
 async function fetchCategories(): Promise<{ slug: string; name: string }[]> {
   try {
@@ -124,7 +77,7 @@ export default async function CatalogPage({ searchParams }: Props) {
   const page = Math.max(1, Number(params.page ?? "1"));
 
   const [allProducts, categories] = await Promise.all([
-    fetchProductsFromApi(),
+    fetchAllProducts(),
     fetchCategories(),
   ]);
 

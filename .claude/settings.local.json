@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(curl -s -X POST http://localhost:3040/api/products -H \"Content-Type: application/json\" -d \"{\\\\\"name\\\\\":\\\\\"Test Product\\\\\",\\\\\"slug\\\\\":\\\\\"test-product-123\\\\\"}\")",
+      "Bash(curl -s -X POST http://localhost:3040/api/products/cmqjvuv9k000fvl4ghp3tj5f6/variants -H \"Content-Type: application/json\" -d \"{\\\\\"sku\\\\\":\\\\\"TEST-42-TAN-$\\(date +%s\\)\\\\\",\\\\\"variant_name\\\\\":\\\\\"42 / Tan\\\\\",\\\\\"price\\\\\":3500,\\\\\"stock_qty\\\\\":10,\\\\\"attributes\\\\\":{\\\\\"size\\\\\":\\\\\"42\\\\\",\\\\\"color\\\\\":\\\\\"Tan\\\\\"},\\\\\"is_default\\\\\":false,\\\\\"status\\\\\":\\\\\"ACTIVE\\\\\"}\")",
+      "Bash(curl -s -X POST http://localhost:3040/api/products/cmqjvuv9k000fvl4ghp3tj5f6/media -H \"Content-Type: application/json\" -d \"{\\\\\"media_url\\\\\":\\\\\"https://example.com/test.jpg\\\\\",\\\\\"media_type\\\\\":\\\\\"IMAGE\\\\\",\\\\\"alt_text\\\\\":\\\\\"test\\\\\"}\")",
+      "Bash(curl -s -X PATCH http://localhost:3040/api/products/cmqjvuv9k000fvl4ghp3tj5f6 -H \"Content-Type: application/json\" -d \"{\\\\\"status\\\\\":\\\\\"ACTIVE\\\\\",\\\\\"is_published\\\\\":true,\\\\\"is_featured\\\\\":false}\")",
+      "Bash(curl -s http://localhost:3040/api/products)",
+      "Bash(grep -n \"tags\\\\|key=\" \"F:/rizz/src/app/brand/catalog/$\\(ls 'F:/rizz/src/app/brand/catalog/')",
+      "Bash(curl -s \"http://localhost:3040/api/homepage/hero\")",
+      "Bash(curl -s \"http://localhost:3040/api/policies/returns\")",
+      "Bash(curl -s \"http://localhost:3040/api/campaigns\")",
+      "Bash(curl -s -X DELETE http://localhost:3040/api/products/cmqjvuv9k000fvl4ghp3tj5f6)",
+      "Bash(curl -s -X DELETE http://localhost:3040/api/products/cmqjvufwi000dvl4gv1zpco5i)",
+      "Bash(curl -s -X DELETE http://localhost:3040/api/products/cmqjvu5c70009vl4gkb1csky2)",
+      "Bash(curl -s -X PATCH http://localhost:3040/api/products/cmqjw0970000hvl4g1bhyt6kj -H \"Content-Type: application/json\" -d \"{\\\\\"tags\\\\\":[]}\")",
+      "Bash(grep -rn 'key={[^`{]' F:/rizz/src --include=\"*.tsx\")",
+      "Bash(grep \"media/upload\" /tmp/backend3.log)",
+      "Bash(python -c ' *)",
+      "Bash(ls -la /tmp/test.png)",
+      "Bash(netstat -ano)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3040/api/products)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(curl -s http://localhost:4000/products/cmqjxayuk0001vl0wvycu5ecq -o /tmp/product_admin.html)",
+      "mcp__Claude_in_Chrome__browser_batch",
+      "mcp__Claude_in_Chrome__computer"
+    ]
+  }
+}

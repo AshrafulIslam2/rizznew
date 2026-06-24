@@ -384,6 +384,71 @@ export function getRelatedProducts(slug: string, count = 4): Product[] {
   return [...sameCategory, ...others].slice(0, count);
 }
 
+/**
+ * Fetches the live, admin-managed product catalog from the backend, merging in
+ * static fallback data by slug where available. This is the source of truth for
+ * any page that needs the real catalog (listing, related/recommended products),
+ * since the bare PRODUCTS array doesn't reflect what's actually live in the admin panel.
+ */
+export async function fetchAllProducts(): Promise<Product[]> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3040/api";
+    const res = await fetch(`${apiUrl}/products`, { next: { revalidate: 60 } });
+    if (!res.ok) return PRODUCTS;
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) return PRODUCTS;
+    const seen = new Set<string>();
+    return data
+      .filter((p: any) => {
+        if (seen.has(p.slug)) return false;
+        seen.add(p.slug);
+        return true;
+      })
+      .map((p: any) => {
+        const fallback = PRODUCTS.find((fp) => fp.slug === p.slug);
+        if (fallback) return fallback;
+
+        const price = getApiProductCardPrice(p);
+        const cheapestVariant = (p.variants ?? []).length > 0
+          ? p.variants.reduce((min: any, v: any) => ((v.sale_price ?? v.price) < (min.sale_price ?? min.price) ? v : min))
+          : null;
+        const oldPrice = cheapestVariant?.sale_price
+          ? cheapestVariant.price
+          : (p.compare_at_price && p.compare_at_price > price ? p.compare_at_price : null);
+
+        return {
+          slug: p.slug,
+          name: p.name,
+          material: p.material ?? "",
+          category: p.category?.name ?? "Uncategorized",
+          categorySlug: p.category?.slug ?? "",
+          price,
+          oldPrice,
+          badge: p.tags?.includes("new") ? "New" : p.tags?.includes("bestseller") ? "Bestseller" : p.is_featured ? "Bestseller" : null,
+          sizes: [],
+          colors: [],
+          images: p.media?.map((m: any) => m.media_url) ?? p.images?.map((i: any) => i.image_url) ?? [],
+          description: p.description ?? p.short_description ?? "",
+          specs: "",
+          craftsmanship: "",
+          collection: "",
+        } as Product;
+      });
+  } catch {
+    return PRODUCTS;
+  }
+}
+
+/**
+ * Recommends related products from the live catalog: same category first, then
+ * others, excluding the current product, capped at `count`.
+ */
+export function pickRelatedProducts(allProducts: Product[], current: Product, count = 4): Product[] {
+  const sameCategory = allProducts.filter((p) => p.slug !== current.slug && p.category === current.category);
+  const others = allProducts.filter((p) => p.slug !== current.slug && p.category !== current.category);
+  return [...sameCategory, ...others].slice(0, count);
+}
+
 export const CATEGORIES: Category[] = ["Loafers", "Sandals", "Belts", "Wallets", "Half Loafers"];
 
 export const PRICE_RANGES = [

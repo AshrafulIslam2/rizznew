@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 import { useCart } from "@/lib/cart-context";
 
 type ApiCategory = { id: string; slug: string; name: string; parent_id: string | null; is_active: boolean };
@@ -10,6 +10,45 @@ type NavCategory = { label: string; href: string; children: { label: string; hre
 
 function titleCase(s: string) {
   return s.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function LanguageSwitcherInner() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isbn = searchParams.get("lang") === "bn";
+
+  function buildUrl(lang: "en" | "bn") {
+    const params = new URLSearchParams(searchParams.toString());
+    if (lang === "bn") params.set("lang", "bn");
+    else params.delete("lang");
+    const qs = params.toString();
+    return qs ? `${pathname}?${qs}` : pathname;
+  }
+
+  return (
+    <div className="flex items-center gap-0.5 rounded-full border border-[var(--border)] px-1 py-0.5 text-[9px] uppercase tracking-wider">
+      <Link
+        href={buildUrl("en")}
+        className={`rounded-full px-2 py-0.5 transition-colors ${!isbn ? "bg-[var(--gold)] text-[#0a0806] font-bold" : "text-[var(--muted)] hover:text-[var(--text)]"}`}
+      >
+        EN
+      </Link>
+      <Link
+        href={buildUrl("bn")}
+        className={`rounded-full px-2 py-0.5 transition-colors ${isbn ? "bg-[var(--gold)] text-[#0a0806] font-bold" : "text-[var(--muted)] hover:text-[var(--text)]"}`}
+      >
+        বাং
+      </Link>
+    </div>
+  );
+}
+
+function LanguageSwitcher() {
+  return (
+    <Suspense fallback={<div className="w-14 h-5" />}>
+      <LanguageSwitcherInner />
+    </Suspense>
+  );
 }
 
 const DEFAULT_ANNOUNCEMENT = "Complimentary shipping on orders above ৳5,000  ·  COD available nationwide";
@@ -195,6 +234,8 @@ export function SiteHeader() {
                 </Link>
               ))}
               <div className="h-4 w-px bg-[var(--border-soft)]" />
+              <LanguageSwitcher />
+              <div className="h-4 w-px bg-[var(--border-soft)]" />
               <button type="button" aria-label="Search" className="text-[var(--muted)] transition-colors hover:text-[var(--text)]">
                 <SearchIcon />
               </button>
@@ -279,6 +320,13 @@ export function SiteHeader() {
               </ul>
 
               <div className="my-5 border-t border-[var(--border)]" />
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="text-[9px] uppercase tracking-[0.3em] text-[var(--gold-dim)]">Language</span>
+                <LanguageSwitcher />
+              </div>
+
+              <div className="my-3 border-t border-[var(--border)]" />
 
               <Link
                 href="/brand/cart"

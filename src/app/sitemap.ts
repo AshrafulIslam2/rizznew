@@ -7,6 +7,7 @@ const staticPages: { path: string; priority: number; changeFrequency: MetadataRo
   { path: "", priority: 1, changeFrequency: "daily" },
   { path: "/brand/catalog", priority: 0.9, changeFrequency: "daily" },
   { path: "/about", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/manufacturing", priority: 0.8, changeFrequency: "weekly" },
   { path: "/factory-quality", priority: 0.6, changeFrequency: "monthly" },
   { path: "/materials", priority: 0.6, changeFrequency: "monthly" },
   { path: "/contact", priority: 0.5, changeFrequency: "monthly" },
