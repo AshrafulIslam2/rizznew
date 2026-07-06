@@ -16,6 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 type Value = { title: string; body: string };
 type TimelineItem = { year: string; event: string };
+type FaqItem = { q: string; a: string };
 type AboutData = {
   heroImage: string;
   storyParagraphs: string[];
@@ -23,6 +24,7 @@ type AboutData = {
   timeline: TimelineItem[];
   quoteText: string;
   quoteAuthor: string;
+  faq: FaqItem[];
 };
 
 const FALLBACK: AboutData = {
@@ -48,6 +50,12 @@ const FALLBACK: AboutData = {
   ],
   quoteText: "Every pair that leaves our workshop carries a piece of Chittagong with it.",
   quoteAuthor: "The Rizz Atelier",
+  faq: [
+    { q: "Where are RIZZ products made?", a: "All RIZZ products are handcrafted in Chittagong, Bangladesh — in our own workshop by our own craftsmen." },
+    { q: "Is the leather genuine?", a: "Yes. We use only genuine leather — full-grain, vegetable-tanned, suede, or embossed calfskin. No synthetic or bonded leather." },
+    { q: "Do you offer a warranty?", a: "Yes. All products come with a one-year craftsmanship warranty covering stitching, hardware, and structural defects." },
+    { q: "Can I visit the workshop?", a: "We welcome visits by appointment. Contact us via WhatsApp or email to arrange a visit to our Chittagong atelier." },
+  ],
 };
 
 async function getAboutData(): Promise<AboutData> {
@@ -56,18 +64,11 @@ async function getAboutData(): Promise<AboutData> {
     const res = await fetch(`${apiUrl}/about`, { next: { revalidate: 60 } });
     if (!res.ok) return FALLBACK;
     const data = await res.json();
-    return data ?? FALLBACK;
+    return { ...FALLBACK, ...data, faq: data?.faq ?? FALLBACK.faq };
   } catch {
     return FALLBACK;
   }
 }
-
-const faqItems = [
-  { q: "Where are RIZZ products made?", a: "All RIZZ products are handcrafted in Chittagong, Bangladesh — in our own workshop by our own craftsmen." },
-  { q: "Is the leather genuine?", a: "Yes. We use only genuine leather — full-grain, vegetable-tanned, suede, or embossed calfskin. No synthetic or bonded leather." },
-  { q: "Do you offer a warranty?", a: "Yes. All products come with a one-year craftsmanship warranty covering stitching, hardware, and structural defects." },
-  { q: "Can I visit the workshop?", a: "We welcome visits by appointment. Contact us via WhatsApp or email to arrange a visit to our Chittagong atelier." },
-];
 
 export default async function AboutPage() {
   const about = await getAboutData();
@@ -196,7 +197,7 @@ export default async function AboutPage() {
                 __html: JSON.stringify({
                   "@context": "https://schema.org",
                   "@type": "FAQPage",
-                  mainEntity: faqItems.map((item) => ({
+                  mainEntity: about.faq.map((item) => ({
                     "@type": "Question",
                     name: item.q,
                     acceptedAnswer: { "@type": "Answer", text: item.a },
@@ -205,7 +206,7 @@ export default async function AboutPage() {
               }}
             />
             <div className="space-y-2">
-              {faqItems.map((item) => (
+              {about.faq.map((item) => (
                 <details key={item.q} className="group border border-[var(--border)] bg-[var(--bg)]">
                   <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4">
                     <span className="pr-4 text-sm font-medium text-[var(--cream)]">{item.q}</span>
