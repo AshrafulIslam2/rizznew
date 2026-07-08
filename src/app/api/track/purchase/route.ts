@@ -12,19 +12,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ skipped: true }, { status: 200 });
   }
 
-  const { order, eventId } = await req.json();
+  const { order, eventId, fbc, fbp } = await req.json();
 
   const userData: Record<string, unknown> = {
     client_ip_address: req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? undefined,
     client_user_agent: req.headers.get('user-agent') ?? undefined,
   };
+
   if (order.customerEmail) userData.em = [sha256(order.customerEmail)];
+
   if (order.customerPhone) {
-    // Normalise BD numbers: strip spaces/dashes, ensure leading 880
     const raw = String(order.customerPhone).replace(/[\s\-]/g, '');
     const normalised = raw.startsWith('0') ? '880' + raw.slice(1) : raw;
     userData.ph = [sha256(normalised)];
   }
+
+  // external_id — hashed order ID ties this event to a known order
+  if (order.id) userData.external_id = [sha256(String(order.id))];
+
+  // fbc / fbp — raw cookie values, do NOT hash these
+  if (fbc) userData.fbc = fbc;
+  if (fbp) userData.fbp = fbp;
 
   const payload = {
     data: [

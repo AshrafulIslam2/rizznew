@@ -166,6 +166,7 @@ export default function CheckoutPage() {
         }),
       });
       if (!res.ok) throw new Error(await res.text());
+      const orderData = await res.json().catch(() => ({}));
       orderPlaced.current = true;
 
       const eventId = uuidv4();
@@ -180,13 +181,22 @@ export default function CheckoutPage() {
       // Browser-side pixel (with eventID for dedup)
       pixelTrack("Purchase", purchaseData, { eventID: eventId });
 
+      // Read fbc/fbp cookies for EMQ — raw, do NOT hash
+      const getCookie = (name: string) => {
+        const m = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+        return m ? m[2] : undefined;
+      };
+
       // Server-side CAPI (fire-and-forget, same eventID deduplicates)
       fetch("/api/track/purchase", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           eventId,
+          fbc: getCookie("_fbc"),
+          fbp: getCookie("_fbp"),
           order: {
+            id: orderData?.id ?? orderData?.order_id ?? undefined,
             total: grandTotal,
             customerEmail: form.email || undefined,
             customerPhone: form.phone,
