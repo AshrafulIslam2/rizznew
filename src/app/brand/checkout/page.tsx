@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
+import { pixelTrack } from "@/lib/pixel";
 
 const fmt = (n: number) => `৳ ${n.toLocaleString("en-US")}`;
 
@@ -59,6 +60,18 @@ export default function CheckoutPage() {
     return () => ctrl.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, appliedCode]);
+
+  const pixelFired = useRef(false);
+  useEffect(() => {
+    if (items.length === 0 || pixelFired.current) return;
+    pixelFired.current = true;
+    pixelTrack("InitiateCheckout", {
+      value: total,
+      currency: "BDT",
+      num_items: items.reduce((s, i) => s + i.quantity, 0),
+      content_ids: items.map((i) => i.slug),
+    });
+  }, [items, total]);
 
   const orderPlaced = useRef(false);
   const lastSentPhone = useRef("");
@@ -153,6 +166,13 @@ export default function CheckoutPage() {
       });
       if (!res.ok) throw new Error(await res.text());
       orderPlaced.current = true;
+      pixelTrack("Purchase", {
+        value: grandTotal,
+        currency: "BDT",
+        num_items: items.reduce((s, i) => s + i.quantity, 0),
+        content_ids: items.map((i) => i.slug),
+        content_type: "product",
+      });
       clear();
       router.push("/brand/thank-you");
     } catch {

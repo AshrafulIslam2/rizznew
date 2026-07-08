@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getProductBySlug, getReviews, fetchAllProducts, pickRelatedProducts, PRODUCTS, type Product, type ProductVariant, type ProductVideo } from "@/lib/products";
 import { ProductActions, ImageGallery } from "@/components/product-actions";
 import { VisitorCounter } from "@/components/visitor-counter";
+import { PixelViewContent } from "@/components/pixel-events";
 
 type Props = { params: Promise<{ slug: string }>; searchParams?: Promise<{ lang?: string }> };
 
@@ -292,6 +293,7 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <PixelViewContent name={product.name} price={product.price} slug={product.slug} category={product.category} />
       <main>
         {/* Breadcrumb */}
         <nav className="border-b border-[var(--hairline)] px-5 py-3 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)] lg:px-8">
