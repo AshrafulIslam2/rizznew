@@ -17,8 +17,12 @@ function getSessionId() {
 }
 
 export function VisitorCounter({ productId }: { productId: string }) {
-  const [baseline] = useState(() => Math.floor(Math.random() * 81) + 20);
+  const [baseline, setBaseline] = useState(0);
   const [realCount, setRealCount] = useState(0);
+
+  useEffect(() => {
+    setBaseline(Math.floor(Math.random() * 81) + 20);
+  }, []);
 
   useEffect(() => {
     if (!productId) return;

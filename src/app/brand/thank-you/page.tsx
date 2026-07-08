@@ -1,17 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
+import { OrderId } from "./order-id";
 
 export const metadata: Metadata = {
   title: "Order Confirmed | RIZZ",
   description: "Your RIZZ order has been received. We will call to confirm before dispatch."
 };
 
-function genOrderId() {
-  return `RZ-${Math.floor(Math.random() * 90000) + 10000}`;
-}
-
 export default function ThankYouPage() {
-  const orderId = genOrderId();
 
   return (
     <main>
@@ -28,7 +25,9 @@ export default function ThankYouPage() {
         <div className="grid gap-px border border-[var(--border)] bg-[var(--border)] sm:grid-cols-3">
           <div className="bg-[var(--surface)] px-6 py-5">
             <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]">Order Number</p>
-            <p className="mt-2 font-serif text-2xl text-[var(--cream)]}">#{orderId}</p>
+            <Suspense fallback={<span className="mt-2 font-serif text-2xl text-[var(--cream)]">—</span>}>
+              <OrderId />
+            </Suspense>
           </div>
           <div className="bg-[var(--surface)] px-6 py-5">
             <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]">Expected Delivery</p>

@@ -9,12 +9,17 @@ export function ProductActions({ product }: { product: Product }) {
   const { addItem, count } = useCart();
   const router = useRouter();
 
+  const MAX_QTY = 5;
   const variants = product.variants ?? [];
 
-  // Default to the cheapest variant, if any exist.
-  const cheapestVariant = variants.length
-    ? variants.reduce((min, v) => ((v.salePrice ?? v.price) < (min.salePrice ?? min.price) ? v : min))
+  // Default to first IN-STOCK variant (cheapest among in-stock), otherwise cheapest overall.
+  const inStockVariants = variants.filter((v) => v.stock > 0);
+  const cheapestInStock = inStockVariants.length
+    ? inStockVariants.reduce((min, v) => ((v.salePrice ?? v.price) < (min.salePrice ?? min.price) ? v : min))
     : null;
+  const cheapestVariant = cheapestInStock ?? (variants.length
+    ? variants.reduce((min, v) => ((v.salePrice ?? v.price) < (min.salePrice ?? min.price) ? v : min))
+    : null);
 
   const [selectedSize, setSelectedSize] = useState<string | null>(cheapestVariant?.size || null);
   const [selectedColor, setSelectedColor] = useState(
@@ -26,36 +31,61 @@ export function ProductActions({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
   const [error, setError] = useState(false);
 
-  // Sizes available for a given color, and colors available for a given size — derived from real variants.
+  // All sizes/colors for a given color/size (combination exists).
   const sizesForColor = (color: string) => variants.filter((v) => v.color === color).map((v) => v.size);
   const colorsForSize = (size: string) => variants.filter((v) => v.size === size).map((v) => v.color);
 
+  // Stock-aware: is this size in stock for the currently selected color?
+  const isSizeInStock = (size: string) =>
+    variants.some((v) => v.size === size && (selectedColor.label ? v.color === selectedColor.label : true) && v.stock > 0);
+
+  // Stock-aware: is this color in stock for the currently selected size?
+  const isColorInStock = (color: string) =>
+    variants.some((v) => v.color === color && (selectedSize ? v.size === selectedSize : true) && v.stock > 0);
+
   function handleSelectSize(size: string) {
+    if (!isSizeInStock(size)) return; // block click on out-of-stock size
     setError(false);
     const available = colorsForSize(size);
     if (available.length > 0 && !available.includes(selectedColor.label)) {
-      const nextColor = product.colors.find((c) => c.label === available[0]);
+      // Switch to first in-stock color for this size, else any color
+      const nextLabel = available.find((cl) =>
+        variants.some((v) => v.size === size && v.color === cl && v.stock > 0)
+      ) ?? available[0];
+      const nextColor = product.colors.find((c) => c.label === nextLabel);
       if (nextColor) setSelectedColor(nextColor);
     }
     setSelectedSize(size);
+    setQty(1);
   }
 
   function handleSelectColor(c: { label: string; hex: string }) {
+    if (!isColorInStock(c.label) && variants.some((v) => v.color === c.label)) {
+      // Color exists but all out of stock — still allow selection to show OOS state
+    }
     const available = sizesForColor(c.label);
     if (available.length > 0 && selectedSize && !available.includes(selectedSize)) {
-      setSelectedSize(available[0]);
+      // Switch to first in-stock size for this color, else any size
+      const nextSize = available.find((s) =>
+        variants.some((v) => v.size === s && v.color === c.label && v.stock > 0)
+      ) ?? available[0];
+      setSelectedSize(nextSize);
     }
     setSelectedColor(c);
+    setQty(1);
   }
 
   const currentVariant =
     variants.find((v) => v.size === selectedSize && v.color === selectedColor.label)
     ?? cheapestVariant;
 
+  const isOutOfStock = variants.length > 0 && (currentVariant == null || currentVariant.stock <= 0);
+
   const displayPrice = currentVariant ? (currentVariant.salePrice ?? currentVariant.price) : product.price;
   const displayOldPrice = currentVariant?.salePrice ? currentVariant.price : (product.oldPrice && product.oldPrice > displayPrice ? product.oldPrice : null);
 
   function handleAdd() {
+    if (isOutOfStock) return;
     if (product.sizes.length > 0 && !selectedSize) {
       setError(true);
       setTimeout(() => setError(false), 2000);
@@ -76,6 +106,7 @@ export function ProductActions({ product }: { product: Product }) {
   }
 
   function handleBuyNow() {
+    if (isOutOfStock) return;
     if (product.sizes.length > 0 && !selectedSize) {
       setError(true);
       setTimeout(() => setError(false), 2000);
@@ -165,19 +196,30 @@ export function ProductActions({ product }: { product: Product }) {
           </div>
           <div className="flex flex-wrap gap-2">
             {product.sizes.map((s) => {
-              const isAvailable = !selectedColor.label || sizesForColor(selectedColor.label).includes(s);
+              const combinationExists = !selectedColor.label || sizesForColor(selectedColor.label).includes(s);
+              const inStock = isSizeInStock(s);
+              const isDisabled = !combinationExists || !inStock;
               return (
                 <button
                   key={s}
                   type="button"
                   onClick={() => handleSelectSize(s)}
-                  className={`min-w-[48px] border px-3 py-2 text-[10px] uppercase tracking-[0.18em] transition-all ${
+                  disabled={isDisabled}
+                  title={isDisabled ? "Out of stock" : undefined}
+                  className={`relative min-w-[48px] border px-3 py-2 text-[10px] uppercase tracking-[0.18em] transition-all ${
                     selectedSize === s
                       ? "border-[var(--gold)] text-[var(--gold-light)] bg-[var(--gold-tint)]"
+                      : isDisabled
+                      ? "cursor-not-allowed border-[var(--border-soft)] text-[var(--muted)] opacity-35"
                       : "border-[var(--border-soft)] text-[var(--muted)] hover:border-[var(--gold-dim)] hover:text-[var(--text)]"
-                  } ${!isAvailable ? "opacity-30" : ""}`}
+                  }`}
                 >
                   {s}
+                  {isDisabled && (
+                    <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                      <span className="absolute h-px w-[70%] rotate-[-35deg] bg-[var(--muted)] opacity-40" />
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -190,24 +232,32 @@ export function ProductActions({ product }: { product: Product }) {
 
       {/* Quantity */}
       <div>
-        <p className="mb-3 text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]">Quantity</p>
+        <p className="mb-3 text-[10px] uppercase tracking-[0.25em] text-[var(--muted)]">
+          Quantity{" "}
+          <span className="normal-case tracking-normal text-[var(--muted)] opacity-60">(max {MAX_QTY})</span>
+        </p>
         <div className="inline-flex items-center border border-[var(--border-soft)]">
           <button
             type="button"
             onClick={() => setQty((q) => Math.max(1, q - 1))}
-            className="h-11 w-11 flex items-center justify-center text-[var(--muted)] hover:text-[var(--text)] transition-colors text-lg"
+            disabled={qty <= 1}
+            className="h-11 w-11 flex items-center justify-center text-[var(--muted)] hover:text-[var(--text)] transition-colors text-lg disabled:opacity-30 disabled:cursor-not-allowed"
           >
             −
           </button>
           <span className="w-12 text-center text-sm text-[var(--cream)]">{qty}</span>
           <button
             type="button"
-            onClick={() => setQty((q) => q + 1)}
-            className="h-11 w-11 flex items-center justify-center text-[var(--muted)] hover:text-[var(--text)] transition-colors text-lg"
+            onClick={() => setQty((q) => Math.min(MAX_QTY, q + 1))}
+            disabled={qty >= MAX_QTY}
+            className="h-11 w-11 flex items-center justify-center text-[var(--muted)] hover:text-[var(--text)] transition-colors text-lg disabled:opacity-30 disabled:cursor-not-allowed"
           >
             +
           </button>
         </div>
+        {qty >= MAX_QTY && (
+          <p className="mt-2 text-xs text-[var(--muted)]">Maximum {MAX_QTY} per order. Contact us for bulk orders.</p>
+        )}
       </div>
 
       {/* COD badge */}
@@ -221,16 +271,24 @@ export function ProductActions({ product }: { product: Product }) {
         <button
           type="button"
           onClick={handleAdd}
-          className={`flex-1 btn-outline transition-all ${added ? "border-emerald-500 text-emerald-400" : ""}`}
+          disabled={isOutOfStock}
+          className={`flex-1 btn-outline transition-all ${
+            isOutOfStock
+              ? "cursor-not-allowed opacity-40"
+              : added
+              ? "border-emerald-500 text-emerald-400"
+              : ""
+          }`}
         >
-          {added ? "Added ✓" : "Add to Cart"}
+          {isOutOfStock ? "Out of Stock" : added ? "Added ✓" : "Add to Cart"}
         </button>
         <button
           type="button"
           onClick={handleBuyNow}
-          className="flex-1 btn-primary"
+          disabled={isOutOfStock}
+          className={`flex-1 btn-primary ${isOutOfStock ? "cursor-not-allowed opacity-40" : ""}`}
         >
-          Buy Now
+          {isOutOfStock ? "Unavailable" : "Buy Now"}
         </button>
       </div>
 
