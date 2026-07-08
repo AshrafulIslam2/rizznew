@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
 import { pixelTrack } from "@/lib/pixel";
+import { v4 as uuidv4 } from "uuid";
 
 const fmt = (n: number) => `৳ ${n.toLocaleString("en-US")}`;
 
@@ -166,13 +167,34 @@ export default function CheckoutPage() {
       });
       if (!res.ok) throw new Error(await res.text());
       orderPlaced.current = true;
-      pixelTrack("Purchase", {
+
+      const eventId = uuidv4();
+      const purchaseData = {
         value: grandTotal,
         currency: "BDT",
         num_items: items.reduce((s, i) => s + i.quantity, 0),
         content_ids: items.map((i) => i.slug),
         content_type: "product",
-      });
+      };
+
+      // Browser-side pixel (with eventID for dedup)
+      pixelTrack("Purchase", purchaseData, { eventID: eventId });
+
+      // Server-side CAPI (fire-and-forget, same eventID deduplicates)
+      fetch("/api/track/purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventId,
+          order: {
+            total: grandTotal,
+            customerEmail: form.email || undefined,
+            customerPhone: form.phone,
+            items: items.map((i) => ({ slug: i.slug, quantity: i.quantity })),
+          },
+        }),
+      }).catch(() => {});
+
       clear();
       router.push("/brand/thank-you");
     } catch {

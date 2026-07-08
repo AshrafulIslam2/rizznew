@@ -4,8 +4,12 @@ declare global {
   }
 }
 
-export function pixelTrack(event: string, data?: Record<string, unknown>) {
+export function pixelTrack(
+  event: string,
+  data?: Record<string, unknown>,
+  options?: { eventID?: string },
+) {
   if (typeof window !== "undefined" && typeof window.fbq === "function") {
-    window.fbq("track", event, data);
+    window.fbq("track", event, data ?? {}, options ?? {});
   }
 }
