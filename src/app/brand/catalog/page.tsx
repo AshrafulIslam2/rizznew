@@ -5,7 +5,14 @@ import { PRICE_RANGES, fetchAllProducts } from "@/lib/products";
 import { CatalogFilters, PaginationBar } from "@/components/catalog-client";
 import { getSeoOverride, buildMetadata } from "@/lib/seo";
 
-async function fetchCategories(): Promise<{ slug: string; name: string }[]> {
+type CategoryData = {
+  slug: string;
+  name: string;
+  page_intro?: string;
+  extra_faq?: { q: string; a: string }[];
+};
+
+async function fetchCategories(): Promise<CategoryData[]> {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3040/api';
     const res = await fetch(`${apiUrl}/categories`, { next: { revalidate: 300 } });
@@ -14,7 +21,12 @@ async function fetchCategories(): Promise<{ slug: string; name: string }[]> {
     if (!Array.isArray(data)) return [];
     return data
       .filter((c: any) => c.is_active)
-      .map((c: any) => ({ slug: c.slug, name: c.name }));
+      .map((c: any) => ({
+        slug: c.slug,
+        name: c.name,
+        page_intro: c.page_intro ?? undefined,
+        extra_faq: Array.isArray(c.extra_faq) ? c.extra_faq : [],
+      }));
   } catch {
     return [];
   }
@@ -81,6 +93,19 @@ export default async function CatalogPage({ searchParams }: Props) {
     fetchCategories(),
   ]);
 
+  const catData = category !== "all"
+    ? categories.find((c) => c.slug === category) ?? null
+    : null;
+
+  const h1 = catData
+    ? `${catData.name} — Handcrafted in Chittagong, Bangladesh`
+    : "Shop All";
+
+  const allFaqItems = [
+    ...faqItems,
+    ...(catData?.extra_faq ?? []),
+  ];
+
   // Filter
   let filtered = [...allProducts];
 
@@ -111,9 +136,9 @@ export default async function CatalogPage({ searchParams }: Props) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "RIZZ Leather — Shop All",
-    description: "Luxury handcrafted leather footwear and accessories from Chittagong, Bangladesh.",
-    url: "https://rizzleather.com/brand/catalog",
+    name: catData ? `RIZZ ${catData.name} — ${h1}` : "RIZZ Leather — Shop All",
+    description: catData?.page_intro?.slice(0, 160) ?? "Luxury handcrafted leather footwear and accessories from Chittagong, Bangladesh.",
+    url: catData ? `https://rizzleather.com/brand/catalog?category=${catData.slug}` : "https://rizzleather.com/brand/catalog",
     breadcrumb: {
       "@type": "BreadcrumbList",
       itemListElement: [
@@ -132,8 +157,10 @@ export default async function CatalogPage({ searchParams }: Props) {
       <main>
         {/* Hero */}
         <section className="border-b border-[var(--hairline)] bg-[var(--surface)] py-14 text-center">
-          <p className="text-[9px] uppercase tracking-[0.5em] text-[var(--gold-dim)]">The Collection</p>
-          <h1 className="mt-3 font-serif text-4xl text-[var(--cream)] sm:text-5xl lg:text-6xl">Shop All</h1>
+          <p className="text-[9px] uppercase tracking-[0.5em] text-[var(--gold-dim)]">
+            {catData ? catData.name : "The Collection"}
+          </p>
+          <h1 className="mt-3 font-serif text-4xl text-[var(--cream)] sm:text-5xl lg:text-6xl">{h1}</h1>
           <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-[var(--muted)]">
             Every piece handcrafted in Chittagong, Bangladesh. Genuine leather. COD across the country.
           </p>
@@ -141,9 +168,24 @@ export default async function CatalogPage({ searchParams }: Props) {
           <nav className="mt-6 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
             <Link href="/" className="hover:text-[var(--text)] transition-colors">Home</Link>
             <span className="opacity-40">›</span>
-            <span className="text-[var(--gold-dim)]">Shop</span>
+            {catData ? (
+              <>
+                <Link href="/brand/catalog" className="hover:text-[var(--text)] transition-colors">Shop</Link>
+                <span className="opacity-40">›</span>
+                <span className="text-[var(--gold-dim)]">{catData.name}</span>
+              </>
+            ) : (
+              <span className="text-[var(--gold-dim)]">Shop</span>
+            )}
           </nav>
         </section>
+
+        {/* Category intro text */}
+        {catData?.page_intro && (
+          <section className="mx-auto max-w-3xl px-5 py-10 lg:px-8">
+            <p className="text-sm leading-loose text-[var(--muted)] whitespace-pre-line">{catData.page_intro}</p>
+          </section>
+        )}
 
         {/* Filters + Grid */}
         <section className="mx-auto max-w-7xl px-5 py-12 lg:px-8">
@@ -223,7 +265,7 @@ export default async function CatalogPage({ searchParams }: Props) {
                 __html: JSON.stringify({
                   "@context": "https://schema.org",
                   "@type": "FAQPage",
-                  mainEntity: faqItems.map((item) => ({
+                  mainEntity: allFaqItems.map((item) => ({
                     "@type": "Question",
                     name: item.q,
                     acceptedAnswer: { "@type": "Answer", text: item.a }
@@ -232,7 +274,7 @@ export default async function CatalogPage({ searchParams }: Props) {
               }}
             />
             <div className="space-y-2">
-              {faqItems.map((item) => (
+              {allFaqItems.map((item) => (
                 <details key={item.q} className="group border border-[var(--border)] bg-[var(--bg)]">
                   <summary className="flex cursor-pointer list-none items-center justify-between px-6 py-4">
                     <span className="pr-4 text-sm font-medium text-[var(--cream)]">{item.q}</span>
