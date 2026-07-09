@@ -15,7 +15,7 @@ type CategoryData = {
 async function fetchCategories(): Promise<CategoryData[]> {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3040/api';
-    const res = await fetch(`${apiUrl}/categories`, { next: { revalidate: 300 } });
+    const res = await fetch(`${apiUrl}/categories`, { cache: 'no-store' });
     if (!res.ok) return [];
     const data = await res.json();
     if (!Array.isArray(data)) return [];
