@@ -32,15 +32,29 @@ async function fetchCategories(): Promise<CategoryData[]> {
   }
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }): Promise<Metadata> {
+  const params = await searchParams;
+  const page = Math.max(1, Number(params.page ?? "1"));
   const override = await getSeoOverride("catalog");
-  return buildMetadata({
+
+  const baseTitle = "Shop All — Luxury Leather Footwear & Accessories | RIZZ";
+  const baseDescription = "Browse the full RIZZ collection — handcrafted loafers, sandals, belts, and wallets. Genuine leather. Filter by category, price, and size. COD available across Bangladesh.";
+
+  const meta = buildMetadata({
     path: "/brand/catalog",
-    defaultTitle: "Shop All — Luxury Leather Footwear & Accessories | RIZZ",
-    defaultDescription:
-      "Browse the full RIZZ collection — handcrafted loafers, sandals, belts, and wallets. Genuine leather. Filter by category, price, and size. COD available across Bangladesh.",
+    defaultTitle: page > 1 ? `${baseTitle} — Page ${page}` : baseTitle,
+    defaultDescription: page > 1 ? `${baseDescription} Page ${page}.` : baseDescription,
     override,
   });
+
+  // Self-referencing canonical for every paginated URL (?page=2, ?page=3, …)
+  if (page > 1) {
+    return {
+      ...meta,
+      alternates: { canonical: `/brand/catalog?page=${page}` },
+    };
+  }
+  return meta;
 }
 
 const PAGE_SIZE = 8;

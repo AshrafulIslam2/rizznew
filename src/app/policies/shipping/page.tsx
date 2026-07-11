@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Delivery & Shipping Policy | RIZZ",
-  description: "RIZZ delivers across Bangladesh via COD in 2–4 business days. International shipping to USA, Europe, and Middle East. Full shipping policy details."
+  title: "Delivery & Shipping Policy | RIZZ Leather",
+  description: "RIZZ delivers across Bangladesh via COD in 2–4 business days. International shipping to USA, Europe, and Middle East. Full shipping policy details.",
+  alternates: { canonical: "/policies/shipping" },
 };
 
 export default function ShippingPage() {

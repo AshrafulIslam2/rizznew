@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Returns & Exchanges Policy | RIZZ",
-  description: "RIZZ accepts returns within 7 days of delivery for unworn items. First exchange is free. Full return and exchange policy details."
+  title: "Returns & Exchanges Policy | RIZZ Leather",
+  description: "RIZZ accepts returns within 7 days of delivery for unworn items. First exchange is free. Full return and exchange policy details.",
+  alternates: { canonical: "/policies/returns" },
 };
 
 export default function ReturnsPage() {

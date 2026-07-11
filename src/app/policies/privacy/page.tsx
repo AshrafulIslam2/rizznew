@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Rizz Leather",
-  description: "Privacy policy for Rizz Leather website and inquiries."
+  title: "Privacy Policy | RIZZ Leather",
+  description: "RIZZ Leather privacy policy — how we collect, use, and protect your personal data. Read your rights and our data practices.",
+  alternates: { canonical: "/policies/privacy" },
 };
 
 export default function PrivacyPolicyPage() {

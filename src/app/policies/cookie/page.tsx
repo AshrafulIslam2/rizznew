@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy | Rizz Leather",
-  description: "Cookie usage and browser storage policy for Rizz Leather website."
+  title: "Cookie Policy | RIZZ Leather",
+  description: "RIZZ Leather cookie policy — what cookies we use, why we use them, and how to manage or opt out.",
+  alternates: { canonical: "/policies/cookie" },
 };
 
 export default function CookiePolicyPage() {

@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | RIZZ",
-  description: "Terms of service for RIZZ — luxury leather footwear and accessories. Governs all purchases, use of the website, and customer obligations."
+  title: "Terms of Service | RIZZ Leather",
+  description: "Terms of service for RIZZ — luxury leather footwear and accessories. Governs all purchases, use of the website, and customer obligations.",
+  alternates: { canonical: "/policies/terms" },
 };
 
 export default function TermsPage() {

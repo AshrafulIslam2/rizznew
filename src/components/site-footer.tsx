@@ -159,7 +159,7 @@ export async function SiteFooter() {
             </div>
           )}
           <div className="flex flex-wrap gap-5">
-            {POLICY_LINKS.slice(0, 3).map((link) => (
+            {POLICY_LINKS.map((link) => (
               <Link key={link.href} href={link.href} className="hover:text-[var(--muted)] transition-colors">
                 {link.label}
               </Link>
