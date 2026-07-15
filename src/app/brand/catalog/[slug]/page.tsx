@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProductBySlug, getReviews, fetchAllProducts, pickRelatedProducts, PRODUCTS, type Product, type ProductVariant, type ProductVideo } from "@/lib/products";
+import { getProductBySlug, fetchAllProducts, pickRelatedProducts, PRODUCTS, type Product, type ProductVariant, type ProductVideo } from "@/lib/products";
 import { ProductActions, ImageGallery } from "@/components/product-actions";
 import { VisitorCounter } from "@/components/visitor-counter";
 import { PixelViewContent } from "@/components/pixel-events";
@@ -228,7 +228,7 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
   const allProducts = await fetchAllProducts();
   const related = pickRelatedProducts(allProducts, product, 4);
 
-  const apiReviews = ((apiProduct?.reviews as Record<string, unknown>[] | undefined) ?? [])
+  const reviews = ((apiProduct?.reviews as Record<string, unknown>[] | undefined) ?? [])
     .filter((r) => r.status === "active")
     .map((r) => ({
       name: r.customer_name as string,
@@ -237,7 +237,6 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
       body: (r.comment as string) ?? "",
       image: r.customer_image_url as string | undefined,
     }));
-  const reviews = apiReviews.length > 0 ? apiReviews : getReviews(slug);
   const avgRating = reviews.length > 0 ? Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) : 0;
 
   const schema = {
@@ -257,13 +256,15 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
       areaServed: { "@type": "Country", name: "Bangladesh" },
       seller: { "@type": "Organization", name: "RIZZ Leather" }
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: avgRating,
-      reviewCount: reviews.length,
-      bestRating: 5,
-      worstRating: 1
-    }
+    ...(reviews.length > 0 ? {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: avgRating,
+        reviewCount: reviews.length,
+        bestRating: 5,
+        worstRating: 1
+      }
+    } : {})
   };
 
   const breadcrumbSchema = {
@@ -318,11 +319,13 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
               <h1 className="mt-2 font-serif text-4xl leading-tight text-[var(--cream)] sm:text-5xl">{product.name}</h1>
               <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]">{product.material}</p>
 
-              {/* Rating summary */}
-              <div className="mt-3 flex items-center gap-2">
-                <StarRating rating={avgRating} />
-                <span className="text-[10px] text-[var(--muted)]">({reviews.length} reviews)</span>
-              </div>
+              {/* Rating summary — only when there are real reviews */}
+              {reviews.length > 0 && (
+                <div className="mt-3 flex items-center gap-2">
+                  <StarRating rating={avgRating} />
+                  <span className="text-[10px] text-[var(--muted)]">({reviews.length} reviews)</span>
+                </div>
+              )}
 
               <div className="mt-3">
                 <VisitorCounter productId={product.id ?? product.slug} />
@@ -353,41 +356,43 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
           </div>
         </section>
 
-        {/* Reviews */}
-        <section className="border-t border-[var(--hairline)] py-14 lg:py-20">
-          <div className="mx-auto max-w-7xl px-5 lg:px-8">
-            <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="text-[9px] uppercase tracking-[0.45em] text-[var(--gold-dim)]">Verified Buyers</p>
-                <h2 className="mt-2 font-serif text-3xl text-[var(--cream)] sm:text-4xl">Customer Reviews</h2>
+        {/* Reviews — only rendered when the product has real reviews in the admin */}
+        {reviews.length > 0 && (
+          <section className="border-t border-[var(--hairline)] py-14 lg:py-20">
+            <div className="mx-auto max-w-7xl px-5 lg:px-8">
+              <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-[9px] uppercase tracking-[0.45em] text-[var(--gold-dim)]">Verified Buyers</p>
+                  <h2 className="mt-2 font-serif text-3xl text-[var(--cream)] sm:text-4xl">Customer Reviews</h2>
+                </div>
+                <div className="flex items-center gap-3">
+                  <StarRating rating={avgRating} />
+                  <span className="text-sm text-[var(--muted)]">{avgRating}.0 out of 5 · {reviews.length} reviews</span>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <StarRating rating={avgRating} />
-                <span className="text-sm text-[var(--muted)]">{avgRating}.0 out of 5 · {reviews.length} reviews</span>
-              </div>
-            </div>
 
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {reviews.map((review, i) => (
-                <article key={i} className="border border-[var(--border)] bg-[var(--surface)] p-6">
-                  <div className="mb-3 flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      {review.image && (
-                        <img src={review.image} alt={review.name} className="h-9 w-9 rounded-full object-cover" />
-                      )}
-                      <div>
-                        <p className="text-sm font-medium text-[var(--cream)]">{review.name}</p>
-                        <p className="mt-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]">{review.date}</p>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {reviews.map((review, i) => (
+                  <article key={i} className="border border-[var(--border)] bg-[var(--surface)] p-6">
+                    <div className="mb-3 flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        {review.image && (
+                          <img src={review.image} alt={review.name} className="h-9 w-9 rounded-full object-cover" />
+                        )}
+                        <div>
+                          <p className="text-sm font-medium text-[var(--cream)]">{review.name}</p>
+                          <p className="mt-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]">{review.date}</p>
+                        </div>
                       </div>
+                      <StarRating rating={review.rating} />
                     </div>
-                    <StarRating rating={review.rating} />
-                  </div>
-                  <p className="text-sm leading-relaxed text-[var(--muted)]">{review.body}</p>
-                </article>
-              ))}
+                    <p className="text-sm leading-relaxed text-[var(--muted)]">{review.body}</p>
+                  </article>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* Recommended */}
         <section className="border-t border-[var(--hairline)] py-14 lg:py-20">
