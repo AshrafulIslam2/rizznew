@@ -25,7 +25,9 @@
       "mcp__Claude_Preview__preview_start",
       "Bash(curl -s http://localhost:4000/products/cmqjxayuk0001vl0wvycu5ecq -o /tmp/product_admin.html)",
       "mcp__Claude_in_Chrome__browser_batch",
-      "mcp__Claude_in_Chrome__computer"
+      "mcp__Claude_in_Chrome__computer",
+      "Bash(npx tsc *)",
+      "Bash(npm install *)"
     ]
   }
 }
