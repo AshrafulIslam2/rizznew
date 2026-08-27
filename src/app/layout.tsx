@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CartProvider } from "@/lib/cart-context";
 import { getBaseUrl } from "@/lib/seo";
+import { BUSINESS as BUSINESS_NAP } from "@/lib/business";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,8 +23,11 @@ const cormorant = Cormorant_Garamond({
 const baseUrl = getBaseUrl();
 const siteName = "RIZZ Leather";
 const defaultTitle = "RIZZ — Luxury Leather Footwear & Accessories | Bangladesh";
+// Kept at ~150 characters: Google truncates around 155-160 on desktop, and the
+// previous 171-character version was being cut mid-sentence in results. Ends
+// on a call to action so the snippet earns the click.
 const defaultDescription =
-  "Artisan leather footwear and accessories handcrafted in Chittagong, Bangladesh. Shop genuine leather loafers, sandals, belts, and wallets with Cash on Delivery nationwide.";
+  "Shop genuine leather shoes,chelsi,office shoes, loafers, sandals, belts & wallets from Chattogram,Bangladesh with nationwide Cash on Delivery.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -67,7 +71,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     alternateLocale: ["bn_BD"],
     url: baseUrl,
-    images: [{ url: "/assets/images/rizzslide.jpg", width: 1200, height: 630, alt: siteName }],
+    images: [{ url: "/assets/images/rizz-slide-crocodile-leather-sandal.jpg", width: 1200, height: 630, alt: siteName }],
   },
   twitter: {
     card: "summary_large_image",
@@ -108,7 +112,7 @@ function buildOrganizationSchema(sameAs: string[]) {
     name: siteName,
     alternateName: ["RIZZ চামড়া", "রিজ লেদার"],
     url: baseUrl,
-    logo: `${baseUrl}/assets/images/rizzslide.jpg`,
+    logo: `${baseUrl}/assets/images/rizz.png`,
     description: defaultDescription,
     foundingLocation: { "@type": "Place", name: "Chittagong, Bangladesh" },
     areaServed: [
@@ -125,13 +129,16 @@ const localBusinessSchema = {
   "@type": "ClothingStore",
   "@id": `${baseUrl}/#localbusiness`,
   name: siteName,
-  image: `${baseUrl}/assets/images/rizzslide.jpg`,
+  image: `${baseUrl}/assets/images/rizz-slide-crocodile-leather-sandal.jpg`,
   url: baseUrl,
   priceRange: "৳৳",
+  telephone: BUSINESS_NAP.telephone,
   address: {
     "@type": "PostalAddress",
-    addressLocality: "Chittagong",
-    addressCountry: "BD",
+    streetAddress: BUSINESS_NAP.streetAddress,
+    addressLocality: BUSINESS_NAP.addressLocality,
+    postalCode: BUSINESS_NAP.postalCode,
+    addressCountry: BUSINESS_NAP.addressCountry,
   },
   geo: { "@type": "GeoCoordinates", latitude: 22.3569, longitude: 91.7832 },
   areaServed: "Bangladesh",

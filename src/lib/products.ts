@@ -53,10 +53,10 @@ export const PRODUCTS: Product[] = [
       { label: "Dark Tan", hex: "#8a5c3f" }
     ],
     images: [
-      "/assets/images/rizz_master_color_sandals/image01.jpg",
-      "/assets/images/rizz_crodile_slide_sandals/image05.jpg",
-      "/assets/images/rizz_crodile_slide_sandals/image07.jpg",
-      "/assets/images/rizz_double_bockles-sandals/image02.jpg"
+      "/assets/images/rizz_master_color_sandals/rizz-master-color-quilted-leather-sandal-1.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-5.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-7.jpg",
+      "/assets/images/rizz_double_bockles-sandals/rizz-double-buckle-leather-sandal-2.jpg"
     ],
     description:
       "The Onyx Loafer is the cornerstone of the Rizz collection. Cut from a single piece of full-grain calfskin, its silhouette is clean, its welt stitched by hand. This is the shoe that wears better at ten years than it did at ten days.",
@@ -80,9 +80,9 @@ export const PRODUCTS: Product[] = [
       { label: "Chestnut", hex: "#4a2c1a" }
     ],
     images: [
-      "/assets/images/rizz_crodile_slide_sandals/image07.jpg",
-      "/assets/images/rizz_master_color_sandals/image01.jpg",
-      "/assets/images/rizz_double_bockles-sandals/image02.jpg"
+      "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-7.jpg",
+      "/assets/images/rizz_master_color_sandals/rizz-master-color-quilted-leather-sandal-1.jpg",
+      "/assets/images/rizz_double_bockles-sandals/rizz-double-buckle-leather-sandal-2.jpg"
     ],
     description:
       "Vegetable-tanned in the traditional manner. The Tobacco Penny Loafer develops a deep, personal patina with every wear — a shoe that becomes truly yours over time.",
@@ -106,9 +106,9 @@ export const PRODUCTS: Product[] = [
       { label: "Dark Navy", hex: "#1a1f2e" }
     ],
     images: [
-      "/assets/images/rizz_crodile_slide_sandals/image05.jpg",
-      "/assets/images/rizz_master_color_sandals/image01.jpg",
-      "/assets/images/rizz_simple_sandals/image01.jpg"
+      "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-5.jpg",
+      "/assets/images/rizz_master_color_sandals/rizz-master-color-quilted-leather-sandal-1.jpg",
+      "/assets/images/rizz_simple_sandals/rizz-simple-leather-thong-sandal-1.jpg"
     ],
     description:
       "Exotic texture without compromise. The crocodile-emboss calfskin delivers maximum visual presence while remaining supple and comfortable through a full day of wear.",
@@ -133,9 +133,9 @@ export const PRODUCTS: Product[] = [
       { label: "Black", hex: "#0a0808" }
     ],
     images: [
-      "/assets/images/rizz_crodile_slide_sandals/image07.jpg",
-      "/assets/images/rizz_dubai_sandals/image04.jpg",
-      "/assets/images/rizz_crodile_slide_sandals/image05.jpg"
+      "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-7.jpg",
+      "/assets/images/rizz_dubai_sandals/rizz-dubai-arabic-leather-sandal-4.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-5.jpg"
     ],
     description:
       "The Cognac Mule: open at the heel, rich at the front. Suede upper over a padded leather footbed. Slips on in a second, stays comfortable for hours.",
@@ -160,9 +160,9 @@ export const PRODUCTS: Product[] = [
       { label: "Black", hex: "#0d0b09" }
     ],
     images: [
-      "/assets/images/rizz_dubai_sandals/image04.jpg",
-      "/assets/images/rizz_crodile_slide_sandals/image05.jpg",
-      "/assets/images/rizz_master_color_sandals/image01.jpg"
+      "/assets/images/rizz_dubai_sandals/rizz-dubai-arabic-leather-sandal-4.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-5.jpg",
+      "/assets/images/rizz_master_color_sandals/rizz-master-color-quilted-leather-sandal-1.jpg"
     ],
     description:
       "Wide strap, clean line. Inspired by resort elegance, the Dubai Slide is the only sandal you need from June through September.",
@@ -186,9 +186,9 @@ export const PRODUCTS: Product[] = [
       { label: "Tan", hex: "#9b6940" }
     ],
     images: [
-      "/assets/images/rizz_double_bockles-sandals/image02.jpg",
-      "/assets/images/rizz_double_bockles-sandals/image03.jpg",
-      "/assets/images/rizz_dubai_sandals/image04.jpg"
+      "/assets/images/rizz_double_bockles-sandals/rizz-double-buckle-leather-sandal-2.jpg",
+      "/assets/images/rizz_double_bockles-sandals/rizz-double-buckle-leather-sandal-3.jpg",
+      "/assets/images/rizz_dubai_sandals/rizz-dubai-arabic-leather-sandal-4.jpg"
     ],
     description:
       "Two buckles, one statement. Adjustable at both ankle and instep for a precision fit — the sandal that takes you from beach to dinner.",
@@ -213,9 +213,9 @@ export const PRODUCTS: Product[] = [
       { label: "Cognac", hex: "#7a4f2d" }
     ],
     images: [
-      "/assets/images/rizz_cholate_sandals/image01.jpg",
-      "/assets/images/rizz_double_bockles-sandals/image03.jpg",
-      "/assets/images/rizz_simple_sandals/image01.jpg"
+      "/assets/images/rizz_cholate_sandals/rizz-cholate-h-strap-leather-sandal-1.jpg",
+      "/assets/images/rizz_double_bockles-sandals/rizz-double-buckle-leather-sandal-3.jpg",
+      "/assets/images/rizz_simple_sandals/rizz-simple-leather-thong-sandal-1.jpg"
     ],
     description:
       "Full-grain Italian calf, 35mm width. The Signature Belt closes with a solid brass frame buckle and wears as naturally with tailored trousers as it does with dark denim.",
@@ -239,9 +239,9 @@ export const PRODUCTS: Product[] = [
       { label: "Mahogany", hex: "#4a1c0f" }
     ],
     images: [
-      "/assets/images/rizz_simple_sandals/image02.jpg",
-      "/assets/images/rizz_cholate_sandals/image01.jpg",
-      "/assets/images/rizz_crodile_slide_sandals/image05.jpg"
+      "/assets/images/rizz_simple_sandals/rizz-simple-leather-thong-sandal-2.jpg",
+      "/assets/images/rizz_cholate_sandals/rizz-cholate-h-strap-leather-sandal-1.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-5.jpg"
     ],
     description:
       "Smooth box calf, 30mm narrow profile. For black-tie and formal occasions — a belt that disappears into an outfit, which is exactly what it should do.",
@@ -266,9 +266,9 @@ export const PRODUCTS: Product[] = [
       { label: "Black", hex: "#0a0808" }
     ],
     images: [
-      "/assets/images/rizz_double_bockles-sandals/image03.jpg",
-      "/assets/images/rizz_simple_sandals/image01.jpg",
-      "/assets/images/rizz_master_color_sandals/image01.jpg"
+      "/assets/images/rizz_double_bockles-sandals/rizz-double-buckle-leather-sandal-3.jpg",
+      "/assets/images/rizz_simple_sandals/rizz-simple-leather-thong-sandal-1.jpg",
+      "/assets/images/rizz_master_color_sandals/rizz-master-color-quilted-leather-sandal-1.jpg"
     ],
     description:
       "Six card slots, two cash compartments, one coin pocket. Slim enough to forget you are carrying it — until you open it.",
@@ -293,9 +293,9 @@ export const PRODUCTS: Product[] = [
       { label: "Cognac", hex: "#7a4f2d" }
     ],
     images: [
-      "/assets/images/rizz_simple_sandals/image01.jpg",
-      "/assets/images/rizz_double_bockles-sandals/image03.jpg",
-      "/assets/images/rizz_cholate_sandals/image01.jpg"
+      "/assets/images/rizz_simple_sandals/rizz-simple-leather-thong-sandal-1.jpg",
+      "/assets/images/rizz_double_bockles-sandals/rizz-double-buckle-leather-sandal-3.jpg",
+      "/assets/images/rizz_cholate_sandals/rizz-cholate-h-strap-leather-sandal-1.jpg"
     ],
     description:
       "Four card slots, one bill section. The Slim Card Holder is what you reach for when a full wallet feels like too much — which is most days.",
@@ -319,9 +319,9 @@ export const PRODUCTS: Product[] = [
       { label: "Midnight", hex: "#0a0808" }
     ],
     images: [
-      "/assets/images/rizz_simple_sandals/image02.jpg",
-      "/assets/images/rizz_crodile_slide_sandals/image05.jpg",
-      "/assets/images/rizz_master_color_sandals/image01.jpg"
+      "/assets/images/rizz_simple_sandals/rizz-simple-leather-thong-sandal-2.jpg",
+      "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-5.jpg",
+      "/assets/images/rizz_master_color_sandals/rizz-master-color-quilted-leather-sandal-1.jpg"
     ],
     description:
       "Open at the heel, structured at the vamp. Lighter than a full loafer, more considered than a sandal — the shoe for the warm months.",
@@ -345,9 +345,9 @@ export const PRODUCTS: Product[] = [
       { label: "Forest Green", hex: "#2d4a2d" }
     ],
     images: [
-      "/assets/images/rizz_cholate_sandals/image01.jpg",
-      "/assets/images/rizz_simple_sandals/image02.jpg",
-      "/assets/images/rizz_dubai_sandals/image04.jpg"
+      "/assets/images/rizz_cholate_sandals/rizz-cholate-h-strap-leather-sandal-1.jpg",
+      "/assets/images/rizz_simple_sandals/rizz-simple-leather-thong-sandal-2.jpg",
+      "/assets/images/rizz_dubai_sandals/rizz-dubai-arabic-leather-sandal-4.jpg"
     ],
     description:
       "Leather strips woven by hand into a continuous pattern. The most labour-intensive piece in the collection — and the one people stare at most.",
@@ -426,7 +426,10 @@ export async function fetchAllProducts(): Promise<Product[]> {
           oldPrice,
           badge: p.tags?.includes("new") ? "New" : p.tags?.includes("bestseller") ? "Bestseller" : p.is_featured ? "Bestseller" : null,
           sizes: Array.from(new Set((p.variants ?? []).map((v: any) => String(v.attributes?.size ?? v.size ?? "")).filter(Boolean))),
-          colors: Array.from(new Set((p.variants ?? []).map((v: any) => v.attributes?.color ?? v.color).filter(Boolean))).map((c: string) => ({ label: c, hex: "#888" })),
+          // Set is typed explicitly: filter(Boolean) widens the element type to
+          // unknown, which made the .map callback below a type error and broke
+          // `next build` (TypeScript errors are not ignored in next.config.ts).
+          colors: Array.from(new Set<string>((p.variants ?? []).map((v: any) => v.attributes?.color ?? v.color).filter(Boolean))).map((c: string) => ({ label: c, hex: "#888" })),
           images: p.media?.map((m: any) => m.media_url) ?? p.images?.map((i: any) => i.image_url) ?? [],
           description: p.description ?? p.short_description ?? "",
           specs: "",

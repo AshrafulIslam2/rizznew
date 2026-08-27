@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
     defaultTitle: "About RIZZ — Artisan Leather from Chittagong, Bangladesh",
     defaultDescription:
       "RIZZ is a luxury leather brand founded in Chittagong, Bangladesh. We make handcrafted footwear and accessories using genuine leather, sold directly with COD across the country.",
-    defaultImage: "/assets/images/rizz_master_color_sandals/image01.jpg",
+    defaultImage: "/assets/images/rizz_master_color_sandals/rizz-master-color-quilted-leather-sandal-1.jpg",
     override,
   });
 }
@@ -28,7 +28,7 @@ type AboutData = {
 };
 
 const FALLBACK: AboutData = {
-  heroImage: "/assets/images/rizz_master_color_sandals/image01.jpg",
+  heroImage: "/assets/images/rizz_master_color_sandals/rizz-master-color-quilted-leather-sandal-1.jpg",
   storyParagraphs: [
     "RIZZ was founded in 2019 in a workshop in Chittagong's leather district — the same streets where Bangladeshi leather has been cut, stitched, and exported for over a century. We started with one question: why couldn't the people who make luxury leather goods also sell them directly, at honest prices?",
     "Most of the world's high-end leather goods pass through many hands before they reach a customer. Each hand adds a margin. The craftsman who made the piece sees very little of what the customer pays. We wanted to change that — for our customers and for our craftsmen.",
@@ -162,7 +162,7 @@ export default async function AboutPage() {
         <section className="relative overflow-hidden">
           <div
             className="h-[45vh] min-h-[300px] bg-cover bg-center"
-            style={{ backgroundImage: "url('/assets/images/rizz_double_bockles-sandals/image02.jpg')" }}
+            style={{ backgroundImage: "url('/assets/images/rizz_double_bockles-sandals/rizz-double-buckle-leather-sandal-2.jpg')" }}
           />
           <div className="absolute inset-0 bg-black/50" />
           <div className="absolute inset-0 flex items-center justify-center text-center px-5">

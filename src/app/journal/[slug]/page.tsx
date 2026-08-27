@@ -157,7 +157,7 @@ export default async function PostPage({ params }: Props) {
   if (!post) notFound();
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rizzleather.com";
-  const coverImage = post.coverImage || `${baseUrl}/assets/images/rizzslide.jpg`;
+  const coverImage = post.coverImage || `${baseUrl}/assets/images/rizz-slide-crocodile-leather-sandal.jpg`;
 
   // Related posts: try API then static, same category
   const apiPosts = await fetchPosts();
@@ -183,7 +183,7 @@ export default async function PostPage({ params }: Props) {
     publisher: {
       "@type": "Organization",
       name: "RIZZ Leather",
-      logo: { "@type": "ImageObject", url: `${baseUrl}/assets/images/rizzslide.jpg` },
+      logo: { "@type": "ImageObject", url: `${baseUrl}/assets/images/rizz-slide-crocodile-leather-sandal.jpg` },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": `${baseUrl}/journal/${post.slug}` },
     articleSection: post.category,

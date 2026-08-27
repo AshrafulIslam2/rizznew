@@ -48,7 +48,7 @@ async function getManufacturingData(): Promise<ManufacturingData | null> {
 
 const FALLBACK: ManufacturingData = {
   hero_video_url: "",
-  hero_image: "/assets/images/rizzslide.jpg",
+  hero_image: "/assets/images/rizz-slide-crocodile-leather-sandal.jpg",
   hero_tag: "Manufacturing & Wholesale",
   hero_headline: "Bangladesh's Trusted Leather Footwear & Goods Manufacturer",
   hero_subtext: "RIZZ Leather designs and manufactures loafers, derby shoes, oxfords, penny loafers, sandals, and formal leather footwear for brands across Bangladesh and internationally — private label, OEM, and bulk wholesale, from our own factory in Chittagong.",

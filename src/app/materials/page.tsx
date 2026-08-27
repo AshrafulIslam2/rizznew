@@ -36,7 +36,7 @@ const fallbackItems = [
 export default async function MaterialsPage() {
   const data = await getSection("materials");
 
-  const heroImage = data?.hero_image || "/assets/images/rizz_master_color_sandals/image01.jpg";
+  const heroImage = data?.hero_image || "/assets/images/rizz_master_color_sandals/rizz-master-color-quilted-leather-sandal-1.jpg";
   const heroTag = data?.hero_tag || "Substance";
   const heroHeadline = data?.hero_headline || "The Leather We Choose";
   const introBody = data?.intro_body || "Sourced from the finest tanneries. Every hide is chosen for grain, weight, and how it ages over years of wear.";

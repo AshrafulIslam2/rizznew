@@ -35,7 +35,7 @@ const fallbackSteps = [
 export default async function FactoryQualityPage() {
   const data = await getSection("factory-quality");
 
-  const heroImage = data?.hero_image || "/assets/images/rizz_crodile_slide_sandals/image07.jpg";
+  const heroImage = data?.hero_image || "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-7.jpg";
   const heroTag = data?.hero_tag || "Our Craft";
   const heroHeadline = data?.hero_headline || "Made for men of distinction.";
   const introBody = data?.intro_body || "Every Rizz piece begins as a single hide — selected, cut, and shaped by craftsmen who have spent decades understanding leather.";

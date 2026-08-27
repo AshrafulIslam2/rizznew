@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CONTACT, POLICY_LINKS } from "@/lib/site";
+import { BUSINESS } from "@/lib/business";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3040/api";
 
@@ -90,7 +91,23 @@ export async function SiteFooter() {
             <p className="mt-4 max-w-xs text-xs leading-loose text-[var(--muted)]">
               Artisan leather footwear and accessories, crafted in Chittagong, Bangladesh. Shipped worldwide.
             </p>
-            <p className="mt-4 text-[10px] uppercase tracking-[0.25em] text-[var(--gold-dim)]">{CONTACT.location}</p>
+            {/* Real NAP in a semantic <address>, matching the Google Business
+                Profile word for word. Google reads this alongside the
+                ClothingStore schema; both pull from src/lib/business.ts so
+                they can never disagree. The phone is a tel: link so a mobile
+                visitor can call the shop in one tap. */}
+            <address className="mt-4 not-italic text-xs leading-loose text-[var(--muted)]">
+              <span className="block">{BUSINESS.streetAddress}</span>
+              <span className="block">
+                {BUSINESS.addressLocality} {BUSINESS.postalCode}, Bangladesh
+              </span>
+              <a
+                href={`tel:${BUSINESS.telephone}`}
+                className="mt-2 inline-block tracking-[0.18em] text-[var(--gold-dim)] transition-colors hover:text-[var(--text)]"
+              >
+                {BUSINESS.telephoneDisplay}
+              </a>
+            </address>
           </div>
 
           <div>
