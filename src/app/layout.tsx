@@ -27,7 +27,7 @@ const defaultTitle = "RIZZ — Luxury Leather Footwear & Accessories | Banglades
 // previous 171-character version was being cut mid-sentence in results. Ends
 // on a call to action so the snippet earns the click.
 const defaultDescription =
-  "Shop genuine leather shoes,chelsi,office shoes, loafers, sandals, belts & wallets from Chattogram,Bangladesh with nationwide Cash on Delivery.";
+  "Shop handcrafted genuine leather shoes,chelsi,office shoes, loafers, sandals, belts & wallets from Chattogram,Bangladesh with nationwide Cash on Delivery.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
