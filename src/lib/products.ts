@@ -393,7 +393,10 @@ export function getRelatedProducts(slug: string, count = 4): Product[] {
 export async function fetchAllProducts(): Promise<Product[]> {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3040/api";
-    const res = await fetch(`${apiUrl}/products`, { next: { revalidate: 60 } });
+    // visibility=public asks the API for ACTIVE + published products only.
+    // Without it the storefront was served every row, so a product set to
+    // Draft in the admin panel stayed visible to customers.
+    const res = await fetch(`${apiUrl}/products?visibility=public`, { next: { revalidate: 60 } });
     if (!res.ok) return PRODUCTS;
     const data = await res.json();
     if (!Array.isArray(data) || data.length === 0) return PRODUCTS;
