@@ -1,9 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
 import type { Product, ProductVideo } from "@/lib/products";
+
+/**
+ * The colour the customer has picked, shared between the two halves of the
+ * product page.
+ *
+ * The gallery and the size/colour picker are siblings under a server
+ * component, so neither can hold the other's state. A context is the smallest
+ * thing that lets picking "Black" swap the photographs without turning the
+ * whole page into one giant client component.
+ */
+const SelectedColorContext = createContext<{
+  color: string | null;
+  setColor: (c: string | null) => void;
+}>({ color: null, setColor: () => {} });
+
+export function ProductColorProvider({ children }: { children: React.ReactNode }) {
+  const [color, setColor] = useState<string | null>(null);
+  return (
+    <SelectedColorContext.Provider value={{ color, setColor }}>
+      {children}
+    </SelectedColorContext.Provider>
+  );
+}
+
+export function useSelectedColor() {
+  return useContext(SelectedColorContext);
+}
 
 export function ProductActions({ product }: { product: Product }) {
   const { addItem, count } = useCart();
@@ -28,6 +55,13 @@ export function ProductActions({ product }: { product: Product }) {
       ?? { label: "", hex: "#8B7355" }
   );
   const [qty, setQty] = useState(1);
+
+  // Publish the colour so the gallery can follow it.
+  const { setColor: publishColor } = useSelectedColor();
+  useEffect(() => {
+    publishColor(selectedColor.label || null);
+    // publishColor is a stable setState wrapper; only the label should re-run this.
+  }, [selectedColor.label]); // eslint-disable-line react-hooks/exhaustive-deps
   const [added, setAdded] = useState(false);
   const [error, setError] = useState(false);
 
@@ -309,13 +343,49 @@ type GalleryItem =
   | { type: "image"; url: string }
   | { type: "video"; url: string; embedUrl: string; thumbnail: string; title: string };
 
-export function ImageGallery({ images, videos = [], name }: { images: string[]; videos?: ProductVideo[]; name: string }) {
+export function ImageGallery({
+  images, videos = [], name, media,
+}: {
+  images: string[];
+  videos?: ProductVideo[];
+  name: string;
+  /** Images with their colourway, when the product has any tagged. */
+  media?: Array<{ url: string; color: string | null }>;
+}) {
+  const { color } = useSelectedColor();
+
+  /**
+   * Which photographs belong to the colour on screen.
+   *
+   * An image tagged with a DIFFERENT colour is hidden; an untagged one always
+   * shows. That way a shop that has only photographed two of its five
+   * colourways still gets a sensible gallery instead of an empty one — and
+   * once every colour is tagged, switching colour switches the whole set.
+   */
+  const shownImages = (() => {
+    if (!media || media.length === 0) return images;
+    const tagged = media.filter((m) => m.color);
+    if (tagged.length === 0) return images;              // nothing tagged yet
+    if (!color) return media.map((m) => m.url);          // no colour chosen
+    const forColour = media.filter(
+      (m) => !m.color || m.color.toLowerCase() === color.toLowerCase(),
+    );
+    // If a colour has no photo of its own and no untagged fallback exists,
+    // showing everything beats showing nothing.
+    return (forColour.length > 0 ? forColour : media).map((m) => m.url);
+  })();
+
   const items: GalleryItem[] = [
-    ...images.map((url): GalleryItem => ({ type: "image", url })),
+    ...shownImages.map((url): GalleryItem => ({ type: "image", url })),
     ...videos.map((v): GalleryItem => ({ type: "video", url: v.url, embedUrl: v.embedUrl, thumbnail: v.thumbnail, title: v.title })),
   ];
   const [active, setActive] = useState(0);
-  const current = items[active];
+
+  // Switching colour changes the set, so start from its first photo rather than
+  // leaving the viewer on index 3 of a shorter list.
+  useEffect(() => { setActive(0); }, [color]);
+
+  const current = items[Math.min(active, Math.max(0, items.length - 1))];
 
   return (
     <div className="grid gap-3 sm:grid-cols-[80px_1fr] xl:sticky xl:top-24">

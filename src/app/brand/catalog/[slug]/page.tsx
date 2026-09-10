@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductBySlug, fetchAllProducts, pickRelatedProducts, PRODUCTS, type Product, type ProductVariant, type ProductVideo } from "@/lib/products";
-import { ProductActions, ImageGallery } from "@/components/product-actions";
+import { ProductActions, ImageGallery, ProductColorProvider } from "@/components/product-actions";
 import { VisitorCounter } from "@/components/visitor-counter";
 import { PixelViewContent } from "@/components/pixel-events";
 
@@ -195,6 +195,11 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
         }
         return (apiProduct.images as { image_url: string }[] | undefined)?.map((i) => i.image_url) ?? [];
       })(),
+      // The same images, but carrying the colourway each one was tagged with,
+      // so the gallery can switch when the customer picks a colour.
+      media: ((apiProduct.media as { media_url: string; media_type?: string; color?: string | null }[] | undefined) ?? [])
+        .filter((m) => m.media_type !== "VIDEO")
+        .map((m) => ({ url: m.media_url, color: m.color ?? null })),
       description: (apiProduct.description as string) ?? (apiProduct.short_description as string) ?? "",
       specs: (apiProduct.specs as string) ?? "",
       craftsmanship: (apiProduct.craftsmanship as string) ?? "",
@@ -311,8 +316,10 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
 
         {/* Product */}
         <section className="mx-auto max-w-7xl px-5 py-10 lg:px-8 lg:py-16">
+          {/* The provider spans both halves so picking a colour swaps the photos. */}
+          <ProductColorProvider>
           <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
-            <ImageGallery images={product.images} videos={product.videos ?? []} name={product.name} />
+            <ImageGallery images={product.images} media={product.media} videos={product.videos ?? []} name={product.name} />
 
             <div>
               <p className="text-[9px] uppercase tracking-[0.4em] text-[var(--gold-dim)]">{product.collection}</p>
@@ -354,6 +361,7 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
               </div>
             </div>
           </div>
+          </ProductColorProvider>
         </section>
 
         {/* Reviews — only rendered when the product has real reviews in the admin */}

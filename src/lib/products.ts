@@ -29,6 +29,12 @@ export type Product = {
   sizes: string[];
   colors: Array<{ label: string; hex: string }>;
   images: string[];
+  /**
+   * Images with the colourway each one shows, so the gallery can switch when
+   * the customer picks a colour. `color: null` means the image is not tied to
+   * any colour and is always shown. Absent for the static seed products.
+   */
+  media?: Array<{ url: string; color: string | null }>;
   description: string;
   specs: string;
   craftsmanship: string;
@@ -434,6 +440,7 @@ export async function fetchAllProducts(): Promise<Product[]> {
           // `next build` (TypeScript errors are not ignored in next.config.ts).
           colors: Array.from(new Set<string>((p.variants ?? []).map((v: any) => v.attributes?.color ?? v.color).filter(Boolean))).map((c: string) => ({ label: c, hex: "#888" })),
           images: p.media?.map((m: any) => m.media_url) ?? p.images?.map((i: any) => i.image_url) ?? [],
+          media: p.media?.map((m: any) => ({ url: m.media_url, color: m.color ?? null })) ?? undefined,
           description: p.description ?? p.short_description ?? "",
           specs: "",
           craftsmanship: "",
