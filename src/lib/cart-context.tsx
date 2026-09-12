@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useReducer } from "react";
+import { pixelTrack } from "@/lib/pixel";
 
 export type CartItem = {
   productId?: string;
@@ -98,7 +99,29 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     <CartContext.Provider
       value={{
         items: state.items,
-        addItem: (item) => dispatch({ type: "ADD", item }),
+        /**
+         * Add to the cart, and tell Meta about it.
+         *
+         * The pixel call lives here rather than on each button so every route
+         * into the cart is counted exactly once — the product page's Add to
+         * Cart, Buy Now, and anything added later. Quantity steppers in the
+         * cart use updateQty, so they correctly do NOT re-fire this.
+         *
+         * content_ids uses the slug, matching what ViewContent and Purchase
+         * already send; the three events must agree or Meta cannot tie them to
+         * the same catalogue item.
+         */
+        addItem: (item) => {
+          dispatch({ type: "ADD", item });
+          pixelTrack("AddToCart", {
+            content_ids: [item.slug],
+            content_name: item.name,
+            content_type: "product",
+            contents: [{ id: item.slug, quantity: item.quantity, item_price: item.price }],
+            value: item.price * item.quantity,
+            currency: "BDT",
+          });
+        },
         removeItem: (slug, size, color) => dispatch({ type: "REMOVE", slug, size, color }),
         updateQty: (slug, size, color, qty) => dispatch({ type: "UPDATE_QTY", slug, size, color, qty }),
         clear: () => dispatch({ type: "CLEAR" }),
