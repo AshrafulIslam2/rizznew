@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
 import type { Product, ProductVideo } from "@/lib/products";
+import { cldUrl, imgProps, W_DETAIL } from "@/lib/image";
 
 /**
  * The colour the customer has picked, shared between the two halves of the
@@ -400,9 +401,16 @@ export function ImageGallery({
               active === i ? "border-[var(--gold)]" : "border-[var(--border-soft)] hover:border-[var(--gold-dim)]"
             }`}
           >
-            <div
-              className="h-16 w-14 bg-cover bg-center sm:h-[72px] sm:w-full"
-              style={{ backgroundImage: `url('${item.type === "video" ? item.thumbnail : item.url}')` }}
+            {/* The worst offender before this change: a thumbnail is at most
+                80px wide, and it was downloading the same ~2.5 MB original as
+                the main photograph — five of them, on every product page. One
+                fixed 160px file covers it even on a 2× screen. */}
+            <img
+              src={cldUrl(item.type === "video" ? item.thumbnail : item.url, 160)}
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+              className="h-16 w-14 object-cover object-center sm:h-[72px] sm:w-full"
             />
             {item.type === "video" && (
               <span className="absolute inset-0 flex items-center justify-center bg-black/30">
@@ -426,11 +434,19 @@ export function ImageGallery({
             />
           </div>
         ) : (
-          <div
-            className="aspect-[4/5] bg-cover bg-center transition-all duration-300"
-            style={{ backgroundImage: `url('${current?.url ?? ""}')` }}
-            role="img"
-            aria-label={name}
+          /* The product page's LCP element, so it loads eagerly at high
+             priority. aspect-[4/5] on the <img> itself reserves the box before
+             the bytes arrive, so nothing below it jumps. */
+          <img
+            {...imgProps(
+              current?.url ?? "",
+              W_DETAIL,
+              "(min-width: 1280px) 600px, (min-width: 1024px) 46vw, (min-width: 640px) calc(100vw - 132px), 100vw",
+            )}
+            alt={name}
+            fetchPriority="high"
+            decoding="async"
+            className="aspect-[4/5] w-full object-cover object-center transition-all duration-300"
           />
         )}
       </div>

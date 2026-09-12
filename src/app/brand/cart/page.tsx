@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useCart } from "@/lib/cart-context";
 import { PRODUCTS } from "@/lib/products";
+import { imgProps } from "@/lib/image";
 
 const fmt = (n: number) => `৳ ${n.toLocaleString("en-US")}`;
 
@@ -46,9 +46,12 @@ export default function CartPage() {
                   key={`${item.slug}-${item.size}-${item.color}`}
                   className="grid grid-cols-[96px_1fr] gap-5 border border-[var(--border)] bg-[var(--surface)] p-4 sm:grid-cols-[120px_1fr] sm:p-5"
                 >
-                  <div
-                    className="h-24 bg-cover bg-center sm:h-[120px]"
-                    style={{ backgroundImage: `url('${item.image}')` }}
+                  <img
+                    {...imgProps(item.image, [160, 400], "(min-width: 640px) 120px, 96px")}
+                    alt={item.name}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-24 w-full object-cover object-center sm:h-[120px]"
                   />
                   <div className="flex flex-col justify-between gap-2">
                     <div>
@@ -158,9 +161,12 @@ export default function CartPage() {
               {related.map((p) => (
                 <Link key={p.slug} href={`/brand/catalog/${p.slug}`} className="group block no-underline">
                   <div className="overflow-hidden bg-[var(--surface)]">
-                    <div
-                      className="h-[200px] bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.04]"
-                      style={{ backgroundImage: `url('${p.images[0]}')` }}
+                    <img
+                      {...imgProps(p.images[0], [400, 600], "(min-width: 640px) 33vw, 100vw")}
+                      alt={`${p.name} — ${p.material} handcrafted leather by RIZZ Leather`}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-[200px] w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.04]"
                     />
                   </div>
                   <div className="mt-3">

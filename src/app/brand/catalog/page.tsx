@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { PRICE_RANGES, fetchAllProducts } from "@/lib/products";
 import { CatalogFilters, PaginationBar } from "@/components/catalog-client";
 import { getSeoOverride, buildMetadata } from "@/lib/seo";
+import { imgProps, W_CARD } from "@/lib/image";
 
 type CategoryData = {
   slug: string;
@@ -231,9 +232,17 @@ export default async function CatalogPage({ searchParams }: Props) {
               {paginated.map((product, idx) => (
                 <Link key={`p-${idx}-${product.slug}`} href={`/brand/catalog/${product.slug}`} className="group block no-underline">
                   <div className="relative overflow-hidden bg-[var(--surface)]">
-                    <div
-                      className="h-[300px] bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.04] sm:h-[340px]"
-                      style={{ backgroundImage: `url('${product.images[0]}')` }}
+                    {/* <img> rather than a background layer: the card is at
+                        most 320px wide, and only an <img> can be told that
+                        with srcset/sizes. The first four are eager because
+                        they are what a visitor lands on; the rest wait. */}
+                    <img
+                      {...imgProps(product.images[0], W_CARD, "(min-width: 1280px) 320px, (min-width: 640px) 50vw, 100vw")}
+                      alt={`${product.name} — ${product.material} handcrafted leather by RIZZ Leather`}
+                      loading={idx < 4 ? "eager" : "lazy"}
+                      fetchPriority={idx === 0 ? "high" : undefined}
+                      decoding="async"
+                      className="h-[300px] w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.04] sm:h-[340px]"
                     />
                     {product.badge && (
                       <span className={`absolute left-3 top-3 px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.22em] ${

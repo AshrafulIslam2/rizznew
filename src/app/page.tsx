@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getApiProductCardPrice } from "@/lib/products";
 import { getSeoOverride, buildMetadata } from "@/lib/seo";
 import { BUSINESS } from "@/lib/business";
+import { imgProps, W_CARD, W_HERO } from "@/lib/image";
 
 export async function generateMetadata(): Promise<Metadata> {
   const override = await getSeoOverride("home");
@@ -232,7 +233,7 @@ export default async function HomePage() {
             Largest Contentful Paint element — a lazy hero would hurt Core Web
             Vitals, which is itself a ranking signal. */}
         <img
-          src={heroImage}
+          {...imgProps(heroImage, W_HERO, "100vw")}
           alt="Handcrafted RIZZ leather sandals made in Chattogram, Bangladesh"
           fetchPriority="high"
           decoding="async"
@@ -288,9 +289,19 @@ export default async function HomePage() {
                 href={`/brand/catalog${(c.product_ids as string[])?.length ? `?campaign=${c.id}` : ""}`}
                 className="group relative block overflow-hidden no-underline"
               >
-                <div
-                  className="h-[220px] bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.04] sm:h-[260px]"
-                  style={{ backgroundImage: `url('${(c.image_url as string) || "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-5.jpg"}')` }}
+                {/* A real <img> rather than a CSS background: a background
+                    layer cannot carry a srcset, so every visitor was sent the
+                    full-resolution original for a 260px-tall banner. */}
+                <img
+                  {...imgProps(
+                    (c.image_url as string) || "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-5.jpg",
+                    W_CARD,
+                    "(min-width: 640px) 50vw, 100vw",
+                  )}
+                  alt={(c.headline as string) || (c.name as string) || "RIZZ campaign"}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-[220px] w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.04] sm:h-[260px]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                 <span className="absolute left-4 top-4 bg-[var(--gold)] px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.25em] text-[#0a0806]">
@@ -327,7 +338,7 @@ export default async function HomePage() {
                     nothing to announce. object-cover reproduces the previous
                     bg-cover framing exactly. */}
                 <img
-                  src={item.image}
+                  {...imgProps(item.image, W_CARD, "(min-width: 1280px) 320px, (min-width: 640px) 50vw, 100vw")}
                   alt={`${item.name} in ${item.material} — handcrafted leather by RIZZ Leather, Chattogram`}
                   loading="lazy"
                   decoding="async"
@@ -351,7 +362,16 @@ export default async function HomePage() {
 
       {/* ── Editorial Banner ─────────────────────────────────── */}
       <section className="relative overflow-hidden">
-        <div className="h-[60vh] min-h-[400px] bg-cover bg-center sm:h-[70vh]" style={{ backgroundImage: `url('${editorialImage}')` }} />
+        <div className="relative h-[60vh] min-h-[400px] sm:h-[70vh]">
+          <img
+            {...imgProps(editorialImage, W_HERO, "100vw")}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
         <div className="absolute inset-0 flex items-center">
           <div className="px-8 sm:px-16 lg:px-24">
@@ -380,7 +400,7 @@ export default async function HomePage() {
               {/* Indexable <img> instead of a background layer — same visual
                   result, but Google Images and screen readers can read it. */}
               <img
-                src={cat.image}
+                {...imgProps(cat.image, W_CARD, i === 0 ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw")}
                 alt={`${cat.label} — ${cat.sub}. Handcrafted leather ${String(cat.label).toLowerCase()} by RIZZ Leather, Chattogram`}
                 loading="lazy"
                 decoding="async"
@@ -489,7 +509,16 @@ export default async function HomePage() {
 
       {/* ── CTA Banner ───────────────────────────────────────── */}
       <section className="relative overflow-hidden border-y border-[var(--hairline)]">
-        <div className="h-[50vh] min-h-[360px] bg-cover bg-[center_30%]" style={{ backgroundImage: `url('${ctaImage}')` }} />
+        <div className="relative h-[50vh] min-h-[360px]">
+          <img
+            {...imgProps(ctaImage, W_HERO, "100vw")}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover object-[center_30%]"
+          />
+        </div>
         <div className="absolute inset-0 bg-black/65" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-5">
           <p className="text-[9px] uppercase tracking-[0.5em] text-[var(--gold-dim)]">{ctaTag}</p>

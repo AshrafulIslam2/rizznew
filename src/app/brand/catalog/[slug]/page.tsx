@@ -5,6 +5,7 @@ import { getProductBySlug, fetchAllProducts, pickRelatedProducts, PRODUCTS, type
 import { ProductActions, ImageGallery, ProductColorProvider } from "@/components/product-actions";
 import { VisitorCounter } from "@/components/visitor-counter";
 import { PixelViewContent } from "@/components/pixel-events";
+import { cldUrl, imgProps, W_CARD } from "@/lib/image";
 
 type Props = { params: Promise<{ slug: string }>; searchParams?: Promise<{ lang?: string }> };
 
@@ -385,7 +386,8 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
                     <div className="mb-3 flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         {review.image && (
-                          <img src={review.image} alt={review.name} className="h-9 w-9 rounded-full object-cover" />
+                          /* 36px on screen — a 160px file covers a 2× phone. */
+                          <img src={cldUrl(review.image, 160)} alt={review.name} width={36} height={36} loading="lazy" decoding="async" className="h-9 w-9 rounded-full object-cover" />
                         )}
                         <div>
                           <p className="text-sm font-medium text-[var(--cream)]">{review.name}</p>
@@ -414,9 +416,12 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
               {related.map((p) => (
                 <Link key={p.slug} href={`/brand/catalog/${p.slug}`} className="group block no-underline">
                   <div className="relative overflow-hidden bg-[var(--surface)]">
-                    <div
-                      className="h-[260px] bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.04]"
-                      style={{ backgroundImage: `url('${p.images[0]}')` }}
+                    <img
+                      {...imgProps(p.images[0], W_CARD, "(min-width: 1280px) 320px, (min-width: 640px) 50vw, 100vw")}
+                      alt={`${p.name} — ${p.material} handcrafted leather by RIZZ Leather`}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-[260px] w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.04]"
                     />
                     {p.badge && (
                       <span className={`absolute left-3 top-3 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.2em] ${

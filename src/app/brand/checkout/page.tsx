@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
 import { pixelTrack } from "@/lib/pixel";
+import { cldUrl } from "@/lib/image";
 import { v4 as uuidv4 } from "uuid";
 
 const fmt = (n: number) => `৳ ${n.toLocaleString("en-US")}`;
@@ -314,9 +315,17 @@ export default function CheckoutPage() {
             <div className="mt-5 space-y-4">
               {items.map((item) => (
                 <div key={`${item.slug}-${item.size}-${item.color}`} className="flex items-center gap-3">
-                  <div
-                    className="h-14 w-14 shrink-0 bg-cover bg-center border border-[var(--border)]"
-                    style={{ backgroundImage: `url('${item.image}')` }}
+                  {/* 56px square — 160px covers it at 2×. This matters more
+                      than it looks: it is the last screen before payment, and
+                      it was pulling a 2.5 MB file per line item. */}
+                  <img
+                    src={cldUrl(item.image, 160)}
+                    alt={item.name}
+                    width={56}
+                    height={56}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-14 w-14 shrink-0 border border-[var(--border)] object-cover object-center"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="truncate text-sm text-[var(--cream)]">{item.name}</p>
