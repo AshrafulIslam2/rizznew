@@ -344,6 +344,59 @@ type GalleryItem =
   | { type: "image"; url: string }
   | { type: "video"; url: string; embedUrl: string; thumbnail: string; title: string };
 
+/**
+ * Which photographs to show, in order, for the colour on screen.
+ *
+ * Pure and exported so the ORDER can be tested, because the order is what was
+ * broken — and broken invisibly. The right photograph was in the gallery the
+ * whole time; it just was never the one on display.
+ *
+ * THE BUG THIS FIXES
+ *
+ *   The old filter kept a colour's own photo AND every untagged photo, in
+ *   whatever order the database returned them. Generic shots get uploaded
+ *   first, so an untagged one sat at index 0 — and the main view jumps to
+ *   index 0 whenever the colour changes. Picking Cognac therefore swapped the
+ *   thumbnail strip correctly and left the big photograph on the generic shot.
+ *   From the customer's side the colour picker appeared to do nothing.
+ *
+ * THE RULE
+ *
+ *   Photos tagged with the chosen colour come first, so the main view lands on
+ *   one. Untagged photos follow as supporting shots — sole, close-up,
+ *   packaging. A photo tagged with a DIFFERENT colour is never shown.
+ */
+export function galleryImagesFor(
+  media: Array<{ url: string; color: string | null }> | undefined,
+  images: string[],
+  color: string | null,
+): string[] {
+  if (!media || media.length === 0) return images;
+
+  const tagged = media.filter((m) => m.color);
+  if (tagged.length === 0) return images; // nothing tagged yet
+  if (!color) return media.map((m) => m.url); // no colour chosen yet
+
+  // Tags are written from a dropdown of the variant colours, so they should
+  // match exactly; trim and case-fold anyway, since "Cognac " costing a sale
+  // would be an absurd way to lose one.
+  const key = (c: string | null | undefined) => String(c ?? "").trim().toLowerCase();
+  const want = key(color);
+
+  const thisColour = media.filter((m) => m.color && key(m.color) === want);
+  const untagged = media.filter((m) => !m.color);
+
+  if (thisColour.length > 0) return [...thisColour, ...untagged].map((m) => m.url);
+
+  // This colourway has not been photographed yet. The generic shots are
+  // honest; another colour's photo would be a lie to the customer.
+  if (untagged.length > 0) return untagged.map((m) => m.url);
+
+  // Every photo belongs to some other colour. A blank product page is worse
+  // than an imperfect one, so fall back to the whole set.
+  return media.map((m) => m.url);
+}
+
 export function ImageGallery({
   images, videos = [], name, media,
 }: {
@@ -355,36 +408,28 @@ export function ImageGallery({
 }) {
   const { color } = useSelectedColor();
 
-  /**
-   * Which photographs belong to the colour on screen.
-   *
-   * An image tagged with a DIFFERENT colour is hidden; an untagged one always
-   * shows. That way a shop that has only photographed two of its five
-   * colourways still gets a sensible gallery instead of an empty one — and
-   * once every colour is tagged, switching colour switches the whole set.
-   */
-  const shownImages = (() => {
-    if (!media || media.length === 0) return images;
-    const tagged = media.filter((m) => m.color);
-    if (tagged.length === 0) return images;              // nothing tagged yet
-    if (!color) return media.map((m) => m.url);          // no colour chosen
-    const forColour = media.filter(
-      (m) => !m.color || m.color.toLowerCase() === color.toLowerCase(),
-    );
-    // If a colour has no photo of its own and no untagged fallback exists,
-    // showing everything beats showing nothing.
-    return (forColour.length > 0 ? forColour : media).map((m) => m.url);
-  })();
+  const shownImages = galleryImagesFor(media, images, color);
 
   const items: GalleryItem[] = [
     ...shownImages.map((url): GalleryItem => ({ type: "image", url })),
     ...videos.map((v): GalleryItem => ({ type: "video", url: v.url, embedUrl: v.embedUrl, thumbnail: v.thumbnail, title: v.title })),
   ];
+
   const [active, setActive] = useState(0);
 
-  // Switching colour changes the set, so start from its first photo rather than
-  // leaving the viewer on index 3 of a shorter list.
-  useEffect(() => { setActive(0); }, [color]);
+  // Switching colour changes the set, so go back to its first photo rather
+  // than leaving the viewer on index 3 of a shorter list.
+  //
+  // Done during render rather than in an effect on purpose. An effect runs
+  // AFTER the browser has painted, so for one frame the new colour's list is
+  // shown at the OLD index — a visible flick to the wrong photograph before it
+  // corrects itself. Adjusting state during render, guarded by the comparison,
+  // re-renders before anything reaches the screen.
+  const [colorShown, setColorShown] = useState(color);
+  if (color !== colorShown) {
+    setColorShown(color);
+    setActive(0);
+  }
 
   const current = items[Math.min(active, Math.max(0, items.length - 1))];
 
