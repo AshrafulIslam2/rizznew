@@ -5,6 +5,7 @@ import { PRICE_RANGES, fetchAllProducts } from "@/lib/products";
 import { CatalogFilters, PaginationBar } from "@/components/catalog-client";
 import { getSeoOverride, buildMetadata } from "@/lib/seo";
 import { imgProps, W_CARD } from "@/lib/image";
+import { EcommerceView } from "@/components/pixel-events";
 
 type CategoryData = {
   slug: string;
@@ -165,6 +166,9 @@ export default async function CatalogPage({ searchParams }: Props) {
 
   return (
     <>
+      <EcommerceView event="view_item_list" listId={`catalog:${category}:${priceLabel}:${sort}:${size}:${page}`}
+        items={paginated.map(p => ({ item_id: p.slug, item_name: p.name,
+          item_category: p.categorySlug, price: p.price, quantity: 1 }))} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}

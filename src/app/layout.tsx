@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
-import { Analytics } from "@/components/analytics";
+import { Analytics, GoogleTagManager, GTM_ID } from "@/components/analytics";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CartProvider } from "@/lib/cart-context";
@@ -165,7 +165,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const sameAs = await getSocialUrls();
   return (
     <html lang="en">
+      <head><GoogleTagManager /></head>
       <body className={`${inter.variable} ${cormorant.variable}`}>
+        <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+          height="0" width="0" style={{ display: "none", visibility: "hidden" }} title="Google Tag Manager" /></noscript>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify([buildOrganizationSchema(sameAs), localBusinessSchema, websiteSchema]) }}
@@ -180,3 +183,4 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     </html>
   );
 }
+

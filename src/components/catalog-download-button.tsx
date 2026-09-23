@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { trackEvent } from "@/lib/tracking";
+import { pixelTrack } from "@/lib/pixel";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3040/api";
 
@@ -21,7 +23,7 @@ export function CatalogDownloadButton({ catalogUrl }: { catalogUrl: string }) {
     setSubmitting(true);
     setError(null);
     try {
-      await fetch(`${API}/checkout-leads`, {
+      const leadResponse = await fetch(`${API}/checkout-leads`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -29,7 +31,9 @@ export function CatalogDownloadButton({ catalogUrl }: { catalogUrl: string }) {
           phone: form.phone,
           source: "catalog_download",
         }),
-      }).catch(() => {});
+      }).catch(() => null);
+      if (leadResponse?.ok) pixelTrack("Lead", { lead_source: "catalog_download" });
+      trackEvent("catalog_download", { content_type: "catalog" });
       window.open(catalogUrl, "_blank");
       setOpen(false);
       setForm({ company_name: "", phone: "" });

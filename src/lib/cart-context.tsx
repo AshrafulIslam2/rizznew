@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { pixelTrack } from "@/lib/pixel";
+import { cartTrackingItems, trackEcommerce } from "@/lib/tracking";
 
 export type CartItem = {
   productId?: string;
@@ -105,7 +106,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
          * The pixel call lives here rather than on each button so every route
          * into the cart is counted exactly once — the product page's Add to
          * Cart, Buy Now, and anything added later. Quantity steppers in the
-         * cart use updateQty, so they correctly do NOT re-fire this.
+         * cart use updateQty, which reports only the quantity difference.
          *
          * content_ids uses the slug, matching what ViewContent and Purchase
          * already send; the three events must agree or Meta cannot tie them to
@@ -114,6 +115,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         addItem: (item) => {
           dispatch({ type: "ADD", item });
           pixelTrack("AddToCart", {
+            items: cartTrackingItems([item]),
             content_ids: [item.slug],
             content_name: item.name,
             content_type: "product",
@@ -122,8 +124,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             currency: "BDT",
           });
         },
-        removeItem: (slug, size, color) => dispatch({ type: "REMOVE", slug, size, color }),
-        updateQty: (slug, size, color, qty) => dispatch({ type: "UPDATE_QTY", slug, size, color, qty }),
+        removeItem: (slug, size, color) => {
+          const item = state.items.find(i => i.slug === slug && i.size === size && i.color === color);
+          if (item) trackEcommerce("remove_from_cart", cartTrackingItems([item]));
+          dispatch({ type: "REMOVE", slug, size, color });
+        },
+        updateQty: (slug, size, color, qty) => {
+          if (!Number.isFinite(qty)) return;
+          qty = Math.max(0, Math.floor(qty));
+          const item = state.items.find(i => i.slug === slug && i.size === size && i.color === color);
+          if (item && qty !== item.quantity) {
+            const delta = { ...item, quantity: Math.abs(qty - item.quantity) };
+            if (qty > item.quantity) pixelTrack("AddToCart", {
+              items: cartTrackingItems([delta]), content_ids: [item.slug], content_type: "product",
+              contents: [{ id: item.slug, quantity: delta.quantity, item_price: item.price }],
+              value: item.price * delta.quantity, currency: "BDT",
+            });
+            else trackEcommerce("remove_from_cart", cartTrackingItems([delta]));
+          }
+          dispatch({ type: "UPDATE_QTY", slug, size, color, qty });
+        },
         clear: () => dispatch({ type: "CLEAR" }),
         total,
         count

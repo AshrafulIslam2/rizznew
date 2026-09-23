@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
 import type { Product, ProductVideo } from "@/lib/products";
 import { cldUrl, imgProps, W_DETAIL } from "@/lib/image";
+import { trackEvent } from "@/lib/tracking";
 
 /**
  * The colour the customer has picked, shared between the two halves of the
@@ -80,6 +81,7 @@ export function ProductActions({ product }: { product: Product }) {
 
   function handleSelectSize(size: string) {
     if (!isSizeInStock(size)) return; // block click on out-of-stock size
+    trackEvent("select_variant", { item_id: product.slug, variant_type: "size", variant_value: size });
     setError(false);
     const available = colorsForSize(size);
     if (available.length > 0 && !available.includes(selectedColor.label)) {
@@ -95,6 +97,7 @@ export function ProductActions({ product }: { product: Product }) {
   }
 
   function handleSelectColor(c: { label: string; hex: string }) {
+    trackEvent("select_variant", { item_id: product.slug, variant_type: "color", variant_value: c.label });
     if (!isColorInStock(c.label) && variants.some((v) => v.color === c.label)) {
       // Color exists but all out of stock — still allow selection to show OOS state
     }

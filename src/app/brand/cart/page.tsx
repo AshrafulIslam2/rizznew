@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { PRODUCTS } from "@/lib/products";
 import { imgProps } from "@/lib/image";
+import { EcommerceView } from "@/components/pixel-events";
+import { cartTrackingItems } from "@/lib/tracking";
 
 const fmt = (n: number) => `৳ ${n.toLocaleString("en-US")}`;
 
@@ -19,6 +21,7 @@ export default function CartPage() {
 
   return (
     <main>
+      <EcommerceView event="view_cart" items={cartTrackingItems(items)} />
       {/* Header */}
       <section className="border-b border-[var(--hairline)] bg-[var(--surface)] py-10 text-center">
         <p className="text-[9px] uppercase tracking-[0.5em] text-[var(--gold-dim)]">Review</p>

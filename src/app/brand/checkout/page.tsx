@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
 import { pixelTrack } from "@/lib/pixel";
+import { cartTrackingItems, trackEcommerce, trackEvent } from "@/lib/tracking";
 import { cldUrl } from "@/lib/image";
 import { v4 as uuidv4 } from "uuid";
 
@@ -68,6 +69,8 @@ export default function CheckoutPage() {
     if (items.length === 0 || pixelFired.current) return;
     pixelFired.current = true;
     pixelTrack("InitiateCheckout", {
+      items: cartTrackingItems(items),
+      contents: items.map(i => ({ id: i.slug, quantity: i.quantity, item_price: i.price })),
       value: total,
       currency: "BDT",
       num_items: items.reduce((s, i) => s + i.quantity, 0),
@@ -76,6 +79,7 @@ export default function CheckoutPage() {
   }, [items, total]);
 
   const orderPlaced = useRef(false);
+  const submitting = useRef(false);
   const lastSentPhone = useRef("");
 
   // Capture phone+email as a checkout lead (debounced) so admin can follow up
@@ -107,9 +111,11 @@ export default function CheckoutPage() {
   const grandTotal = calc ? calc.total : total + shipping;
 
   function applyPromo() {
+    trackEvent("coupon_apply", { coupon: promoInput.trim() });
     setAppliedCode(promoInput.trim());
   }
   function removePromo() {
+    trackEvent("coupon_remove", { coupon: appliedCode });
     setAppliedCode("");
     setPromoInput("");
   }
@@ -131,10 +137,21 @@ export default function CheckoutPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (submitting.current || orderPlaced.current) return;
     const errs = validate();
-    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      trackEvent("checkout_error", { error_type: "validation", fields: Object.keys(errs) });
+      return;
+    }
     if (items.length === 0) return;
 
+    submitting.current = true;
+    trackEcommerce("add_shipping_info", cartTrackingItems(items), { shipping_tier: "Standard delivery" });
+    pixelTrack("AddPaymentInfo", {
+      items: cartTrackingItems(items), value: total, currency: "BDT", payment_type: "COD",
+      content_ids: items.map(i => i.slug), content_type: "product",
+    });
     setPlacing(true);
     setSubmitError(null);
     try {
@@ -171,7 +188,14 @@ export default function CheckoutPage() {
       orderPlaced.current = true;
 
       const eventId = uuidv4();
+      const transactionId = String(orderData?.id ?? orderData?.order_id ?? eventId);
       const purchaseData = {
+        transaction_id: transactionId,
+        items: cartTrackingItems(items),
+        contents: items.map(i => ({ id: i.slug, quantity: i.quantity, item_price: i.price })),
+        shipping,
+        coupon: appliedCode || undefined,
+        ecommerce_value: Math.max(0, grandTotal - shipping),
         value: grandTotal,
         currency: "BDT",
         num_items: items.reduce((s, i) => s + i.quantity, 0),
@@ -191,6 +215,7 @@ export default function CheckoutPage() {
       // Server-side CAPI (fire-and-forget, same eventID deduplicates)
       fetch("/api/track/purchase", {
         method: "POST",
+        keepalive: true,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           eventId,
@@ -209,8 +234,11 @@ export default function CheckoutPage() {
       clear();
       router.push("/brand/thank-you");
     } catch {
+      trackEvent("checkout_error", { error_type: "order_request" });
       setSubmitError("Could not place your order. Please check your connection and try again.");
       setPlacing(false);
+    } finally {
+      submitting.current = false;
     }
   }
 

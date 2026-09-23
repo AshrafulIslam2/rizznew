@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { trackEcommerce, type TrackingItem } from "@/lib/tracking";
 import { pixelTrack } from "@/lib/pixel";
 
 export function PixelViewContent({
@@ -14,7 +15,10 @@ export function PixelViewContent({
   slug: string;
   category?: string;
 }) {
+  const lastSlug = useRef<string>();
   useEffect(() => {
+    if (lastSlug.current === slug) return;
+    lastSlug.current = slug;
     pixelTrack("ViewContent", {
       content_name: name,
       content_ids: [slug],
@@ -26,6 +30,21 @@ export function PixelViewContent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
+  return null;
+}
+
+export function EcommerceView({ event, items, listId }: {
+  event: "view_cart" | "view_item_list";
+  items: TrackingItem[];
+  listId?: string;
+}) {
+  const last = useRef<string>();
+  const signature = JSON.stringify({ event, items, listId });
+  useEffect(() => {
+    if (!items.length || last.current === signature) return;
+    last.current = signature;
+    trackEcommerce(event, items, listId ? { item_list_id: listId } : {});
+  }, [event, items, listId, signature]);
   return null;
 }
 

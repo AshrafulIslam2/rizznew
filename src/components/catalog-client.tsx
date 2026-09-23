@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { PRICE_RANGES, SORT_OPTIONS } from "@/lib/products";
+import { trackEvent } from "@/lib/tracking";
 
 type Props = {
   activeCategory: string;
@@ -19,6 +20,7 @@ export function CatalogFilters({ activeCategory, activePrice, activeSort, active
 
   const set = useCallback(
     (key: string, value: string) => {
+      trackEvent("catalog_filter", { filter_name: key, filter_value: value });
       const params = new URLSearchParams(searchParams.toString());
       if (value === "" || value === "all") {
         params.delete(key);
