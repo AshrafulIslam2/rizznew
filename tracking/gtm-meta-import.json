@@ -8,6 +8,28 @@
         "WEB"
       ]
     },
+    "builtInVariable": [
+      {
+        "name": "Event",
+        "type": "EVENT"
+      },
+      {
+        "name": "Page Hostname",
+        "type": "PAGE_HOSTNAME"
+      },
+      {
+        "name": "Page Path",
+        "type": "PAGE_PATH"
+      },
+      {
+        "name": "Page URL",
+        "type": "PAGE_URL"
+      },
+      {
+        "name": "Referrer",
+        "type": "REFERRER"
+      }
+    ],
     "variable": [
       {
         "variableId": "1",

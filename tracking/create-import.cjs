@@ -20,6 +20,13 @@ const container = {
   exportFormatVersion: 2,
   containerVersion: {
     container: { publicId: 'GTM-5JWD43TK', name: 'RIZZ', usageContext: ['WEB'] },
+    builtInVariable: [
+      { name: 'Event', type: 'EVENT' },
+      { name: 'Page Hostname', type: 'PAGE_HOSTNAME' },
+      { name: 'Page Path', type: 'PAGE_PATH' },
+      { name: 'Page URL', type: 'PAGE_URL' },
+      { name: 'Referrer', type: 'REFERRER' },
+    ],
     variable: [{ variableId: '1', name: 'RIZZ - Meta Event', type: 'v', parameter: [
       { type: 'INTEGER', key: 'dataLayerVersion', value: '2' },
       { type: 'BOOLEAN', key: 'setDefaultValue', value: 'false' },
