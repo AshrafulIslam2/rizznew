@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getApiProductCardPrice } from "@/lib/products";
+import { buildHomeProductSections, type HomeApiProduct, type HomeCategory } from "@/lib/home-product-sections";
+import { CategoryProductSlider } from "@/components/category-product-slider";
 import { getSeoOverride, buildMetadata } from "@/lib/seo";
 import { BUSINESS } from "@/lib/business";
 import { imgProps, W_CARD, W_HERO } from "@/lib/image";
@@ -30,15 +31,14 @@ async function getSection(key: string): Promise<Record<string, any> | null> {
   }
 }
 
-async function getFeaturedProducts() {
+async function getHomepageProducts(): Promise<HomeApiProduct[]> {
   try {
-    const res = await fetch(`${API}/products`, { next: { revalidate: 60 } });
-    if (!res.ok) return null;
+    const res = await fetch(`${API}/products?visibility=public`, { next: { revalidate: 60 } });
+    if (!res.ok) return [];
     const data = await res.json();
-    if (!Array.isArray(data) || data.length === 0) return null;
-    return data.filter((p: Record<string, unknown>) => p.is_featured || p.is_published).slice(0, 4);
+    return Array.isArray(data) ? data : [];
   } catch {
-    return null;
+    return [];
   }
 }
 
@@ -47,8 +47,8 @@ async function getCategories() {
     const res = await fetch(`${API}/categories`, { next: { revalidate: 300 } });
     if (!res.ok) return null;
     const data = await res.json();
-    if (!Array.isArray(data) || data.length === 0) return null;
-    return data;
+    if (!Array.isArray(data)) return null;
+    return data.filter((category: HomeCategory) => category.is_active);
   } catch {
     return null;
   }
@@ -75,13 +75,6 @@ function campaignBadge(c: Record<string, unknown>): string {
 }
 
 // ── Fallback static data ──────────────────────────────────────────────────────
-
-const fallbackArrivals = [
-  { name: "The Onyx Loafer", material: "Full-Grain Calfskin", price: "৳ 5,800", badge: "New", href: "/brand/catalog?category=Men%27s%20Loafers", image: "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-5.jpg" },
-  { name: "Cognac Mule", material: "Premium Suede", price: "৳ 4,200", badge: "Bestseller", href: "/brand/catalog?category=Men%27s%20Sandals", image: "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-7.jpg" },
-  { name: "Signature Slide", material: "Vegetable-Tanned Leather", price: "৳ 3,500", badge: null, href: "/brand/catalog?category=Men%27s%20Sandals", image: "/assets/images/rizz_master_color_sandals/rizz-master-color-quilted-leather-sandal-1.jpg" },
-  { name: "The Classic Bifold", material: "Italian Veg-Tan", price: "৳ 2,800", badge: "New", href: "/brand/catalog?category=Men%27s%20Wallets", image: "/assets/images/rizz_double_bockles-sandals/rizz-double-buckle-leather-sandal-3.jpg" }
-];
 
 const fallbackCategories = [
   { label: "Loafers", sub: "The Signature Collection", href: "/brand/catalog?category=Men%27s%20Loafers", image: "/assets/images/rizz_master_color_sandals/rizz-master-color-quilted-leather-sandal-1.jpg", span: "lg:col-span-6 lg:row-span-2" },
@@ -149,7 +142,7 @@ export default async function HomePage() {
       getSection("materials"),
       getSection("quote"),
       getSection("cta"),
-      getFeaturedProducts(),
+      getHomepageProducts(),
       getCategories(),
       getActiveCampaigns(),
     ]);
@@ -169,25 +162,7 @@ export default async function HomePage() {
     fallbackBrandBar
   );
 
-  // New arrivals from API or fallback
-  const newArrivals = apiProducts
-    ? apiProducts.map((p: Record<string, unknown>) => {
-        const images = (p.media as {media_url: string}[] | undefined)?.map(m => m.media_url)
-          ?? (p.images as {image_url: string}[] | undefined)?.map(i => i.image_url)
-          ?? [];
-        const cardPrice = getApiProductCardPrice(p as { price?: number; variants?: { price: number; sale_price?: number | null }[] });
-        return {
-          name: p.name as string,
-          material: (p.material as string) || "Genuine Leather",
-          price: cardPrice > 0 ? `৳ ${cardPrice.toLocaleString("en-US")}` : "Contact for Price",
-          badge: (p.tags as string[] | undefined)?.includes("new") ? "New"
-            : (p.tags as string[] | undefined)?.includes("bestseller") ? "Bestseller"
-            : p.is_featured ? "Bestseller" : null,
-          href: `/brand/catalog/${p.slug}`,
-          image: images[0] || "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-5.jpg"
-        };
-      })
-    : fallbackArrivals;
+  const { newArrivals, sections: categorySections } = buildHomeProductSections(apiProducts, apiCategories ?? []);
 
   // Editorial banner
   const editorialImage = editorial?.image || "/assets/images/rizz_crodile_slide_sandals/rizz-crocodile-slide-leather-sandal-7.jpg";
@@ -197,7 +172,7 @@ export default async function HomePage() {
   const editorialBtn = { label: editorial?.button_label || "Our Craft", href: editorial?.button_href || "/factory-quality" };
 
   // Categories — use API categories with fallback images if available
-  const displayCategories = (apiCategories && apiCategories.length > 0)
+  const displayCategories = apiCategories
     ? (apiCategories as Record<string, unknown>[]).slice(0, 5).map((cat, i) => ({
         label: cat.name as string,
         sub: (cat.description as string | undefined) || "Explore Collection",
@@ -318,6 +293,7 @@ export default async function HomePage() {
       )}
 
       {/* ── New Arrivals ─────────────────────────────────────── */}
+      {newArrivals.length > 0 && (
       <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28">
         <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -330,20 +306,20 @@ export default async function HomePage() {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          {newArrivals.map((item, i) => (
-            <Link key={`arrival-${i}`} href={item.href} className="group block no-underline">
+          {newArrivals.map((item) => (
+            <Link key={item.slug} href={item.href} className="group block no-underline">
               <div className="relative overflow-hidden bg-[var(--surface)]">
                 {/* A real <img> rather than a CSS background: Google Images
                     cannot index background-image, and a screen reader has
                     nothing to announce. object-cover reproduces the previous
                     bg-cover framing exactly. */}
-                <img
+                {item.image ? <img
                   {...imgProps(item.image, W_CARD, "(min-width: 1280px) 320px, (min-width: 640px) 50vw, 100vw")}
-                  alt={`${item.name} in ${item.material} — handcrafted leather by RIZZ Leather, Chattogram`}
+                  alt={item.name}
                   loading="lazy"
                   decoding="async"
                   className="h-[340px] w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.04] sm:h-[380px] lg:h-[420px]"
-                />
+                /> : <div className="flex h-[340px] items-center justify-center text-xs text-[var(--muted)] sm:h-[380px] lg:h-[420px]">Image coming soon</div>}
                 {item.badge && (
                   <span className="absolute left-4 top-4 bg-[var(--gold)] px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.25em] text-[#0a0806]">
                     {item.badge}
@@ -359,6 +335,16 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+      )}
+
+      {/* Category rows follow the admin category order; empty categories are hidden. */}
+      {categorySections.length > 0 && (
+        <div className="mx-auto max-w-7xl px-5 pb-12 lg:px-8 lg:pb-20">
+          {categorySections.map(section => (
+            <CategoryProductSlider key={section.slug} name={section.name} href={section.href} products={section.products} total={section.total} />
+          ))}
+        </div>
+      )}
 
       {/* ── Editorial Banner ─────────────────────────────────── */}
       <section className="relative overflow-hidden">

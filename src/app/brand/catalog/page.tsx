@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { PRICE_RANGES, fetchAllProducts } from "@/lib/products";
+import { PRICE_RANGES, fetchAllProducts, newestProductsFirst } from "@/lib/products";
 import { CatalogFilters, PaginationBar } from "@/components/catalog-client";
 import { getSeoOverride, buildMetadata } from "@/lib/seo";
 import { imgProps, W_CARD } from "@/lib/image";
@@ -143,7 +143,7 @@ export default async function CatalogPage({ searchParams }: Props) {
   // Sort
   if (sort === "price-asc") filtered.sort((a, b) => a.price - b.price);
   else if (sort === "price-desc") filtered.sort((a, b) => b.price - a.price);
-  else if (sort === "new") filtered.sort((a, b) => (a.badge === "New" ? -1 : b.badge === "New" ? 1 : 0));
+  else if (sort === "new") filtered.sort(newestProductsFirst);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);

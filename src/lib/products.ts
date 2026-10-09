@@ -18,6 +18,7 @@ export type ProductVideo = {
 
 export type Product = {
   id?: string;
+  createdAt?: string;
   slug: string;
   name: string;
   material: string;
@@ -382,6 +383,27 @@ export function getApiProductCardPrice(p: { price?: number | null; variants?: { 
   return p.price ?? 0;
 }
 
+/** Primary photograph first; videos never become product card images. */
+export function getApiProductImages(product: {
+  media?: { media_url: string; media_type?: string; is_primary?: boolean }[];
+  images?: { image_url: string; is_primary?: boolean }[];
+}): string[] {
+  const media = (product.media ?? []).filter(item => item.media_type !== "VIDEO" && item.media_url);
+  const orderedMedia = [...media.filter(item => item.is_primary), ...media.filter(item => !item.is_primary)];
+  const images = product.images ?? [];
+  const orderedImages = [...images.filter(item => item.is_primary), ...images.filter(item => !item.is_primary)];
+  return [...new Set([...orderedMedia.map(item => item.media_url), ...orderedImages.map(item => item.image_url)].filter(Boolean))];
+}
+
+/** Creation date controls New Arrivals; the optional "New" badge is editorial. */
+export function newestProductsFirst(a: Pick<Product, "createdAt">, b: Pick<Product, "createdAt">): number {
+  const date = (value?: string) => {
+    const timestamp = value ? Date.parse(value) : NaN;
+    return Number.isFinite(timestamp) ? timestamp : 0;
+  };
+  return date(b.createdAt) - date(a.createdAt);
+}
+
 export function getRelatedProducts(slug: string, count = 4): Product[] {
   const product = getProductBySlug(slug);
   if (!product) return PRODUCTS.slice(0, count);
@@ -391,8 +413,9 @@ export function getRelatedProducts(slug: string, count = 4): Product[] {
 }
 
 /**
- * Fetches the live, admin-managed product catalog from the backend, merging in
- * static fallback data by slug where available. This is the source of truth for
+ * Fetches the live, admin-managed product catalog from the backend. API images,
+ * prices and creation dates stay authoritative even for a known seed slug.
+ * This is the source of truth for
  * any page that needs the real catalog (listing, related/recommended products),
  * since the bare PRODUCTS array doesn't reflect what's actually live in the admin panel.
  */
@@ -405,7 +428,7 @@ export async function fetchAllProducts(): Promise<Product[]> {
     const res = await fetch(`${apiUrl}/products?visibility=public`, { next: { revalidate: 60 } });
     if (!res.ok) return PRODUCTS;
     const data = await res.json();
-    if (!Array.isArray(data) || data.length === 0) return PRODUCTS;
+    if (!Array.isArray(data)) return PRODUCTS;
     const seen = new Set<string>();
     return data
       .filter((p: any) => {
@@ -414,9 +437,6 @@ export async function fetchAllProducts(): Promise<Product[]> {
         return true;
       })
       .map((p: any) => {
-        const fallback = PRODUCTS.find((fp) => fp.slug === p.slug);
-        if (fallback) return fallback;
-
         const price = getApiProductCardPrice(p);
         const cheapestVariant = (p.variants ?? []).length > 0
           ? p.variants.reduce((min: any, v: any) => ((v.sale_price ?? v.price) < (min.sale_price ?? min.price) ? v : min))
@@ -426,6 +446,8 @@ export async function fetchAllProducts(): Promise<Product[]> {
           : (p.compare_at_price && p.compare_at_price > price ? p.compare_at_price : null);
 
         return {
+          id: p.id,
+          createdAt: p.created_at,
           slug: p.slug,
           name: p.name,
           material: p.material ?? "",
@@ -439,8 +461,8 @@ export async function fetchAllProducts(): Promise<Product[]> {
           // unknown, which made the .map callback below a type error and broke
           // `next build` (TypeScript errors are not ignored in next.config.ts).
           colors: Array.from(new Set<string>((p.variants ?? []).map((v: any) => v.attributes?.color ?? v.color).filter(Boolean))).map((c: string) => ({ label: c, hex: "#888" })),
-          images: p.media?.map((m: any) => m.media_url) ?? p.images?.map((i: any) => i.image_url) ?? [],
-          media: p.media?.map((m: any) => ({ url: m.media_url, color: m.color ?? null })) ?? undefined,
+          images: getApiProductImages(p),
+          media: p.media?.filter((m: any) => m.media_type !== "VIDEO").map((m: any) => ({ url: m.media_url, color: m.color ?? null })) ?? undefined,
           description: p.description ?? p.short_description ?? "",
           specs: "",
           craftsmanship: "",

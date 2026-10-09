@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getProductBySlug, fetchAllProducts, pickRelatedProducts, PRODUCTS, type Product, type ProductVariant, type ProductVideo } from "@/lib/products";
 import { ProductActions, ImageGallery, ProductColorProvider } from "@/components/product-actions";
 import { VisitorCounter } from "@/components/visitor-counter";
+import { productKeywords, productGuide, jsonLd } from "@/lib/product-seo";
 import { PixelViewContent } from "@/components/pixel-events";
 import { cldUrl, imgProps, W_CARD } from "@/lib/image";
 
@@ -19,7 +20,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const lang = sp.lang === "bn" ? "bn" : "en";
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rizzleather.com";
-  const canonical = `/brand/catalog/${slug}`;
+  const canonical = `/brand/catalog/${slug}${lang === "bn" ? "?lang=bn" : ""}`;
   const hreflang = {
     canonical,
     languages: {
@@ -29,8 +30,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     },
   };
 
+  const apiProduct = await fetchProductBySlugFromApi(slug) as Record<string, unknown> | null;
   const p = getProductBySlug(slug);
-  if (p) {
+  if (!apiProduct && p) {
     return {
       title: `${p.name} — ${p.material} | RIZZ`,
       description: p.description.slice(0, 155),
@@ -44,7 +46,6 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     };
   }
 
-  const apiProduct = await fetchProductBySlugFromApi(slug) as Record<string, unknown> | null;
   if (!apiProduct) return { title: "Product | RIZZ" };
 
   // Find Bangla translation if available
@@ -54,23 +55,27 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const name = apiProduct.name as string;
   const material = (apiProduct.material as string) || "Genuine Leather";
   const fallbackDescription = `${name} — handcrafted ${material.toLowerCase()} from RIZZ Leather, Chittagong, Bangladesh. Genuine leather. Cash on Delivery nationwide.`;
-  const image = (apiProduct.media as { media_url: string }[] | undefined)?.[0]?.media_url;
+  const imageMedia = ((apiProduct.media as { media_url: string; media_type?: string; is_primary?: boolean }[] | undefined) ?? []).filter(m => m.media_type !== "VIDEO");
+  const image = (imageMedia.find(m => m.is_primary) ?? imageMedia[0])?.media_url;
 
   // Use Bangla content if lang=bn and translation exists, otherwise English
   const title = lang === "bn" && bnTranslation
     ? (bnTranslation.seo_title || `${bnTranslation.name} | RIZZ Leather`)
-    : ((apiProduct.meta_title as string) || `${name} — ${material} | RIZZ`);
+    : ((apiProduct.meta_title as string) || (apiProduct.focus_keyword ? `${name} — ${apiProduct.focus_keyword} | RIZZ Leather` : `${name} — ${material} | RIZZ`));
 
   const description = lang === "bn" && bnTranslation
     ? (bnTranslation.seo_description || bnTranslation.short_description || fallbackDescription).slice(0, 160)
     : ((apiProduct.meta_description as string) || (apiProduct.short_description as string) || fallbackDescription).slice(0, 160);
 
   const ogLocale = lang === "bn" ? "bn_BD" : "en_US";
+  const keywords = productKeywords(apiProduct);
 
   return {
     title,
     description,
+    keywords: keywords.length ? keywords : undefined,
     alternates: hreflang,
+    twitter: { card: "summary_large_image", title, description, images: image ? [image] : undefined },
     openGraph: {
       title,
       description,
@@ -119,15 +124,10 @@ const COLOR_HEX_MAP: Record<string, string> = {
 async function fetchProductBySlugFromApi(slug: string) {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3040/api';
-    const listRes = await fetch(`${apiUrl}/products`, { next: { revalidate: 60 } });
-    if (!listRes.ok) return null;
-    const list = await listRes.json();
-    if (!Array.isArray(list)) return null;
-    const found = (list as Record<string, unknown>[]).find((p) => p.slug === slug);
-    if (!found?.id) return null;
-    // List endpoint omits variants/media/faqs — fetch the full record by id.
-    const detailRes = await fetch(`${apiUrl}/products/${found.id}`, { next: { revalidate: 60 } });
-    if (!detailRes.ok) return found;
+    // A fresh slug lookup makes newly published products and SEO updates visible.
+    // Next.js memoizes this GET for metadata and page content in the same render.
+    const detailRes = await fetch(`${apiUrl}/products/by-slug/${encodeURIComponent(slug)}`, { cache: "no-store" });
+    if (!detailRes.ok) return null;
     return await detailRes.json();
   } catch {
     return null;
@@ -144,7 +144,7 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
 
   let product: Product | null = getProductBySlug(slug) ?? null;
 
-  if (!product && apiProduct) {
+  if (apiProduct) {
     const rawVariants = (apiProduct.variants as Record<string, unknown>[] | undefined) ?? [];
     const variants: ProductVariant[] = rawVariants.map((v) => {
       const attrs = (v.attributes as { size?: string; color?: string } | null) ?? {};
@@ -245,10 +245,19 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
     }));
   const avgRating = reviews.length > 0 ? Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) : 0;
 
+  const keywords = productKeywords(apiProduct);
+  const guide = productGuide(apiProduct, lang);
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://rizzleather.com").replace(/\/$/, "");
+  const productUrl = `${baseUrl}/brand/catalog/${product.slug}`;
+  const inStock = product.variants?.length ? product.variants.some(v => v.stock > 0) : true;
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
+    url: productUrl,
+    ...(apiProduct?.sku ? { sku: apiProduct.sku } : {}),
+    ...(keywords.length ? { keywords: keywords.join(", ") } : {}),
     description: product.description,
     image: product.images,
     material: product.material,
@@ -258,7 +267,8 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
       "@type": "Offer",
       price: product.price,
       priceCurrency: "BDT",
-      availability: "https://schema.org/InStock",
+      url: productUrl,
+      availability: inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       areaServed: { "@type": "Country", name: "Bangladesh" },
       seller: { "@type": "Organization", name: "RIZZ Leather" }
     },
@@ -277,10 +287,10 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "/" },
-      { "@type": "ListItem", position: 2, name: "Shop", item: "/brand/catalog" },
-      { "@type": "ListItem", position: 3, name: product.category, item: `/brand/catalog?category=${product.categorySlug ?? ""}` },
-      { "@type": "ListItem", position: 4, name: product.name, item: `/brand/catalog/${product.slug}` }
+      { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+      { "@type": "ListItem", position: 2, name: "Shop", item: `${baseUrl}/brand/catalog` },
+      { "@type": "ListItem", position: 3, name: product.category, item: `${baseUrl}/brand/catalog?category=${encodeURIComponent(product.categorySlug ?? "")}` },
+      { "@type": "ListItem", position: 4, name: product.name, item: productUrl }
     ]
   };
 
@@ -298,8 +308,8 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbSchema) }} />
       <PixelViewContent name={product.name} price={product.price} slug={product.slug} category={product.category} />
       <main>
         {/* Breadcrumb */}
@@ -364,6 +374,17 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
           </div>
           </ProductColorProvider>
         </section>
+
+        {guide.content && (
+          <section aria-labelledby="product-guide-title" className="border-t border-[var(--hairline)] py-12 lg:py-16">
+            <div className="mx-auto max-w-3xl px-5 lg:px-8">
+              <h2 id="product-guide-title" className="font-serif text-2xl text-[var(--cream)] sm:text-3xl">{guide.heading}</h2>
+              <div lang={lang === "bn" ? "bn" : "en"} className="mt-5 space-y-4 text-sm leading-relaxed text-[var(--muted)]">
+                {guide.content.split(/\n\s*\n/).map((paragraph, index) => <p key={index} className="whitespace-pre-line">{paragraph}</p>)}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Reviews — only rendered when the product has real reviews in the admin */}
         {reviews.length > 0 && (
@@ -447,7 +468,7 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
             <script
               type="application/ld+json"
               dangerouslySetInnerHTML={{
-                __html: JSON.stringify({
+                __html: jsonLd({
                   "@context": "https://schema.org",
                   "@type": "FAQPage",
                   mainEntity: faqItems.map((item) => ({
